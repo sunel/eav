@@ -1,0 +1,15 @@
+			
+			Attribute::add([
+				'attribute_code' => 'ATTRIBUTECODE',
+				'entity_code' => 'ENTITYCODE',
+				'backend_class' => NULL,
+				'backend_type' => '',
+				'backend_table' =>  NULL,
+				'frontend_class' =>  NULL,
+				'frontend_type' => '',
+				'frontend_label' => ucwords(str_replace('_',' ','ATTRIBUTECODE')),
+				'source_class' =>  NULL,
+				'default_value' => '',
+				'is_required' => 0,
+				'required_validate_class' =>  NULL	
+			]);

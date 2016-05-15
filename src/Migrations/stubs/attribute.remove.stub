@@ -1,0 +1,5 @@
+			
+			Attribute::remove([
+				'attribute_code' => 'ATTRIBUTECODE',
+				'entity_code' => 'ENTITYCODE',
+			]);

@@ -1,0 +1,32 @@
+{
+    "name": "sunel/eav",
+    "description": "Eav For Artisan.",
+    "keywords": ["eav", "laravel"],
+    "license": "MIT",
+    "require": {
+        "php": ">=5.5.9",
+        "illuminate/database": "5.2.*"
+    },
+    "require-dev": {
+        "fzaninotto/faker": "~1.4",
+        "mockery/mockery": "0.9.*",
+        "phpunit/phpunit": "~4.0"
+    },
+    "authors": [
+        {
+            "name": "Sunel TR",
+            "email": "sunelbe@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Eav\\": "src/"
+        }
+    },
+    "autoload-dev": {
+    },
+    "scripts": {
+    },
+    "config": {        
+    }
+}

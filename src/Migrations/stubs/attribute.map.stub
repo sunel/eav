@@ -1,0 +1,7 @@
+			
+			EntityAttribute::map([
+				'attribute_code' => 'ATTRIBUTECODE',
+				'entity_code' => 'ENTITYCODE',
+				'attribute_set' => 'Default',
+				'attribute_group' => 'General'
+			]);

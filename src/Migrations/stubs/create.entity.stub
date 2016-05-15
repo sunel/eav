@@ -1,0 +1,140 @@
+<?php
+
+use Eav\Entity;
+use Eav\AttributeSet;
+use Eav\AttributeGroup;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
+
+class DummyClass extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+    	Schema::create('DummyTable_datetime', function (Blueprint $table) {
+            $table->increments('value_id')->comment('Value ID');
+            $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
+            $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
+            $table->smallInteger('store_id')->unsigned()->default(0)->comment('Store Type ID');
+            $table->integer('entity_id')->unsigned()->default(0)->comment('Entity ID');
+            
+            $table->dateTime('value')->default(NULL)->nullable()->comment('Value');
+            
+            $table->unique(['entity_id','attribute_id','store_id']);
+            $table->index('store_id');
+			$table->index('attribute_id');
+			$table->index('entity_id');        	  
+        });
+        
+        Schema::create('DummyTable_decimal', function (Blueprint $table) {
+            $table->increments('value_id')->comment('Value ID');
+            $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
+            $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
+            $table->smallInteger('store_id')->unsigned()->default(0)->comment('Store Type ID');
+            $table->integer('entity_id')->unsigned()->default(0)->comment('Entity ID');
+            
+            $table->decimal('value', 12 , 4)->default(NULL)->nullable()->comment('Value');
+            
+            $table->unique(['entity_id','attribute_id','store_id']);
+            $table->index('store_id');
+			$table->index('attribute_id');
+			$table->index('entity_id');        	  
+        });
+        
+        Schema::create('DummyTable_int', function (Blueprint $table) {
+            $table->increments('value_id')->comment('Value ID');
+            $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
+            $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
+            $table->smallInteger('store_id')->unsigned()->default(0)->comment('Store Type ID');
+            $table->integer('entity_id')->unsigned()->default(0)->comment('Entity ID');
+            
+            $table->integer('value')->default(NULL)->nullable()->comment('Value');
+            
+            $table->unique(['entity_id','attribute_id','store_id']);
+            $table->index('store_id');
+			$table->index('attribute_id');
+			$table->index('entity_id');        	  
+        });
+        
+         Schema::create('DummyTable_text', function (Blueprint $table) {
+            $table->increments('value_id')->comment('Value ID');
+            $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
+            $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
+            $table->smallInteger('store_id')->unsigned()->default(0)->comment('Store Type ID');
+            $table->integer('entity_id')->unsigned()->default(0)->comment('Entity ID');
+            
+            $table->text('value')->comment('Value');
+            
+            $table->unique(['entity_id','attribute_id','store_id']);
+            $table->index('store_id');
+			$table->index('attribute_id');
+			$table->index('entity_id');        	  
+        });
+        
+        Schema::create('DummyTable_varchar', function (Blueprint $table) {
+            $table->increments('value_id')->comment('Value ID');
+            $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
+            $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
+            $table->smallInteger('store_id')->unsigned()->default(0)->comment('Store Type ID');
+            $table->integer('entity_id')->unsigned()->default(0)->comment('Entity ID');
+            
+            $table->string('value')->default(NULL)->nullable()->comment('Value');
+            
+            $table->unique(['entity_id','attribute_id','store_id']);
+            $table->index('store_id');
+			$table->index('attribute_id');
+			$table->index('entity_id');        	  
+        });
+        
+        $entity = Entity::create([
+        	'entity_code' => 'DummyTable',
+        	'entity_class' => 'DummyBaseClass',
+        	'entity_table' => 'DummyTable',
+        ]);
+        
+        
+        $attributeSet = AttributeSet::create([
+        	'attribute_set_name' => 'Default',
+        	'entity_id' => $entity->entity_id,
+        ]);
+        
+        $entity->default_attribute_set_id = $attributeSet->attribute_set_id;        
+        $entity->save();
+        
+        $attributeGroup = AttributeGroup::create([
+        	'attribute_set_id' => $attributeSet->attribute_set_id,
+        	'attribute_group_name' => 'General',
+        ]);
+                
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+    	Schema::drop('DummyTable_datetime');
+        Schema::drop('DummyTable_decimal');
+        Schema::drop('DummyTable_int');
+        Schema::drop('DummyTable_text');
+        Schema::drop('DummyTable_varchar');
+        
+        
+        $entity = Entity::where('entity_code', '=', 'DummyTable');               
+        $attributeSet = AttributeSet::where('attribute_set_name', '=', 'Default')
+        				->where('entity_id', '=', $entity->first()->entity_id);
+        $attributeGroup = AttributeGroup::where('attribute_set_id', '=', $attributeSet->first()->attribute_set_id)
+        				->where('attribute_group_name', '=', 'General');
+        
+        
+        $attributeGroup->delete();
+        $attributeSet->delete();
+        $entity->delete();
+    }
+}
