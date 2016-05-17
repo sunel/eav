@@ -3,6 +3,7 @@
 namespace Eav\Attribute;
 
 use Validator;
+use Eav\Attribute;
 use Eav\Attribute\Validator as AttributeValidator;
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Collection as BaseCollection;
@@ -50,7 +51,11 @@ class Collection extends BaseCollection
     protected function getArrayableItems($items)
     {
         $items = array_reduce($items, function ($result, $item) {
-            $result[$item->getAttributeCode()] = $item;
+            if (is_a($item, Attribute::class)) {
+                $result[$item->getAttributeCode()] = $item;
+            } else {
+                $result[] = $item;
+            }
             return $result;
         }, array());
 

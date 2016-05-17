@@ -2,6 +2,7 @@
 
 namespace Eav;
 
+use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 class Entity extends Model
@@ -67,5 +68,12 @@ class Entity extends Model
     public function defaultAttributeSet()
     {
         return $this->hasOne(AttributeSet::class, 'attribute_set_id', 'default_attribute_set_id');
+    }
+    
+    public function describe()
+    {
+        $table = $this->getAttribute('entity_table');
+        $pdo = \DB::connection()->getPdo();
+        return new Collection($pdo->query("describe $table")->fetchAll());
     }
 }

@@ -4,6 +4,7 @@ namespace Eav\Providers;
 
 use Validator;
 use Eav\Console\ModelMakeCommand;
+use Eav\Console\EntityComplierCommand;
 use Illuminate\Support\ServiceProvider;
 use Eav\Migrations\EntityMigrationCreator;
 use Eav\Migrations\AttributeMigrationCreator;
@@ -74,7 +75,7 @@ class LaravelServiceProvider extends ServiceProvider
     {
         $commands = [
             'MakeEntityMigration', 'MakeEnityModel', 'MakeAttributeMigration',
-            'MakeEntityAttributeMap'
+            'MakeEntityAttributeMap', 'EntityComplier'
         ];
 
         // We'll simply spin through the list of commands that are migration related
@@ -91,8 +92,22 @@ class LaravelServiceProvider extends ServiceProvider
             'command.entity.migrate.make',
             'command.attribute.migrate.make',
             'command.entity.model.make',
-            'command.entity.attribute.map.make'
+            'command.entity.attribute.map.make',
+            'command.entity.complier'
         );
+    }
+
+    /**
+     * Register the command.
+     *
+     * @return void
+     */
+    protected function registerEntityComplierCommand()
+    {
+        $this->app->singleton('command.entity.complier', function ($app) {
+
+            return new EntityComplierCommand($app['files'], $app['composer']);
+        });
     }
 
     /**
