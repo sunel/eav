@@ -37,19 +37,19 @@ trait Attribute
     protected function fetchAttributes($attributes = array(), $static = false, $required = false)
     {
         $loadedAttributes = $this->baseEntity()->eavAttributes();
-        
-        if (!empty($attributes)) {
-            $loadedAttributes->whereIn('attribute_code', $attributes);
-        }
-                
-        $loadedAttributes->where(function ($query) use ($static, $required) {
-            if ($static) {
+         				
+		$loadedAttributes->where(function ($query) use ($static, $required, $attributes) {
+			 if (!empty($attributes)) {	
+				$query->orWhereIn('attribute_code', $attributes);
+			 }
+			
+			if ($static) {
                 $query->orWhere('backend_type', 'static');
             }
             if ($required) {
                 $query->orWhere('is_required', 1);
-            }
-        });
+            }	
+		});
         
         return $loadedAttributes->get();
     }

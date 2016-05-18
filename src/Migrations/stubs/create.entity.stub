@@ -24,6 +24,10 @@ class DummyClass extends Migration
             
             $table->dateTime('value')->default(NULL)->nullable()->comment('Value');
             
+            $table->foreign('entity_id')
+            	  ->references('id')->on('DummyTables')
+				  ->onDelete('cascade');
+            
             $table->unique(['entity_id','attribute_id','store_id']);
             $table->index('store_id');
 			$table->index('attribute_id');
@@ -38,6 +42,10 @@ class DummyClass extends Migration
             $table->integer('entity_id')->unsigned()->default(0)->comment('Entity ID');
             
             $table->decimal('value', 12 , 4)->default(NULL)->nullable()->comment('Value');
+            
+            $table->foreign('entity_id')
+            	  ->references('id')->on('DummyTables')
+				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id','store_id']);
             $table->index('store_id');
@@ -54,6 +62,10 @@ class DummyClass extends Migration
             
             $table->integer('value')->default(NULL)->nullable()->comment('Value');
             
+            $table->foreign('entity_id')
+            	  ->references('id')->on('DummyTables')
+				  ->onDelete('cascade');
+            
             $table->unique(['entity_id','attribute_id','store_id']);
             $table->index('store_id');
 			$table->index('attribute_id');
@@ -68,6 +80,10 @@ class DummyClass extends Migration
             $table->integer('entity_id')->unsigned()->default(0)->comment('Entity ID');
             
             $table->text('value')->comment('Value');
+            
+            $table->foreign('entity_id')
+            	  ->references('id')->on('DummyTables')
+				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id','store_id']);
             $table->index('store_id');
@@ -84,6 +100,10 @@ class DummyClass extends Migration
             
             $table->string('value')->default(NULL)->nullable()->comment('Value');
             
+            $table->foreign('entity_id')
+            	  ->references('id')->on('DummyTables')
+				  ->onDelete('cascade');
+            
             $table->unique(['entity_id','attribute_id','store_id']);
             $table->index('store_id');
 			$table->index('attribute_id');
@@ -93,7 +113,7 @@ class DummyClass extends Migration
         $entity = Entity::create([
         	'entity_code' => 'DummyTable',
         	'entity_class' => 'DummyBaseClass',
-        	'entity_table' => 'DummyTable',
+        	'entity_table' => 'DummyTables',
         ]);
         
         

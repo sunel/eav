@@ -15,13 +15,12 @@ class SyntaxBuilder
      * Create the PHP syntax for the given schema.
      *
      * @param  array $schema
-     * @param  array $meta
      * @return string
      */
-    public function create($schema, $meta)
+    public function create($schema)
     {
-        $up = $this->createSchemaForUpMethod($schema, $meta);
-        $down = $this->createSchemaForDownMethod($schema, $meta);
+        $up = $this->createSchemaForUpMethod($schema);
+        $down = $this->createSchemaForDownMethod($schema);
 
         return compact('up', 'down');
     }
@@ -30,58 +29,26 @@ class SyntaxBuilder
      * Create the schema for the "up" method.
      *
      * @param  string $schema
-     * @param  array $meta
      * @return string
      */
-    private function createSchemaForUpMethod($schema, $meta)
+    private function createSchemaForUpMethod($schema)
     {
         $fields = $this->constructSchema($schema);
 
-        if ($meta['action'] == 'create') {
-            return $this->insert($fields)->into($this->getCreateSchemaWrapper());
-        }
-
-        if ($meta['action'] == 'add') {
-            return $this->insert($fields)->into($this->getChangeSchemaWrapper());
-        }
-
-        if ($meta['action'] == 'remove') {
-            $fields = $this->constructSchema($schema, 'Drop');
-
-            return $this->insert($fields)->into($this->getChangeSchemaWrapper());
-        }
+        return $this->insert($fields)->into($this->getCreateSchemaWrapper());
     }
 
     /**
      * Construct the syntax for a down field.
      *
      * @param  array $schema
-     * @param  array $meta
      * @return string
      */
-    private function createSchemaForDownMethod($schema, $meta)
+    private function createSchemaForDownMethod($schema)
     {
         // If the user created a table, then for the down
         // method, we should drop it.
-        if ($meta['action'] == 'create') {
-            return sprintf("Schema::drop('%s');", $meta['table']);
-        }
-
-        // If the user added columns to a table, then for
-        // the down method, we should remove them.
-        if ($meta['action'] == 'add') {
-            $fields = $this->constructSchema($schema, 'Drop');
-
-            return $this->insert($fields)->into($this->getChangeSchemaWrapper());
-        }
-
-        // If the user removed columns from a table, then for
-        // the down method, we should add them back on.
-        if ($meta['action'] == 'remove') {
-            $fields = $this->constructSchema($schema);
-
-            return $this->insert($fields)->into($this->getChangeSchemaWrapper());
-        }
+        return "Schema::drop('{{table}}');";
     }
 
     /**

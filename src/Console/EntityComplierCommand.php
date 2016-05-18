@@ -17,7 +17,7 @@ class EntityComplierCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'eav:entity:complie {entity : The name of the entity.}';
+    protected $signature = 'eav:entity:compile {entity : The name of the entity.}';
 
     /**
      * The console command description.
@@ -65,9 +65,9 @@ class EntityComplierCommand extends Command
         $entity = $this->input->getArgument('entity');
 
         (new EntityComplier(Entity::findByCode($entity), $this->files))->compile();
-        
-        //dd($entity);
-
+		
+		$this->info('Migration created successfully.');
+                
         //$this->composer->dumpAutoloads();
     }
 }

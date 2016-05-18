@@ -3,6 +3,7 @@
 namespace Eav\Flat\Entity;
 
 use Eav\Entity;
+use Illuminate\Support\Str;
 use Eav\Migrations\SchemaParser;
 use Eav\Migrations\SyntaxBuilder;
 use Illuminate\Filesystem\Filesystem;
@@ -27,29 +28,106 @@ class Complier
     public function compile()
     {
         $this->createTable();
-        //$this->insertValues();
+        $this->insertValues();
+    }
+	
+	protected function insertValues()
+    {
+    	$entity = app($this->entity->entity_class);
+		
+		$data = $entity->all('attr.*')->toArray();
+		
+		$entity->setUseFlat(true);
+		
+		$entity->insert($data);
+    	
     }
 
     protected function createTable()
     {
-        $this->buildSchema();
+        $path = $this->getPath($this->entity->entity_table.'_flat');
+		
+		$this->makeDirectory($path);
+		
+		$this->files->put($path, $this->compileMigrationStub());
+		
+		$this->files->requireOnce($path);
+		
+		$this->runUp($path);
+    }
+	
+	/**
+     * Run "up" a migration instance.
+     *
+     * @param  string  $file
+     * @param  int     $batch
+     * @param  bool    $pretend
+     * @return void
+     */
+    protected function runUp($file)
+    {
+    	// First we will resolve a "real" instance of the migration class from this
+        // migration file name. Once we have the instances we can run the actual
+        // command such as "up" or "down", or we can just simulate the action.
+        $migration = $this->resolve($file);
+
+        $migration->up();
+
+        // Once we have run a migrations class, we will log that it was run in this
+        // repository so that we don't try to run it next time we do a migration
+        // in the application. A migration repository keeps the migrate order.
+        //$this->repository->log($file, $batch);
+
+        //$this->note("<info>Migrated:</info> $file");
+    }
+	
+	 /**
+     * Resolve a migration instance from a file.
+     *
+     * @param  string  $file
+     * @return object
+     */
+    public function resolve($file)
+    {
+        $file = basename($file, ".php");
+
+        $class = Str::studly($file);
+
+        return new $class;
     }
 
     protected function buildSchema()
     {
-        $table = $this->entity->describe()->map(function ($attribute) {
-            
-            if ($attribute['Field'] == 'id') {
-                $schema =  "id:increment";
+    	
+		$table = $this->entity->describe()->map(function ($attribute) {
+			
+			if ($attribute['COLUMN_KEY'] == 'PRI') {
+                $schema = "{$attribute['COLUMN_NAME']}:{$this->getColumn($attribute['DATA_TYPE'])}:unsigned";
             } else {
-                $schema = "{$attribute['Field']}:{$attribute['Type']}";
+            	
+            	if ($attribute['DATA_TYPE'] == 'decimal') {
+                	$schema = "{$attribute['COLUMN_NAME']}:{$this->getColumn($attribute['DATA_TYPE'])}({$attribute['NUMERIC_PRECISION']} , {$attribute['NUMERIC_SCALE']})";
+				} else if ($attribute['DATA_TYPE'] == 'int') {
+					$schema = "{$attribute['COLUMN_NAME']}:{$this->getColumn($attribute['DATA_TYPE'])}";
+					if(!Str::contains($attribute['COLUMN_TYPE'] , 'unsigned')) {
+						$schema .= "({$attribute['NUMERIC_PRECISION']})";
+					} 
+				} else if ($attribute['DATA_TYPE'] == 'varchar') {
+					$schema = "{$attribute['COLUMN_NAME']}:{$this->getColumn($attribute['DATA_TYPE'])}({$attribute['CHARACTER_MAXIMUM_LENGTH']})";
+				} else {
+					$schema = "{$attribute['COLUMN_NAME']}:{$this->getColumn($attribute['DATA_TYPE'])}";
+				}
+			
+				if(Str::contains($attribute['COLUMN_TYPE'] , 'unsigned')) {
+					 $schema .= ":unsigned";
+				}
                 
-                if ($attribute['Null'] != 'NO') {
+                if ($attribute['IS_NULLABLE'] != 'NO') {
                     $schema .= ":nullable";
                 }
                 
-                if ($attribute['Default'] != null) {
-                    $schema .= ":default('{$attribute['Default']}')";
+                if ($attribute['COLUMN_DEFAULT'] != null) {
+                    $schema .= ":default('{$attribute['COLUMN_DEFAULT']}')";
                 }
             }
             
@@ -80,8 +158,8 @@ class Complier
         
         
         $schema = (new SchemaParser)->parse(implode(',', $table).','.implode(',', $attributes));
-        
-        return (new SyntaxBuilder)->create($schema, ['action' => 'create', 'table' => $this->entity->entity_table.'_flat']);
+		
+        return (new SyntaxBuilder)->create($schema);
     }
 
     /**
@@ -104,7 +182,7 @@ class Complier
      */
     protected function getPath($name)
     {
-        return base_path() . '/database/migrations/eav/' . date('Y_m_d_His') . '_' . $name . '.php';
+        return base_path() . '/database/migrations/eav/' . $name . '.php';
     }
    
     /**
@@ -114,7 +192,7 @@ class Complier
      */
     protected function compileMigrationStub()
     {
-        $stub = $this->files->get(__DIR__ . '/../stubs/migration.stub');
+        $stub = $this->files->get(__DIR__ . '/../../Migrations/stubs/migration.stub');
         $this->replaceClassName($stub)
             ->replaceSchema($stub)
             ->replaceTableName($stub);
@@ -128,7 +206,7 @@ class Complier
      */
     protected function replaceClassName(&$stub)
     {
-        $className = ucwords(camel_case($this->argument('name')));
+        $className = ucwords(camel_case($this->entity->entity_table.'_flat'));
         $stub = str_replace('{{class}}', $className, $stub);
         return $this;
     }
@@ -140,7 +218,7 @@ class Complier
      */
     protected function replaceTableName(&$stub)
     {
-        $table = $this->meta['table'];
+        $table = $this->entity->entity_table.'_flat';
         $stub = str_replace('{{table}}', $table, $stub);
         return $this;
     }
@@ -152,10 +230,7 @@ class Complier
      */
     protected function replaceSchema(&$stub)
     {
-        if ($schema = $this->option('schema')) {
-            $schema = (new SchemaParser)->parse($schema);
-        }
-        $schema = (new SyntaxBuilder)->create($schema, $this->meta);
+        $schema = $this->buildSchema();
         $stub = str_replace(['{{schema_up}}', '{{schema_down}}'], $schema, $stub);
         return $this;
     }
@@ -167,9 +242,15 @@ class Complier
             case 'int':
                 return 'integer';
                 break;
+			case 'timestamp':
+                return 'timestamp';
+                break;	
             case 'datetime':
                 return 'dateTime';
                 break;
+			case 'decimal':
+                return 'decimal';
+                break;	
             case 'varchar':
             default:
                 return 'string';

@@ -3,6 +3,7 @@
 namespace Eav;
 
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 
 class Entity extends Model
@@ -21,7 +22,7 @@ class Entity extends Model
     
     public function getEntityTablePrefix()
     {
-        $tableName = $this->getAttribute('entity_table');
+        $tableName = Str::singular($this->getAttribute('entity_table'));
         $tablePrefix = $this->getConnection()->getTablePrefix();
         if ($tablePrefix != '') {
             $tableName = "$tablePrefix.$tableName";
@@ -73,7 +74,18 @@ class Entity extends Model
     public function describe()
     {
         $table = $this->getAttribute('entity_table');
-        $pdo = \DB::connection()->getPdo();
-        return new Collection($pdo->query("describe $table")->fetchAll());
-    }
+		
+		$connection = \DB::connection();
+		
+		$database = $connection->getDatabaseName();
+
+        $table = $connection->getTablePrefix().$table;
+		
+		$result = \DB::table('information_schema.columns')
+				->where('table_schema', $database)
+				->where('table_name', $table)
+				->get();
+				
+        return new Collection(json_decode(json_encode($result), true));
+    }	
 }

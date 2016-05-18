@@ -2,8 +2,9 @@
 
 namespace Eav;
 
-use Eav\Traits\Attribute;
+use Eav\Traits\Attribute as AttributeTraits;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Eav\Database\Query\Builder as EavQueryBuilder;
 use Illuminate\Database\Eloquent\Builder;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 abstract class EavModel extends Model
 {
-    use Attribute;
+    use AttributeTraits;
     /**
      * Entity code.
      * Can be used as part of method name for entity processing
@@ -21,6 +22,8 @@ abstract class EavModel extends Model
     protected static $unguarded = true;
 
     protected static $baseEntity = [];
+	
+	protected static $useFlat = false;
     
     
     /**
@@ -78,6 +81,35 @@ abstract class EavModel extends Model
 
         return true;
     }
+	
+	
+	public static function setUseFlat($flag)
+	{
+		static::$useFlat = $flag;
+	}
+	
+	public static function canUseFlat()
+	{
+		return static::$useFlat;
+	}
+	
+	/**
+     * Get the table associated with the model.
+     *
+     * @return string
+     */
+    public function getTable()
+    {
+    	if(static::canUseFlat()){
+    		 return str_replace('\\', '', Str::snake(Str::plural(class_basename($this)))).'_flat';
+    	}
+		
+        if (isset($this->table)) {
+            return $this->table;
+        }
+
+        return str_replace('\\', '', Str::snake(Str::plural(class_basename($this))));
+    }
     
     public function validate()
     {
@@ -126,11 +158,16 @@ abstract class EavModel extends Model
      */
     protected function performUpdate(Builder $query, array $options = [])
     {
+    	if(static::canUseFlat()){
+    		return parent::performUpdate($query, $options);
+    	}
+		
+		
         $dirty = $this->getDirty();
 
         if (count($dirty) > 0) {
-            //$loadedAttributes = $this->loadAttributes(array_keys($dirty), true, true);
-            $loadedAttributes = $this->loadAttributes([], true, true);
+            $loadedAttributes = $this->loadAttributes(array_keys($dirty), true, true);
+            //$loadedAttributes = $this->loadAttributes([], true, true);
         
             $loadedAttributes->validate($dirty);
 
@@ -178,15 +215,19 @@ abstract class EavModel extends Model
      */
     protected function performInsert(Builder $query, array $options = [])
     {
+    	if(static::canUseFlat()){
+    		return parent::performInsert($query, $options);
+    	}
+		
         // If the model has an incrementing key, we can use the "insertGetId" method on
         // the query builder, which will give us back the final inserted ID for this
         // table from the database. Not all tables have to be incrementing though.
         $attributes = $this->attributes;
         
-        //$loadedAttributes = $this->loadAttributes(array_keys($attributes), true, true);
-        $loadedAttributes = $this->loadAttributes([], true, true);
+        $loadedAttributes = $this->loadAttributes(array_keys($attributes), true, true);
+        //$loadedAttributes = $this->loadAttributes([], true, true);
         
-        $loadedAttributes->validate($attributes);
+        //$loadedAttributes->validate($attributes);
         
         return $this->getConnection()->transaction(function () use ($query, $options, $attributes, $loadedAttributes) {
             

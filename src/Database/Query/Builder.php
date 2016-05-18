@@ -144,7 +144,7 @@ class Builder extends QueryBuilder
             $loadedAttributes->each(function ($attribute, $key) use (&$columns) {
                 if (!$attribute->isStatic()) {
                     $columns[] = $attribute->setEntity($this->baseEntity())
-                        ->addAttributeJoin($this)->getSelectColumn();
+                        ->addAttributeJoin($this,'left')->getSelectColumn();
                 }
             });
         } else {
@@ -153,16 +153,22 @@ class Builder extends QueryBuilder
             $loadedAttributes = null;
 
             if ($columns != ['*']) {
-                $filterAttr = array_merge($filterAttr, (array) $columns);
+            	$orgColumns = (array) $columns;
+                $filterAttr = array_merge($filterAttr, $orgColumns);
                 $loadedAttributes = $this->loadAttributes($filterAttr);
             }
 
             $columns = ["{$this->from}.*"];
             if ($loadedAttributes) {
-                $loadedAttributes->each(function ($attribute, $key) use (&$columns) {
-                    if (!$attribute->isStatic()) {
+                $loadedAttributes->each(function ($attribute, $key) use (&$columns, $orgColumns) {
+                    if (!$attribute->isStatic()) {                    
+                    	if(in_array($attribute->getAttributeCode(),$orgColumns)) {
+                    		$type = 'left';	
+                    	} else {
+                    		$type = 'inner';	
+                    	}
                         $columns[] = $attribute->setEntity($this->baseEntity())
-                            ->addAttributeJoin($this)->getSelectColumn();
+                            ->addAttributeJoin($this,$type)->getSelectColumn();
                     }
                 });
             }
