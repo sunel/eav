@@ -1,8 +1,8 @@
 <?php
 
 return [
-	
-	'entity' => [
-		
-	]
+    
+    'entity' => [
+        
+    ]
 ];

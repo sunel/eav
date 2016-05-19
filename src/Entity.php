@@ -20,11 +20,11 @@ class Entity extends Model
     ];
     
     public $timestamps = false;
-	
-	public function canUseFlat()
-	{
-		return $this->getAttribute('is_flat_enabled');
-	}
+    
+    public function canUseFlat()
+    {
+        return $this->getAttribute('is_flat_enabled');
+    }
     
     public function getEntityTablePrefix()
     {
@@ -80,18 +80,18 @@ class Entity extends Model
     public function describe()
     {
         $table = $this->getAttribute('entity_table');
-		
-		$connection = \DB::connection();
-		
-		$database = $connection->getDatabaseName();
+        
+        $connection = \DB::connection();
+        
+        $database = $connection->getDatabaseName();
 
         $table = $connection->getTablePrefix().$table;
-		
-		$result = \DB::table('information_schema.columns')
-				->where('table_schema', $database)
-				->where('table_name', $table)
-				->get();
-				
+        
+        $result = \DB::table('information_schema.columns')
+                ->where('table_schema', $database)
+                ->where('table_name', $table)
+                ->get();
+                
         return new Collection(json_decode(json_encode($result), true));
-    }	
+    }
 }
