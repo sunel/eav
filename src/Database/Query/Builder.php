@@ -59,6 +59,11 @@ class Builder extends QueryBuilder
     {
         return $this->baseEntity;
     }
+	
+	public function canUseFlat()
+	{
+		return ($this->baseEntity() && $this->baseEntity()->canUseFlat());
+	}
     
     /**
      * Insert a new record into the database.
@@ -163,12 +168,13 @@ class Builder extends QueryBuilder
                 $loadedAttributes->each(function ($attribute, $key) use (&$columns, $orgColumns) {
                     if (!$attribute->isStatic()) {                    
                     	if(in_array($attribute->getAttributeCode(),$orgColumns)) {
-                    		$type = 'left';	
+                    		$columns[] = $attribute->setEntity($this->baseEntity())
+                            		->addAttributeJoin($this,'left')->getSelectColumn();
                     	} else {
-                    		$type = 'inner';	
+                    		$attribute->setEntity($this->baseEntity())
+                            		->addAttributeJoin($this);
                     	}
-                        $columns[] = $attribute->setEntity($this->baseEntity())
-                            ->addAttributeJoin($this,$type)->getSelectColumn();
+                        
                     }
                 });
             }
@@ -178,6 +184,24 @@ class Builder extends QueryBuilder
 
         return $loadedAttributes;
     }
+
+ 	protected function fixFlatColumns()
+    {
+    	$columns = $this->columns;
+		
+		if ($columns == ['attr.*'] || $columns == 'attr.*') {
+			$columns = ["{$this->from}.*"];
+		} else {
+			if ($columns != ['*']) {			
+				$columns = array_merge(
+					\Config::get('eav.entity.'.$this->baseEntity()->entity_code.'.columns', []),
+					$columns
+				);
+			}
+		}		
+		 
+    	$this->columns = $columns;
+	}
     
 
      /**
@@ -187,6 +211,13 @@ class Builder extends QueryBuilder
      */
     public function toSql()
     {
+    	if($this->canUseFlat()) {
+    			
+    		$this->fixFlatColumns();
+    		
+    		return parent::toSql();	
+    	}
+		
         $this->processAttributes($this->fixColumns());
 
         return $this->grammar->compileSelect($this);
@@ -237,6 +268,10 @@ class Builder extends QueryBuilder
      */
     public function whereAttribute($column, $operator = null, $value = null, $boolean = 'and')
     {
+    	if($this->canUseFlat()) {
+    		return $this->where($column, $operator, $value, $boolean);	
+    	}    	
+		
         $type = 'Basic';
 
         // Here we will make some assumptions about the operator. If only 2 values are
@@ -275,6 +310,10 @@ class Builder extends QueryBuilder
      */
     public function whereNestedAttribute(Closure $callback, $boolean = 'and')
     {
+    	if($this->canUseFlat()) {
+    		return $this->whereNested($callback, $boolean);	
+    	}
+		
         $query = $this->forNestedWhere();
 
         call_user_func($callback, $query);
@@ -323,6 +362,10 @@ class Builder extends QueryBuilder
      */
     public function whereBetweenAttribute($column, array $values, $boolean = 'and', $not = false)
     {
+    	if($this->canUseFlat()) {
+    		return $this->whereBetween($column, $values, $boolean, $not);	
+    	}
+		
         $type = 'between';
 
         return $this->addWhereAttribute($column, compact('column', 'values', 'type', 'boolean', 'not', 'type'));
@@ -376,6 +419,10 @@ class Builder extends QueryBuilder
      */
     public function whereInAttribute($column, $values, $boolean = 'and', $not = false)
     {
+    	if($this->canUseFlat()) {
+    		return $this->whereIn($column, $values, $boolean, $not);	
+    	}
+		
         $type = $not ? 'NotIn' : 'In';
 
         if ($values instanceof Arrayable) {
@@ -432,6 +479,10 @@ class Builder extends QueryBuilder
      */
     public function whereNullAttribute($column, $boolean = 'and', $not = false)
     {
+    	if($this->canUseFlat()) {
+    		return $this->whereNull($column, $boolean, $not);	
+    	}
+		
         $type = $not ? 'NotNull' : 'Null';
 
         return $this->addWhereAttribute($column, compact('column', 'boolean', 'not', 'type'));
@@ -482,6 +533,10 @@ class Builder extends QueryBuilder
      */
     public function whereDateAttribute($column, $operator, $value, $boolean = 'and')
     {
+    	if($this->canUseFlat()) {
+    		return $this->whereDate($column, $operator, $value, $boolean);	
+    	}
+		
         return $this->addDateBasedWhereAttribute('Date', $column, $operator, $value, $boolean);
     }
 
@@ -496,6 +551,10 @@ class Builder extends QueryBuilder
      */
     public function whereDayAttribute($column, $operator, $value, $boolean = 'and')
     {
+    	if($this->canUseFlat()) {
+    		return $this->whereDay($column, $operator, $value, $boolean);	
+    	}
+		
         return $this->addDateBasedWhereAttribute('Day', $column, $operator, $value, $boolean);
     }
 
@@ -510,6 +569,10 @@ class Builder extends QueryBuilder
      */
     public function whereMonthAttribute($column, $operator, $value, $boolean = 'and')
     {
+    	if($this->canUseFlat()) {
+    		return $this->whereMonth($column, $operator, $value, $boolean);	
+    	}
+		
         return $this->addDateBasedWhereAttribute('Month', $column, $operator, $value, $boolean);
     }
 
@@ -524,6 +587,10 @@ class Builder extends QueryBuilder
      */
     public function whereYearAttribute($column, $operator, $value, $boolean = 'and')
     {
+    	if($this->canUseFlat()) {
+    		return $this->whereYear($column, $operator, $value, $boolean);	
+    	}
+		
         return $this->addDateBasedWhereAttribute('Year', $column, $operator, $value, $boolean);
     }
 
@@ -551,6 +618,10 @@ class Builder extends QueryBuilder
      */
     public function orderByAttribute($column, $direction = 'asc')
     {
+    	if($this->canUseFlat()) {
+    		return $this->orderBy($column, $direction);	
+    	}
+		
         $property = $this->unions ? 'unionOrders' : 'orders';
         $direction = strtolower($direction) == 'asc' ? 'asc' : 'desc';
 

@@ -15,10 +15,16 @@ class Entity extends Model
     
     protected $fillable = [
         'entity_code', 'entity_class', 'entity_table',
-        'default_attribute_set_id', 'additional_attribute_table'
+        'default_attribute_set_id', 'additional_attribute_table',
+        'is_flat_enabled'
     ];
     
     public $timestamps = false;
+	
+	public function canUseFlat()
+	{
+		return $this->getAttribute('is_flat_enabled');
+	}
     
     public function getEntityTablePrefix()
     {

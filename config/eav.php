@@ -1,5 +1,8 @@
 <?php
 
 return [
-
+	
+	'entity' => [
+		
+	]
 ];

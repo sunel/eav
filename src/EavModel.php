@@ -38,15 +38,7 @@ abstract class EavModel extends Model
             throw new \Exception("Entity Type need to be specified for :: ".static::class);
         }
 
-        $this->loadEntityProperty();
-
-        $this->addModelEvent();
-            
-        $this->bootIfNotBooted();
-
-        $this->syncOriginal();
-
-        $this->fill($attributes);
+        parent::__construct($attributes);
     }
 
     protected function loadEntityProperty()
@@ -86,6 +78,7 @@ abstract class EavModel extends Model
 	public static function setUseFlat($flag)
 	{
 		static::$useFlat = $flag;
+		static::$baseEntity[static::ENTITY]->is_flat_enabled = $flag;
 	}
 	
 	public static function canUseFlat()
@@ -113,8 +106,11 @@ abstract class EavModel extends Model
     
     public function validate()
     {
-        if ($this->exists) {
-        }
+        $attributes = $this->attributes;
+        
+        $loadedAttributes = $this->loadAttributes(array_keys($attributes), true, true);        
+        
+        $loadedAttributes->validate($attributes);
     }
 
     /**
@@ -166,8 +162,7 @@ abstract class EavModel extends Model
         $dirty = $this->getDirty();
 
         if (count($dirty) > 0) {
-            $loadedAttributes = $this->loadAttributes(array_keys($dirty), true, true);
-            //$loadedAttributes = $this->loadAttributes([], true, true);
+            $loadedAttributes = $this->loadAttributes(array_keys($dirty), true, true);        
         
             $loadedAttributes->validate($dirty);
 
@@ -225,9 +220,8 @@ abstract class EavModel extends Model
         $attributes = $this->attributes;
         
         $loadedAttributes = $this->loadAttributes(array_keys($attributes), true, true);
-        //$loadedAttributes = $this->loadAttributes([], true, true);
         
-        //$loadedAttributes->validate($attributes);
+        $loadedAttributes->validate($attributes);
         
         return $this->getConnection()->transaction(function () use ($query, $options, $attributes, $loadedAttributes) {
             
@@ -300,9 +294,7 @@ abstract class EavModel extends Model
             }
         });
         
-        return true;
-        
-        //return $this->newBaseQueryBuilder()->getConnection()->statement($bulkInsert);     
+        return true;            
     }
 
 
