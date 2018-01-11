@@ -60,7 +60,7 @@ class EntityComplierCommand extends Command
      *
      * @return void
      */
-    public function fire()
+    public function handle()
     {
         $entity = $this->input->getArgument('entity');
 

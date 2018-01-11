@@ -41,9 +41,7 @@ class LaravelServiceProvider extends ServiceProvider
             __DIR__.'/../../config/eav.php' => config_path('eav.php'),
         ], 'config');
         
-        $this->publishes([
-            __DIR__.'/../../database/migrations/' => database_path('migrations')
-        ], 'migrations');
+        $this->loadMigrationsFrom(__DIR__.'/../../database/migrations/');
     }
     
      /**
@@ -123,7 +121,7 @@ class LaravelServiceProvider extends ServiceProvider
     }
     
     /**
-     * Register the "make" migration command.
+     * Register the "make enitity" migration command.
      *
      * @return void
      */
@@ -142,7 +140,7 @@ class LaravelServiceProvider extends ServiceProvider
     }
     
     /**
-     * Register the "make" migration command.
+     * Register the "make attibute" migration command.
      *
      * @return void
      */
@@ -161,7 +159,7 @@ class LaravelServiceProvider extends ServiceProvider
     }
     
     /**
-     * Register the "make" migration command.
+     * Register the "make entity attribute map" migration command.
      *
      * @return void
      */
