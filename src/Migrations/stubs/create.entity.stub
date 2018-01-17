@@ -1,8 +1,10 @@
 <?php
 
 use Eav\Entity;
+use Eav\Attribute;
 use Eav\AttributeSet;
 use Eav\AttributeGroup;
+use Eav\EntityAttribute;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
@@ -129,6 +131,8 @@ class DummyClass extends Migration
         	'attribute_set_id' => $attributeSet->attribute_set_id,
         	'attribute_group_name' => 'General',
         ]);
+
+        $this->addTimeStampAttributes();
                 
     }
 
@@ -139,6 +143,8 @@ class DummyClass extends Migration
      */
     public function down()
     {
+        $this->removeTimeStampAttributes();
+        
     	Schema::drop('DummyTable_datetime');
         Schema::drop('DummyTable_decimal');
         Schema::drop('DummyTable_int');
@@ -156,5 +162,79 @@ class DummyClass extends Migration
         $attributeGroup->delete();
         $attributeSet->delete();
         $entity->delete();
+        
+    }
+
+
+    protected function addTimeStampAttributes()
+    {
+        Attribute::add([
+            'attribute_code' => 'created_at',
+            'entity_code' => 'DummyTable',
+            'backend_class' => NULL,
+            'backend_type' => 'static',
+            'backend_table' =>  NULL,
+            'frontend_class' =>  NULL,
+            'frontend_type' => 'input',
+            'frontend_label' => ucwords(str_replace('_',' ','created_at')),
+            'source_class' =>  NULL,
+            'default_value' => '',
+            'is_required' => 0,
+            'required_validate_class' =>  NULL  
+        ]);
+
+        EntityAttribute::map([
+            'attribute_code' => 'created_at',
+            'entity_code' => 'DummyTable',
+            'attribute_set' => 'Default',
+            'attribute_group' => 'General'
+        ]);
+
+        Attribute::add([
+            'attribute_code' => 'updated_at',
+            'entity_code' => 'DummyTable',
+            'backend_class' => NULL,
+            'backend_type' => 'static',
+            'backend_table' =>  NULL,
+            'frontend_class' =>  NULL,
+            'frontend_type' => 'input',
+            'frontend_label' => ucwords(str_replace('_',' ','updated_at')),
+            'source_class' =>  NULL,
+            'default_value' => '',
+            'is_required' => 0,
+            'required_validate_class' =>  NULL  
+        ]);
+
+        EntityAttribute::map([
+            'attribute_code' => 'updated_at',
+            'entity_code' => 'DummyTable',
+            'attribute_set' => 'Default',
+            'attribute_group' => 'General'
+        ]);
+
+
+    }
+
+    protected function removeTimeStampAttributes()
+    {
+        EntityAttribute::unmap([
+            'attribute_code' => 'created_at',
+            'entity_code' => 'DummyTable',
+        ]);
+
+        Attribute::remove([
+            'attribute_code' => 'created_at',
+            'entity_code' => 'DummyTable',
+        ]);
+
+        EntityAttribute::unmap([
+            'attribute_code' => 'updated_at',
+            'entity_code' => 'DummyTable',
+        ]);
+
+        Attribute::remove([
+            'attribute_code' => 'updated_at',
+            'entity_code' => 'DummyTable',
+        ]);
     }
 }
