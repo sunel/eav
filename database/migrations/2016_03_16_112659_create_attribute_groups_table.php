@@ -16,7 +16,6 @@ class CreateAttributeGroupsTable extends Migration
             $table->increments('attribute_group_id');
             $table->integer('attribute_set_id')->unsigned();
             $table->string('attribute_group_name');
-            $table->smallInteger('default_id');
             
             $table->foreign('attribute_set_id')
                   ->references('attribute_set_id')->on('attribute_sets')
