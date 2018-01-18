@@ -29,15 +29,15 @@ class Collection extends BaseCollection
                     $rules[$attribute->getAttributeCode()] = 'required';
                 }
                 if ($attribute->getAttribute('backend_class')) {
-                    $classRules[$attribute->getAttributeCode()] = $attribute->getBackend();
+                    $rules[$attribute->getAttributeCode()] = [$rules[$attribute->getAttributeCode()], $attribute->getBackend()];
                 }
             }
         });
         
-        $attributeValidator = AttributeValidator::make($data, $classRules, Validator::make($data, $rules));
+        $attributeValidator = Validator::make($data, $rules);       
 
         if ($attributeValidator->fails()) {
-            throw new ValidationException($attributeValidator->errors());
+            throw new ValidationException($attributeValidator);
         }
     }
     

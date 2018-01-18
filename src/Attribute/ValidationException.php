@@ -2,7 +2,7 @@
 namespace Eav\Attribute;
 
 use Illuminate\Contracts\Support\MessageProvider;
-use Illuminate\Contracts\Validation\ValidationException as BaseValidationException;
+use Illuminate\Validation\ValidationException as BaseValidationException;
 
 class ValidationException extends BaseValidationException implements MessageProvider
 {

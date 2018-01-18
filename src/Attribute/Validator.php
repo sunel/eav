@@ -8,14 +8,14 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Support\MessageBag;
 use Illuminate\Validation\PresenceVerifierInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Illuminate\Contracts\Translation\Translator;
 
 class Validator
 {
     /**
      * The Translator implementation.
      *
-     * @var \Symfony\Component\Translation\TranslatorInterface
+     * @var \Illuminate\Contracts\Translation\Translator
      */
     protected $translator;
 
@@ -71,14 +71,14 @@ class Validator
     /**
      * Create a new Validator instance.
      *
-     * @param  \Symfony\Component\Translation\TranslatorInterface  $translator
+     * @param  \Illuminate\Contracts\Translation\Translator  $translator
      * @param  array  $data
      * @param  array  $rules
      * @param  array  $messages
      * @param  array  $customAttributes
      * @return void
      */
-    public function __construct(TranslatorInterface $translator, array $data, array $rules, MessageBag $messageBag = null, $failedRules = [])
+    public function __construct(Translator $translator, array $data, array $rules, MessageBag $messageBag = null, $failedRules = [])
     {
         $this->translator = $translator;
         $this->data = $data;

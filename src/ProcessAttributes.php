@@ -7,35 +7,32 @@ class ProcessAttributes
 {
     public static function process($query, $loadedAttributes, $baseEntity, $noJoin = false)
     {
-        $filterAttr = $query->attributeColumns['columns'];
+        $filterAttr = array_flip($query->attributeColumns['columns']);
 
-        foreach ((array) $query->attributeOrderBy['binding'] as $type => $bindings) {
-            $usedAttributes = $loadedAttributes
-                ->filter(function ($attribute) use ($filterAttr) {
-                    return in_array($attribute->getAttributeCode(), $filterAttr);
-                });
+        $usedAttributes = $loadedAttributes
+            ->filter(function ($attribute) use ($filterAttr) {
+               return isset($filterAttr[$attribute->getAttributeCode()]);
+            });   
 
-            array_map(function ($binding) use ($usedAttributes, $baseEntity, $query) {
-               $attribute = Arr::first($usedAttributes->all(),
-                function ($itemKey, $model) use ($binding) {
-                    return $model->getAttributeCode() == $binding['column'];
-                }, null);
+        foreach ((array) $query->attributeOrderBy['binding'] as $bindings) {
+
+            foreach ($bindings as $binding) {
+                $attribute = $usedAttributes->get($binding['column']);
                 if ($attribute) {
                     $attribute->setEntity($baseEntity);
                     $attribute->addAttributeJoin($query);
                     $attribute->addAttributeOrderBy($query, $binding);
                 }
-            }, $bindings);
+            }
         }
 
         foreach ((array) $query->attributeWheres['binding'] as $type => $bindings) {
             switch ($type) {
                 case 'Nested':
-                    array_map(function ($binding) use ($loadedAttributes, $query) {
-
+                    foreach ($bindings as $binding) {
                         $binding['query']->processAttributes($loadedAttributes, true);
                         $query->addNestedWhereQuery($binding['query'], $binding['boolean']);
-                    }, $bindings);
+                    }
 
                     $loadedAttributes->each(function ($attribute, $key) use ($baseEntity, $query) {
                         $attribute->setEntity($baseEntity);
@@ -50,11 +47,8 @@ class ProcessAttributes
                             return in_array($attribute->getAttributeCode(), $filterAttr);
                         });
 
-                    array_map(function ($binding) use ($usedAttributes, $baseEntity, $query, $noJoin) {
-                       $attribute = Arr::first($usedAttributes->all(),
-                        function ($itemKey, $model) use ($binding) {
-                            return $model->getAttributeCode() == $binding['column'];
-                        }, null);
+                    foreach ($bindings as $binding) {                        
+                        $attribute = $usedAttributes->get($binding['column']);
                         if ($attribute) {
                             $attribute->setEntity($baseEntity);
                             if (!$noJoin) {
@@ -65,7 +59,7 @@ class ProcessAttributes
                                 $binding
                             );
                         }
-                    }, $bindings);
+                    }
 
                     break;
             }

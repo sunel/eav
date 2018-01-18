@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 abstract class EavModel extends Model
 {
     use AttributeTraits;
+
     /**
      * Entity code.
      * Can be used as part of method name for entity processing
@@ -38,6 +39,8 @@ abstract class EavModel extends Model
             throw new \Exception("Entity Type need to be specified for :: ".static::class);
         }
 
+        $this->addModelEvent();
+
         parent::__construct($attributes);
     }
 
@@ -55,6 +58,8 @@ abstract class EavModel extends Model
     
     public function baseEntity()
     {
+        $this->loadEntityProperty();
+        
         return static::$baseEntity[static::ENTITY];
     }
 
@@ -70,8 +75,6 @@ abstract class EavModel extends Model
             }
             $model->setAttribute('entity_id', $model->baseEntity()->entity_id);
         }, 9999);
-
-        return true;
     }
     
     
@@ -114,24 +117,6 @@ abstract class EavModel extends Model
     }
 
     /**
-     * Save the model to the database.
-     *
-     * @param  array  $options
-     * @return bool
-     */
-    public function save(array $options = [])
-    {
-        // First we'll need to create a fresh query instance and touch the creation and
-        // update timestamps on this model, which are maintained by us for developer
-        // convenience. After, we will just continue saving these model instances.
-        if ($this->timestamps && Arr::get($options, 'timestamps', true)) {
-            $this->updateTimestamps();
-        }
-
-        return parent::save($options);
-    }
-
-    /**
      * Get a new query builder instance for the connection.
      *
      * @return \Illuminate\Database\Query\Builder
@@ -146,6 +131,92 @@ abstract class EavModel extends Model
     }
 
     /**
+     * Perform a model insert operation.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  array  $options
+     * @return bool
+     */
+    protected function performInsert(Builder $query, array $options = [])
+    {
+        if (static::canUseFlat()) {
+            return parent::performInsert($query, $options);
+        }
+
+        // First we'll need to create a fresh query instance and touch the creation and
+        // update timestamps on this model, which are maintained by us for developer
+        // convenience. After, we will just continue saving these model instances.
+        if ($this->usesTimestamps()) {
+            $this->updateTimestamps();
+        }
+        
+        // If the model has an incrementing key, we can use the "insertGetId" method on
+        // the query builder, which will give us back the final inserted ID for this
+        // table from the database. Not all tables have to be incrementing though.
+        $attributes = $this->attributes;
+        
+        $loadedAttributes = $this->loadAttributes(array_keys($attributes), true, true);
+        
+        $loadedAttributes->validate($attributes);
+        
+        return $this->getConnection()->transaction(function () use ($query, $options, $attributes, $loadedAttributes) {
+            
+            if ($this->fireModelEvent('creating') === false) {
+                return false;
+            }
+            
+            if (!$this->insertMainTable($query, $options, $attributes, $loadedAttributes)) {
+                return false;
+            }
+            
+            if (!$this->insertAttributes($query, $options, $attributes, $loadedAttributes)) {
+                return false;
+            }
+            
+            $this->fireModelEvent('created', false);
+             
+            return true;
+        });
+    }    
+
+
+    public function insertMainTable($query, $options, $attributes, $loadedAttributes)
+    {
+        if ($this->fireModelEvent('creating.main') === false) {
+            return false;
+        }
+         
+        $mainTableAttribute = $this->getMainTableAttribute($loadedAttributes);
+        
+        $mainData = array_intersect_key($attributes, array_flip($mainTableAttribute));
+        
+        $this->insertAndSetId($query, $mainData);
+        
+        // We will go ahead and set the exists property to true, so that it is set when
+        // the created event is fired, just in case the developer tries to update it
+        // during the event. This will allow them to do so and run an update here.
+        $this->exists = true;
+
+        $this->wasRecentlyCreated = true;
+
+        $this->fireModelEvent('created.main', false);
+        
+        return true;
+    }
+
+    public function insertAttributes($query, $options, $modelData, $loadedAttributes)
+    {
+        $loadedAttributes->each(function ($attribute, $key) use ($modelData) {
+            if (!$attribute->isStatic()) {
+                $attribute->setEntity($this->baseEntity());                
+                $attribute->insertAttribute($modelData[$attribute->getAttributeCode()], $this->getKey());
+            }
+        });
+        
+        return true;
+    }
+
+    /**
      * Perform a model update operation.
      *
      * @param  \Illuminate\Database\Eloquent\Builder  $query
@@ -157,12 +228,18 @@ abstract class EavModel extends Model
         if (static::canUseFlat()) {
             return parent::performUpdate($query, $options);
         }
-        
-        
+
+        // First we need to create a fresh query instance and touch the creation and
+        // update timestamp on the model which are maintained by us for developer
+        // convenience. Then we will just continue saving the model instances.
+        if ($this->usesTimestamps()) {
+            $this->updateTimestamps();
+        }
+             
         $dirty = $this->getDirty();
 
         if (count($dirty) > 0) {
-            $loadedAttributes = $this->loadAttributes(array_keys($dirty), true, true);
+            $loadedAttributes = $this->loadAttributes(array_keys($dirty));
         
             $loadedAttributes->validate($dirty);
 
@@ -196,67 +273,10 @@ abstract class EavModel extends Model
             if (count($dirty) > 0) {
                 $this->fireModelEvent('updated', false);
             }
+
+            $this->syncChanges();
         }
 
-        return true;
-    }
-
-    /**
-     * Perform a model insert operation.
-     *
-     * @param  \Illuminate\Database\Eloquent\Builder  $query
-     * @param  array  $options
-     * @return bool
-     */
-    protected function performInsert(Builder $query, array $options = [])
-    {
-        if (static::canUseFlat()) {
-            return parent::performInsert($query, $options);
-        }
-        
-        // If the model has an incrementing key, we can use the "insertGetId" method on
-        // the query builder, which will give us back the final inserted ID for this
-        // table from the database. Not all tables have to be incrementing though.
-        $attributes = $this->attributes;
-        
-        $loadedAttributes = $this->loadAttributes(array_keys($attributes), true, true);
-        
-        $loadedAttributes->validate($attributes);
-        
-        return $this->getConnection()->transaction(function () use ($query, $options, $attributes, $loadedAttributes) {
-            
-            if ($this->fireModelEvent('creating') === false) {
-                return false;
-            }
-            
-            if (!$this->insertMainTable($query, $options, $attributes, $loadedAttributes)) {
-                return false;
-            }
-            
-            if (!$this->insertAttributes($query, $options, $attributes, $loadedAttributes)) {
-                return false;
-            }
-            
-            $this->fireModelEvent('created', false);
-             
-            return true;
-        });
-    }
-
-    public function updateAttributes($query, $options, $modelData, $loadedAttributes)
-    {
-        $loadedAttributes->each(function ($attribute, $key) use ($modelData) {
-            if (!$attribute->isStatic()) {
-                $attribute->setEntity($this->baseEntity());
-                
-                $insertData = [
-                    'value' => $modelData[$attribute->getAttributeCode()]
-                ];
-                
-                $attribute->updateAttribute($insertData, $this->getKey(), 0);
-            }
-        });
-        
         return true;
     }
 
@@ -276,48 +296,15 @@ abstract class EavModel extends Model
         
         return true;
     }
-    
-    
-    public function insertAttributes($query, $options, $modelData, $loadedAttributes)
+
+    public function updateAttributes($query, $options, $modelData, $loadedAttributes)
     {
         $loadedAttributes->each(function ($attribute, $key) use ($modelData) {
             if (!$attribute->isStatic()) {
-                $attribute->setEntity($this->baseEntity());
-                
-                $insertData = [
-                    'entity_id' => $this->getKey(),
-                    'value' => $modelData[$attribute->getAttributeCode()],
-                    'store_id'=>0,
-                ];
-                
-                $attribute->insertAttribute($insertData);
+                $attribute->setEntity($this->baseEntity());                
+                $attribute->updateAttribute($modelData[$attribute->getAttributeCode()], $this->getKey());
             }
         });
-        
-        return true;
-    }
-
-
-    public function insertMainTable($query, $options, $attributes, $loadedAttributes)
-    {
-        if ($this->fireModelEvent('creating.main') === false) {
-            return false;
-        }
-         
-        $mainTableAttribute = $this->getMainTableAttribute($loadedAttributes);
-        
-        $mainData = array_intersect_key($attributes, array_flip($mainTableAttribute));
-        
-        $this->insertAndSetId($query, $mainData);
-        
-        // We will go ahead and set the exists property to true, so that it is set when
-        // the created event is fired, just in case the developer tries to update it
-        // during the event. This will allow them to do so and run an update here.
-        $this->exists = true;
-
-        $this->wasRecentlyCreated = true;
-
-        $this->fireModelEvent('created.main', false);
         
         return true;
     }
