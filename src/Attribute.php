@@ -344,31 +344,41 @@ class Attribute extends Model
         return $this->attributeIdCache[$k];
     }
     
-    public function insertAttribute($insertData)
+    public function insertAttribute($value, $entityId)
     {
-        $insertData['entity_type_id'] = $this->getEntity()->getKey();
-        $insertData['attribute_id'] = $this->getKey();
+        $insertData = [
+            'entity_type_id' => $this->getEntity()->getKey(),
+            'attribute_id' => $this->getKey(),
+            'entity_id' => $entityId,
+            'value' => $value
+        ];
         
         return $this->newBaseQueryBuilder()
             ->from($this->getBackendTable())
             ->insert($insertData);
     }
 
-    public function updateAttribute($insertData, $entityId, $storeId = 0)
+    public function updateAttribute($value, $entityId)
     {
-        return $this->newBaseQueryBuilder()
+        $attributes = [
+            'entity_type_id' => $this->getEntity()->getKey(),
+            'attribute_id' => $this->getKey(),
+            'entity_id' => $entityId,
+        ];
+
+         return $this->newBaseQueryBuilder()
             ->from($this->getBackendTable())
-            ->where('entity_type_id', '=', $this->getEntity()->getKey())
-            ->where('attribute_id', '=', $this->getKey())
-            ->where('entity_id', '=', $entityId)
-            ->where('store_id', '=', $storeId)
-            ->update($insertData);
+            ->updateOrInsert($attributes, ['value' => $value]);
     }
-    
-    public function getAttributeInsertQuery($insertData)
+
+    public function getAttributeInsertQuery($value, $entityId)
     {
-        $insertData['entity_type_id'] = $this->getEntity()->getKey();
-        $insertData['attribute_id'] = $this->getKey();
+        $insertData = [
+            'entity_type_id' => $this->getEntity()->getKey(),
+            'attribute_id' => $this->getKey(),
+            'entity_id' => $entityId,
+            'value' => $value
+        ];
         
         return $this->newBaseQueryBuilder()
             ->from($this->getBackendTable())
@@ -493,7 +503,7 @@ class Attribute extends Model
     
     public function getSelectColumn()
     {
-        return "{$this->getAttributeCode()}_at.value as {$this->getAttributeCode()}";
+        return "{$this->getAttributeCode()}_attr.value as {$this->getAttributeCode()}";
     }
     
     
@@ -507,24 +517,24 @@ class Attribute extends Model
         
         if (is_callable($callback)) {
             $callback = function ($join) use ($query) {
-                $callback($join, $query, "{$this->getAttributeCode()}_at");
+                $callback($join, $query, "{$this->getAttributeCode()}_attr");
             };
             
             if ($joinType == 'left') {
-                $query->leftJoin("{$this->getBackendTable()} as {$this->getAttributeCode()}_at", $callback);
+                $query->leftJoin("{$this->getBackendTable()} as {$this->getAttributeCode()}_attr", $callback);
             } else {
-                $query->join("{$this->getBackendTable()} as {$this->getAttributeCode()}_at", $callback);
+                $query->join("{$this->getBackendTable()} as {$this->getAttributeCode()}_attr", $callback);
             }
         } else {
             if ($joinType == 'left') {
-                $query->leftJoin("{$this->getBackendTable()} as {$this->getAttributeCode()}_at", function ($join) use ($query) {
-                    $join->on("{$query->from}.id", '=', "{$this->getAttributeCode()}_at.entity_id")
-                        ->where("{$this->getAttributeCode()}_at.attribute_id", "=", $this->getAttributeId());
+                $query->leftJoin("{$this->getBackendTable()} as {$this->getAttributeCode()}_attr", function ($join) use ($query) {
+                    $join->on("{$query->from}.id", '=', "{$this->getAttributeCode()}_attr.entity_id")
+                        ->where("{$this->getAttributeCode()}_attr.attribute_id", "=", $this->getAttributeId());
                 });
             } else {
-                $query->join("{$this->getBackendTable()} as {$this->getAttributeCode()}_at", function ($join) use ($query) {
-                    $join->on("{$query->from}.id", '=', "{$this->getAttributeCode()}_at.entity_id")
-                        ->where("{$this->getAttributeCode()}_at.attribute_id", "=", $this->getAttributeId());
+                $query->join("{$this->getBackendTable()} as {$this->getAttributeCode()}_attr", function ($join) use ($query) {
+                    $join->on("{$query->from}.id", '=', "{$this->getAttributeCode()}_attr.entity_id")
+                        ->where("{$this->getAttributeCode()}_attr.attribute_id", "=", $this->getAttributeId());
                 });
             }
         }
@@ -537,7 +547,7 @@ class Attribute extends Model
         if ($this->isStatic()) {
             $query->orderBy("{$query->from}.{$binding['column']}", $binding['direction']);
         } else {
-            $query->orderBy("{$this->getAttributeCode()}_at.value", $binding['direction']);
+            $query->orderBy("{$this->getAttributeCode()}_attr.value", $binding['direction']);
         }
     }
     
@@ -554,7 +564,7 @@ class Attribute extends Model
         if ($this->isStatic()) {
             $query->where("{$query->from}.{$binding['column']}", $binding['operator'], $binding['value'], $binding['boolean']);
         } else {
-            $query->where("{$this->getAttributeCode()}_at.value", $binding['operator'], $binding['value'], $binding['boolean']);
+            $query->where("{$this->getAttributeCode()}_attr.value", $binding['operator'], $binding['value'], $binding['boolean']);
         }
     }
 
@@ -563,7 +573,7 @@ class Attribute extends Model
         if ($this->isStatic()) {
             $query->whereBetween("{$query->from}.{$binding['column']}", $binding['values'], $binding['boolean'], $binding['not']);
         } else {
-            $query->whereBetween("{$this->getAttributeCode()}_at.value", $binding['values'], $binding['boolean'], $binding['not']);
+            $query->whereBetween("{$this->getAttributeCode()}_attr.value", $binding['values'], $binding['boolean'], $binding['not']);
         }
     }
 
@@ -572,7 +582,7 @@ class Attribute extends Model
         if ($this->isStatic()) {
             $query->whereIn("{$query->from}.{$binding['column']}", $binding['values'], $binding['boolean'], $binding['not']);
         } else {
-            $query->whereIn("{$this->getAttributeCode()}_at.value", $binding['values'], $binding['boolean'], $binding['not']);
+            $query->whereIn("{$this->getAttributeCode()}_attr.value", $binding['values'], $binding['boolean'], $binding['not']);
         }
     }
 
@@ -581,7 +591,7 @@ class Attribute extends Model
         if ($this->isStatic()) {
             $query->whereNotIn("{$query->from}.{$binding['column']}", $binding['values'], $binding['boolean'], $binding['not']);
         } else {
-            $query->whereNotIn("{$this->getAttributeCode()}_at.value", $binding['values'], $binding['boolean'], $binding['not']);
+            $query->whereNotIn("{$this->getAttributeCode()}_attr.value", $binding['values'], $binding['boolean'], $binding['not']);
         }
     }
 
@@ -590,7 +600,7 @@ class Attribute extends Model
         if ($this->isStatic()) {
             $query->whereNull("{$query->from}.{$binding['column']}", $binding['boolean'], $binding['not']);
         } else {
-            $query->whereNull("{$this->getAttributeCode()}_at.value", $binding['boolean'], $binding['not']);
+            $query->whereNull("{$this->getAttributeCode()}_attr.value", $binding['boolean'], $binding['not']);
         }
     }
 
@@ -599,7 +609,7 @@ class Attribute extends Model
         if ($this->isStatic()) {
             $query->whereNotNull("{$query->from}.{$binding['column']}", $binding['boolean'], $binding['not']);
         } else {
-            $query->whereNotNull("{$this->getAttributeCode()}_at.value", $binding['boolean'], $binding['not']);
+            $query->whereNotNull("{$this->getAttributeCode()}_attr.value", $binding['boolean'], $binding['not']);
         }
     }
 
@@ -608,7 +618,7 @@ class Attribute extends Model
         if ($this->isStatic()) {
             $query->whereDate("{$query->from}.{$binding['column']}", $binding['operator'], $binding['value'], $binding['boolean']);
         } else {
-            $query->whereDate("{$this->getAttributeCode()}_at.value", $binding['operator'], $binding['value'], $binding['boolean']);
+            $query->whereDate("{$this->getAttributeCode()}_attr.value", $binding['operator'], $binding['value'], $binding['boolean']);
         }
     }
 
@@ -617,7 +627,7 @@ class Attribute extends Model
         if ($this->isStatic()) {
             $query->whereDay("{$query->from}.{$binding['column']}", $binding['operator'], $binding['value'], $binding['boolean']);
         } else {
-            $query->whereDay("{$this->getAttributeCode()}_at.value", $binding['operator'], $binding['value'], $binding['boolean']);
+            $query->whereDay("{$this->getAttributeCode()}_attr.value", $binding['operator'], $binding['value'], $binding['boolean']);
         }
     }
 
@@ -626,7 +636,7 @@ class Attribute extends Model
         if ($this->isStatic()) {
             $query->whereMonth("{$query->from}.{$binding['column']}", $binding['operator'], $binding['value'], $binding['boolean']);
         } else {
-            $query->whereMonth("{$this->getAttributeCode()}_at.value", $binding['operator'], $binding['value'], $binding['boolean']);
+            $query->whereMonth("{$this->getAttributeCode()}_attr.value", $binding['operator'], $binding['value'], $binding['boolean']);
         }
     }
 
@@ -635,7 +645,7 @@ class Attribute extends Model
         if ($this->isStatic()) {
             $query->whereYear("{$query->from}.{$binding['column']}", $binding['operator'], $binding['value'], $binding['boolean']);
         } else {
-            $query->whereYear("{$this->getAttributeCode()}_at.value", $binding['operator'], $binding['value'], $binding['boolean']);
+            $query->whereYear("{$this->getAttributeCode()}_attr.value", $binding['operator'], $binding['value'], $binding['boolean']);
         }
     }
 }
