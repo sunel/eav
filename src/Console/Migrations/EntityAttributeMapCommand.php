@@ -13,7 +13,7 @@ class EntityAttributeMapCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'eav:entity:attribute:map {attributes : List of attributes.}
+    protected $signature = 'eav:map:attribute {attributes : List of attributes.}
 		{entity : The base entity.}
 		{--path= : The location where the migration file should be created.}';
 

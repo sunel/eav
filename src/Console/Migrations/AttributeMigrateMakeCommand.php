@@ -13,7 +13,7 @@ class AttributeMigrateMakeCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'eav:attribute:migration {attributes : List of attributes.}
+    protected $signature = 'eav:make:attribute {attributes : List of attributes.}
 		{entity : The name of the entity.}
         {--path= : The location where the migration file should be created.}';
 
@@ -63,35 +63,31 @@ class AttributeMigrateMakeCommand extends Command
         // It's possible for the developer to specify the tables to modify in this
         // schema operation. The developer may also specify if this table needs
         // to be freshly created so we can create the appropriate migrations.
-        $name = $this->input->getArgument('attributes');
+        $attributes = $this->input->getArgument('attributes');
         
         $entity = $this->input->getArgument('entity');
 
         // Now we are ready to write the migration out to disk. Once we've written
         // the migration out, we will dump-autoload for the entire framework to
         // make sure that the migrations are registered by the class loaders.
-        $this->writeMigration($name, $entity);
+        $this->writeMigration($attributes, $entity);
         
-        sleep(2);
-        
-        $this->call('eav:entity:attribute:map', ['attributes' => $name, 'entity' => $entity]);
-
-        $this->composer->dumpAutoloads();
+        $this->call('eav:map:attribute', ['attributes' => $attributes, 'entity' => $entity]);
     }
 
     /**
      * Write the migration file to disk.
      *
-     * @param  string  $name
+     * @param  string  $attributes
      * @param  string  $table
      * @param  bool    $create
      * @return string
      */
-    protected function writeMigration($name, $entity)
+    protected function writeMigration($attributes, $entity)
     {
         $path = $this->getMigrationPath();
 
-        $file = pathinfo($this->creator->create($name, $entity, $path), PATHINFO_FILENAME);
+        $file = pathinfo($this->creator->create($attributes, $entity, $path), PATHINFO_FILENAME);
 
         $this->line("<info>Created Migration:</info> $file");
     }

@@ -13,7 +13,7 @@ class EntityMigrateMakeCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'eav:entity:migration {name : The name of the entity.}
+    protected $signature = 'eav:make:entity {name : The name of the entity.}
 		{class : The base Class of entity.}
         {--path= : The location where the migration file should be created.}';
 
