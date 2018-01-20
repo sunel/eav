@@ -9,11 +9,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Attribute extends Model
 {
-    const TYPE_STATIC                = 'static';
-    
-    public $timestamps = false;
+    const TYPE_STATIC = 'static';
     
     protected $primaryKey = 'attribute_id';
+
+    public $timestamps = false;
     
     protected $fillable = [
         'attribute_code', 'backend_class', 'backend_type',
@@ -75,6 +75,39 @@ class Attribute extends Model
      * @var array
      */
     protected $optionArray  = [];
+
+    public function options()
+    {
+        return $this->hasMany(AttributeOption::class, 'attribute_id');
+    }
+            
+    public function optionValues()
+    {
+        return $this->hasManyThroughOptions(AttributeOptionValue::class, AttributeOption::class, 'attribute_id', 'option_id');
+    }
+    
+    /**
+     * Define a has-many-through relationship.
+     *
+     * @param  string  $related
+     * @param  string  $through
+     * @param  string|null  $firstKey
+     * @param  string|null  $secondKey
+     * @param  string|null  $localKey
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function hasManyThroughOptions($related, $through, $firstKey = null, $secondKey = null, $localKey = null)
+    {
+        $through = new $through;
+
+        $firstKey = $firstKey ?: $this->getForeignKey();
+
+        $secondKey = $secondKey ?: $through->getForeignKey();
+
+        $localKey = $localKey ?: $this->getKeyName();
+
+        return new HasManyThroughOptions((new $related)->newQuery(), $this, $through, $firstKey, $secondKey, $localKey);
+    }
     
     /**
      * Set attribute code
@@ -455,40 +488,7 @@ class Attribute extends Model
     public function setOptionsArray($options)
     {
         return $this->optionArray = $options;
-    }
-        
-    public function options()
-    {
-        return $this->hasMany(AttributeOption::class, 'attribute_id');
-    }
-            
-    public function optionValues()
-    {
-        return $this->hasManyThroughOptions(AttributeOptionValue::class, AttributeOption::class, 'attribute_id', 'option_id');
-    }
-    
-    /**
-     * Define a has-many-through relationship.
-     *
-     * @param  string  $related
-     * @param  string  $through
-     * @param  string|null  $firstKey
-     * @param  string|null  $secondKey
-     * @param  string|null  $localKey
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
-     */
-    public function hasManyThroughOptions($related, $through, $firstKey = null, $secondKey = null, $localKey = null)
-    {
-        $through = new $through;
-
-        $firstKey = $firstKey ?: $this->getForeignKey();
-
-        $secondKey = $secondKey ?: $through->getForeignKey();
-
-        $localKey = $localKey ?: $this->getKeyName();
-
-        return new HasManyThroughOptions((new $related)->newQuery(), $this, $through, $firstKey, $secondKey, $localKey);
-    }
+    }    
     
     public function addToSelect($query, $joinType = 'inner', $callback = null)
     {

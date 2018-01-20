@@ -36,14 +36,14 @@ class Entity extends Model
         return $tableName;
     }
         
-    public function eavAttributeSet()
+    public function attributeSet()
     {
-        return $this->hasMany(AttributeSet::class);
+        return $this->hasMany(AttributeSet::class, 'entity_id');
     }
         
-    public function eavAttributes()
+    public function attributes()
     {
-        return $this->hasMany(Attribute::class);
+        return $this->hasMany(Attribute::class, 'entity_id');
     }
     
     public static function findByCode($code)

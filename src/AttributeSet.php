@@ -14,12 +14,12 @@ class AttributeSet extends Model
         'attribute_set_name' , 'entity_id'
     ];
     
-    public function eavAttributes()
+    public function attributes()
     {
         return $this->hasManyThrough(Attribute::class, EntityAttribute::class, 'attribute_set_id', 'attribute_id');
     }
     
-    public function eavAttributeGroup()
+    public function attributeGroup()
     {
         return $this->hasMany(AttributeGroup::class);
     }

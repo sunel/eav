@@ -269,16 +269,12 @@ class Builder extends QueryBuilder
         if ($this->canUseFlat()) {
             return $this->where($column, $operator, $value, $boolean);
         }
-        
-        $type = 'Basic';
 
-        // Here we will make some assumptions about the operator. If only 2 values are
-        // passed to the method, we will assume that the operator is an equals sign
-        // and keep going. Otherwise, we'll require the operator to be passed in.
-        if (func_num_args() == 2) {
-            list($value, $operator) = [$operator, '='];
-        } elseif ($this->invalidOperatorAndValue($operator, $value)) {
-            throw new InvalidArgumentException('Illegal operator and value combination.');
+        // If the column is an array, we will assume it is an array of key-value pairs
+        // and can add them each as a where clause. We will maintain the boolean we
+        // received when the method was called and pass it into the nested where.
+        if (is_array($column)) {
+            return $this->addArrayOfWhereAttributes($column, $boolean);
         }
 
         // If the columns is actually a Closure instance, we will assume the developer
@@ -287,16 +283,53 @@ class Builder extends QueryBuilder
         if ($column instanceof Closure) {
             return $this->whereNestedAttribute($column, $boolean);
         }
+        
+        $type = 'Basic';
+
+        // Here we will make some assumptions about the operator. If only 2 values are
+        // passed to the method, we will assume that the operator is an equals sign
+        // and keep going. Otherwise, we'll require the operator to be passed in.
+        list($value, $operator) = $this->prepareValueAndOperator(
+            $value, $operator, func_num_args() == 2
+        );
 
         // If the given operator is not found in the list of valid operators we will
         // assume that the developer is just short-cutting the '=' operators and
         // we will set the operators to '=' and set the values appropriately.
-        if (! in_array(strtolower($operator), $this->operators, true)) {
+        if ($this->invalidOperator($operator)) {
             list($value, $operator) = [$operator, '='];
         }
 
 
+        // If the value is "null", we will just assume the developer wants to add a
+        // where null clause to the query. So, we will allow a short-cut here to
+        // that method for convenience so the developer doesn't have to check.
+        if (is_null($value)) {
+            return $this->whereNullAttribute($column, $boolean, $operator !== '=');
+        }
+
         return $this->addWhereAttribute($column, compact('column', 'operator', 'value', 'boolean', 'type'));
+    }
+
+    /**
+     * Add an array of where clauses to the query.
+     *
+     * @param  array  $column
+     * @param  string  $boolean
+     * @param  string  $method
+     * @return $this
+     */
+    protected function addArrayOfWhereAttributes($column, $boolean, $method = 'whereAttribute')
+    {
+        return $this->whereNestedAttribute(function ($query) use ($column, $method, $boolean) {
+            foreach ($column as $key => $value) {
+                if (is_numeric($key) && is_array($value)) {
+                    $query->{$method}(...array_values($value));
+                } else {
+                    $query->$method($key, '=', $value, $boolean);
+                }
+            }
+        }, $boolean);
     }
 
     /**
@@ -310,11 +343,9 @@ class Builder extends QueryBuilder
     {
         if ($this->canUseFlat()) {
             return $this->whereNested($callback, $boolean);
-        }
-        
-        $query = $this->forNestedWhere();
+        }        
 
-        call_user_func($callback, $query);
+        call_user_func($callback, $query = $this->forNestedWhere());
 
         return $this->addNestedWhereQueryAttribute($query, $boolean);
     }
@@ -629,27 +660,5 @@ class Builder extends QueryBuilder
         $this->attributeOrderBy['binding'][$property][] = compact('column', 'direction');
 
         return $this;
-    }
-
-    /**
-     * Add an "order by" clause for a timestamp to the query.
-     *
-     * @param  string  $column
-     * @return \Illuminate\Database\Query\Builder|static
-     */
-    public function latest($column = 'created_at')
-    {
-        return $this->orderByAttribute($column, 'desc');
-    }
-
-    /**
-     * Add an "order by" clause for a timestamp to the query.
-     *
-     * @param  string  $column
-     * @return \Illuminate\Database\Query\Builder|static
-     */
-    public function oldest($column = 'created_at')
-    {
-        return $this->orderByAttribute($column, 'asc');
     }
 }

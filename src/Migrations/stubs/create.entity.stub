@@ -5,6 +5,7 @@ use Eav\Attribute;
 use Eav\AttributeSet;
 use Eav\AttributeGroup;
 use Eav\EntityAttribute;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
@@ -21,7 +22,6 @@ class DummyClass extends Migration
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
-            $table->smallInteger('store_id')->unsigned()->default(0)->comment('Store Type ID');
             $table->integer('entity_id')->unsigned()->default(0)->comment('Entity ID');
             
             $table->dateTime('value')->default(NULL)->nullable()->comment('Value');
@@ -30,8 +30,7 @@ class DummyClass extends Migration
             	  ->references('id')->on('DummyTables')
 				  ->onDelete('cascade');
             
-            $table->unique(['entity_id','attribute_id','store_id']);
-            $table->index('store_id');
+            $table->unique(['entity_id','attribute_id']);
 			$table->index('attribute_id');
 			$table->index('entity_id');        	  
         });
@@ -40,7 +39,6 @@ class DummyClass extends Migration
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
-            $table->smallInteger('store_id')->unsigned()->default(0)->comment('Store Type ID');
             $table->integer('entity_id')->unsigned()->default(0)->comment('Entity ID');
             
             $table->decimal('value', 12 , 4)->default(NULL)->nullable()->comment('Value');
@@ -49,8 +47,7 @@ class DummyClass extends Migration
             	  ->references('id')->on('DummyTables')
 				  ->onDelete('cascade');
             
-            $table->unique(['entity_id','attribute_id','store_id']);
-            $table->index('store_id');
+            $table->unique(['entity_id','attribute_id']);
 			$table->index('attribute_id');
 			$table->index('entity_id');        	  
         });
@@ -59,7 +56,6 @@ class DummyClass extends Migration
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
-            $table->smallInteger('store_id')->unsigned()->default(0)->comment('Store Type ID');
             $table->integer('entity_id')->unsigned()->default(0)->comment('Entity ID');
             
             $table->integer('value')->default(NULL)->nullable()->comment('Value');
@@ -68,8 +64,7 @@ class DummyClass extends Migration
             	  ->references('id')->on('DummyTables')
 				  ->onDelete('cascade');
             
-            $table->unique(['entity_id','attribute_id','store_id']);
-            $table->index('store_id');
+            $table->unique(['entity_id','attribute_id']);
 			$table->index('attribute_id');
 			$table->index('entity_id');        	  
         });
@@ -78,7 +73,6 @@ class DummyClass extends Migration
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
-            $table->smallInteger('store_id')->unsigned()->default(0)->comment('Store Type ID');
             $table->integer('entity_id')->unsigned()->default(0)->comment('Entity ID');
             
             $table->text('value')->comment('Value');
@@ -87,8 +81,7 @@ class DummyClass extends Migration
             	  ->references('id')->on('DummyTables')
 				  ->onDelete('cascade');
             
-            $table->unique(['entity_id','attribute_id','store_id']);
-            $table->index('store_id');
+            $table->unique(['entity_id','attribute_id']);        
 			$table->index('attribute_id');
 			$table->index('entity_id');        	  
         });
@@ -97,7 +90,6 @@ class DummyClass extends Migration
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
-            $table->smallInteger('store_id')->unsigned()->default(0)->comment('Store Type ID');
             $table->integer('entity_id')->unsigned()->default(0)->comment('Entity ID');
             
             $table->string('value')->default(NULL)->nullable()->comment('Value');
@@ -106,8 +98,7 @@ class DummyClass extends Migration
             	  ->references('id')->on('DummyTables')
 				  ->onDelete('cascade');
             
-            $table->unique(['entity_id','attribute_id','store_id']);
-            $table->index('store_id');
+            $table->unique(['entity_id','attribute_id']);
 			$table->index('attribute_id');
 			$table->index('entity_id');        	  
         });

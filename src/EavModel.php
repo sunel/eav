@@ -22,10 +22,7 @@ abstract class EavModel extends Model
 
     protected static $unguarded = true;
 
-    protected static $baseEntity = [];
-    
-    protected static $useFlat = false;
-    
+    protected static $baseEntity = [];    
     
     /**
      * Create a new Eloquent model instance.
@@ -78,15 +75,15 @@ abstract class EavModel extends Model
     }
     
     
-    public static function setUseFlat($flag)
+    public function setUseFlat($flag)
     {
-        static::$useFlat = $flag;
+        $this->baseEntity();
         static::$baseEntity[static::ENTITY]->is_flat_enabled = $flag;
     }
     
-    public static function canUseFlat()
+    public function canUseFlat()
     {
-        return static::$useFlat;
+        return $this->baseEntity()->canUseFlat();
     }
     
     /**
@@ -96,24 +93,22 @@ abstract class EavModel extends Model
      */
     public function getTable()
     {
-        if (static::canUseFlat()) {
-            return str_replace('\\', '', Str::snake(Str::plural(class_basename($this)))).'_flat';
-        }
-        
-        if (isset($this->table)) {
-            return $this->table;
+        $table = parent::getTable();
+
+        if ($this->canUseFlat()) {
+            return $table.'_flat';
         }
 
-        return str_replace('\\', '', Str::snake(Str::plural(class_basename($this))));
+        return $table;
     }
     
     public function validate()
     {
         $attributes = $this->attributes;
         
-        $loadedAttributes = $this->loadAttributes(array_keys($attributes), true, true);
-        
-        $loadedAttributes->validate($attributes);
+        $loadedAttributes = $this->loadAttributes(
+            array_keys($attributes), true, true
+        )->validate($attributes);
     }
 
     /**
@@ -123,11 +118,11 @@ abstract class EavModel extends Model
      */
     protected function newBaseQueryBuilder()
     {
-        $conn = $this->getConnection();
+        $connection = $this->getConnection();
 
-        $grammar = $conn->getQueryGrammar();
-
-        return new EavQueryBuilder($conn, $grammar, $conn->getPostProcessor(), $this->baseEntity());
+        return new EavQueryBuilder(
+            $connection, $connection->getQueryGrammar(), $connection->getPostProcessor(), $this->baseEntity()
+        );
     }
 
     /**
@@ -139,7 +134,7 @@ abstract class EavModel extends Model
      */
     protected function performInsert(Builder $query, array $options = [])
     {
-        if (static::canUseFlat()) {
+        if ($this->canUseFlat()) {
             return parent::performInsert($query, $options);
         }
 
@@ -225,7 +220,7 @@ abstract class EavModel extends Model
      */
     protected function performUpdate(Builder $query, array $options = [])
     {
-        if (static::canUseFlat()) {
+        if ($this->canUseFlat()) {
             return parent::performUpdate($query, $options);
         }
 
@@ -307,61 +302,5 @@ abstract class EavModel extends Model
         });
         
         return true;
-    }
-    
-    /**
-     * Fire the given event for the model.
-     *
-     * @param  string  $event
-     * @param  bool  $halt
-     * @return mixed
-     */
-    protected function fireModelEvent($event, $halt = true)
-    {
-        if (! isset(static::$dispatcher)) {
-            return true;
-        }
-
-        // We will append the names of the class to the event to distinguish it from
-        // other model events that are fired, allowing us to listen on each model
-        // event set individually instead of catching event for all the models.
-        $event = "eloquent.eav.{$event}: ".static::ENTITY;
-
-        $method = $halt ? 'until' : 'fire';
-
-        return static::$dispatcher->$method($event, $this);
-    }
-
-    /**
-     * Register a model event with the dispatcher.
-     *
-     * @param  string  $event
-     * @param  \Closure|string  $callback
-     * @param  int  $priority
-     * @return void
-     */
-    protected static function registerModelEvent($event, $callback, $priority = 0)
-    {
-        if (isset(static::$dispatcher)) {
-            static::$dispatcher->listen("eloquent.eav.{$event}: ".static::ENTITY, $callback, $priority);
-        }
-    }
-
-     /**
-     * Remove all of the event listeners for the model.
-     *
-     * @return void
-     */
-    public static function flushEventListeners()
-    {
-        if (! isset(static::$dispatcher)) {
-            return;
-        }
-
-        $instance = new static;
-
-        foreach ($instance->getObservableEvents() as $event) {
-            static::$dispatcher->forget("eloquent.eav.{$event}: ".static::ENTITY);
-        }
     }
 }
