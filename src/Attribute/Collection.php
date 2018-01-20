@@ -40,26 +40,30 @@ class Collection extends BaseCollection
             throw new ValidationException($attributeValidator);
         }
     }
-    
-    
-    /**
-     * Results array of items from Collection or Arrayable.
-     *
-     * @param  mixed  $items
-     * @return array
-     */
-    protected function getArrayableItems($items)
-    {
-        $items = array_reduce($items, function ($result, $item) {
-            if (is_a($item, Attribute::class)) {
-                $result[$item->getAttributeCode()] = $item;
-            } else {
-                $result[] = $item;
-            }
-            return $result;
-        }, array());
 
-        return $items;
+    /**
+     * Get the keys of the collection items.
+     *
+     * @return static
+     */
+    public function code()
+    {
+        return $this->keys();
+    }
+
+
+    /**
+     * Get the keys of the collection items.
+     *
+     * @return static
+     */
+    public function patch()
+    {
+        return new static(array_reduce($this->items, function ($result, $item) {
+            $result[$item->getAttributeCode()] = $item;
+
+            return $result;
+        }, []));
     }
     
     

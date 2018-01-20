@@ -10,7 +10,7 @@ trait Attribute
     
     protected $attributesCollectionKeys = [];
         
-    public function loadAttributes($attributes = array(), $static = false, $required = false)
+    public function loadAttributes($attributes = [], $static = false, $required = false)
     {
         $attributes = array_unique($attributes);
 
@@ -29,29 +29,30 @@ trait Attribute
             $this->attributesCollection = $loadedAttributes;
         }
         
-        $this->attributesCollectionKeys = array_merge($this->attributesCollectionKeys, $loadedAttributes->keys()->toArray());
+        $this->attributesCollectionKeys = array_merge($this->attributesCollectionKeys, $loadedAttributes->code()->toArray());
                 
         return $loadedAttributes;
     }
     
-    protected function fetchAttributes($attributes = array(), $static = false, $required = false)
+    protected function fetchAttributes($attributes = [], $static = false, $required = false)
     {
-        $loadedAttributes = $this->baseEntity()->eavAttributes();
-         				
-		$loadedAttributes->where(function ($query) use ($static, $required, $attributes) {
-			 if (!empty($attributes)) {	
-				$query->orWhereIn('attribute_code', $attributes);
-			 }
-			
-			if ($static) {
-                $query->orWhere('backend_type', 'static');
-            }
-            if ($required) {
-                $query->orWhere('is_required', 1);
-            }	
-		});
-        
-        return $loadedAttributes->get();
+        $loadedAttributes = $this->baseEntity()
+            ->attributes()
+            ->where(function ($query) use ($static, $required, $attributes) {
+    			 if (!empty($attributes)) {	
+    				$query->orWhereIn('attribute_code', $attributes);
+    			 }
+    			
+    			if ($static) {
+                    $query->orWhere('backend_type', 'static');
+                }
+                if ($required) {
+                    $query->orWhere('is_required', 1);
+                }	
+    		})->get()->patch();
+
+
+        return $loadedAttributes;
     }
     
     public function extractAttributes($columns = null)
@@ -62,12 +63,10 @@ trait Attribute
     public function getMainTableAttribute($loadedAttributes)
     {
         $mainTableAttributeCollection = $loadedAttributes->filter(function ($attribute) {
-            if ($attribute->isStatic()) {
-                return true;
-            }
+            return $attribute->isStatic();
         });
         
-        $mainTableAttribute = $mainTableAttributeCollection->keys()->toArray();
+        $mainTableAttribute = $mainTableAttributeCollection->code()->toArray();
         
         $mainTableAttribute[] = 'entity_id';
         $mainTableAttribute[] = 'attribute_set_id';
@@ -83,6 +82,7 @@ trait Attribute
             if (!$attribute->isStatic() && ($columns == null || in_array($attribute->getAttributeCode(), $columns))) {
                 return true;
             }
+            return false;
         });
         
         /*$eavTableAttribute = $eavTableAttributeCollection->map(function($attribute) {
