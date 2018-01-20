@@ -8,6 +8,7 @@ use Illuminate\Support\Composer;
 use Illuminate\Filesystem\Filesystem;
 use Eav\Flat\Entity\Complier as EntityComplier;
 use Symfony\Component\Console\Input\InputOption;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class EntityComplierCommand extends Command
 {
@@ -24,7 +25,7 @@ class EntityComplierCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Compile Entity into Flat';
+    protected $description = 'Compile Entity into Flat Table Data';
     
     /**
      * The filesystem instance.
@@ -62,10 +63,20 @@ class EntityComplierCommand extends Command
      */
     public function handle()
     {
-        $entity = $this->input->getArgument('entity');
+        $entityCode = $this->input->getArgument('entity');
 
-        (new EntityComplier(Entity::findByCode($entity), $this->files))->compile();
-		
-		$this->info("`{$entity}` entity is compiled successfully and flat table is created.");
+        try {
+            
+            $entity = Entity::findByCode($entityCode);
+
+            $this->info("Compiling `{$entityCode}` entity.");
+
+            (new EntityComplier($entity, $this->files, $this))->compile();
+            
+            $this->info("Entity is compiled successfully and flat table is created.");
+
+        } catch(ModelNotFoundException $e) {
+            $this->error("`{$entityCode}` entity doesn't exists.");
+        }		    
     }
 }

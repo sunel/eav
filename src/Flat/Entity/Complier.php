@@ -7,6 +7,7 @@ use Illuminate\Support\Str;
 use Eav\Migrations\SchemaParser;
 use Eav\Migrations\SyntaxBuilder;
 use Illuminate\Filesystem\Filesystem;
+use Symfony\Component\Console\Command\Command;
 
 class Complier
 {
@@ -19,10 +20,13 @@ class Complier
     
     protected $entity;
 
-    public function __construct(Entity $entity, Filesystem $files)
+    protected $console;
+
+    public function __construct(Entity $entity, Filesystem $files, Command $console)
     {
         $this->entity = $entity;
         $this->files = $files;
+        $this->console = $console;
     }
 
     public function compile()
@@ -34,17 +38,26 @@ class Complier
 	protected function insertValues()
     {
     	$entity = app($this->entity->entity_class);
-		
-		$data = $entity->all('attr.*')->toArray();
-		
-		$entity->setUseFlat(true);
-		
-		$entity->insert($data);
-    	
+
+        $flatEntity = app($this->entity->entity_class);
+    
+        $flatEntity->baseEntity();
+
+        $this->console->info("\t Updating `{$this->entity->entity_table}` flat table.");
+
+        $entity->select('attr.*')->chunk(100, function($chunk) use($flatEntity) {
+            $flatEntity->setUseFlat(true);
+            $flatEntity->insert($chunk->toArray());
+            $flatEntity->setUseFlat(false);
+        });
+
+        $this->console->info("\t Updated `{$this->entity->entity_table}` flat table.");		    	
     }
 
     protected function createTable()
     {
+        $this->console->info("\t Creating flat table for `{$this->entity->entity_table}`.");
+
         $path = $this->getPath($this->entity->entity_table.'_flat');
 		
 		$this->makeDirectory($path);
@@ -53,6 +66,8 @@ class Complier
 		
 		$this->files->requireOnce($path);
 		
+        $this->console->info("\t Migrating `{$this->entity->entity_table}` flat schema.");
+
 		$this->runUp($path);
     }
 	
@@ -133,7 +148,7 @@ class Complier
             
             return $schema;
             
-        })->all();
+        });
         
         
         $attributes = $this->collectAttributes()->where('backend_type', '!=', 'static')->get()->map(function ($attribute) {
@@ -154,10 +169,11 @@ class Complier
             
             return $schema;
             
-        })->all();
+        });
         
+        $this->console->info("\t Found {$attributes->count()} attributes.");
         
-        $schema = (new SchemaParser)->parse(implode(',', $table).','.implode(',', $attributes));
+        $schema = (new SchemaParser)->parse($table->implode(',').','.$attributes->implode(','));
 		
         return (new SyntaxBuilder)->create($schema);
     }
