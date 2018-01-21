@@ -3,9 +3,6 @@
 namespace Eav\Attribute;
 
 use Validator;
-use Eav\Attribute;
-use Eav\Attribute\Validator as AttributeValidator;
-use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Collection as BaseCollection;
 
 class Collection extends BaseCollection

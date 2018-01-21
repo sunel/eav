@@ -41,4 +41,14 @@ abstract class Source implements SourceContract
     {
         return $this->attribute;
     }
+
+    /**
+     * Retrieve option array
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        return $this->getOptionArray();
+    }
 }

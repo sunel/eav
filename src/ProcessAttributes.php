@@ -1,8 +1,6 @@
 <?php
 namespace Eav;
 
-use Illuminate\Support\Arr;
-
 class ProcessAttributes
 {
     public static function process($query, $loadedAttributes, $baseEntity, $noJoin = false)
@@ -42,11 +40,6 @@ class ProcessAttributes
                     break;
                 case 'Basic':
                 default:
-                    $usedAttributes = $loadedAttributes
-                        ->filter(function ($attribute) use ($filterAttr) {
-                            return in_array($attribute->getAttributeCode(), $filterAttr);
-                        });
-
                     foreach ($bindings as $binding) {                        
                         $attribute = $usedAttributes->get($binding['column']);
                         if ($attribute) {

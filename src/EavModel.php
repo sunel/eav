@@ -40,8 +40,8 @@ abstract class EavModel extends Model
 
         parent::__construct($attributes);
     }
-
-    protected function loadEntityProperty()
+    
+    public function baseEntity()
     {
         if (!isset(static::$baseEntity[static::ENTITY])) {
             try {
@@ -51,13 +51,17 @@ abstract class EavModel extends Model
             }
             static::$baseEntity[static::ENTITY] = $eavEntity;
         }
-    }
-    
-    public function baseEntity()
-    {
-        $this->loadEntityProperty();
         
         return static::$baseEntity[static::ENTITY];
+    }
+
+    public function baseEntityId()
+    {
+        if($value = $this->getAttributeValue('entity_id')) {
+            return $value;
+        }
+
+        return $this->baseEntity()->entity_id;
     }
 
     protected function addModelEvent()
@@ -70,15 +74,14 @@ abstract class EavModel extends Model
                     $model->setAttribute('attribute_set_id', $model->baseEntity()->default_attribute_set_id);
                 }
             }
-            $model->setAttribute('entity_id', $model->baseEntity()->entity_id);
+            $model->setAttribute('entity_id', $this->baseEntityId());
         }, 9999);
     }
     
     
     public function setUseFlat($flag)
     {
-        $this->baseEntity();
-        static::$baseEntity[static::ENTITY]->is_flat_enabled = $flag;
+        $this->baseEntity()->is_flat_enabled = $flag;
     }
     
     public function canUseFlat()

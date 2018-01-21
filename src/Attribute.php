@@ -69,23 +69,19 @@ class Attribute extends Model
     protected $dataTable  = null;
     
     
-    /**
-     * Attribute options
-     *
-     * @var array
-     */
-    protected $optionArray  = [];
-
     public function options()
     {
-        return $this->hasMany(AttributeOption::class, 'attribute_id');
+        if($this->usesSource()) {
+            return $this->getSource()->toArray();
+        }
+        return $this->optionValues->toArray();
     }
             
     public function optionValues()
     {
         return $this->hasManyThroughOptions(AttributeOptionValue::class, AttributeOption::class, 'attribute_id', 'option_id');
     }
-    
+
     /**
      * Define a has-many-through relationship.
      *
@@ -94,9 +90,10 @@ class Attribute extends Model
      * @param  string|null  $firstKey
      * @param  string|null  $secondKey
      * @param  string|null  $localKey
+     * @param  string|null  $secondLocalKey
      * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
      */
-    public function hasManyThroughOptions($related, $through, $firstKey = null, $secondKey = null, $localKey = null)
+    public function hasManyThroughOptions($related, $through, $firstKey = null, $secondKey = null, $localKey = null, $secondLocalKey = null)
     {
         $through = new $through;
 
@@ -106,7 +103,11 @@ class Attribute extends Model
 
         $localKey = $localKey ?: $this->getKeyName();
 
-        return new HasManyThroughOptions((new $related)->newQuery(), $this, $through, $firstKey, $secondKey, $localKey);
+        $secondLocalKey = $secondLocalKey ?: $through->getKeyName();
+
+        $instance = $this->newRelatedInstance($related);
+
+        return new HasManyThroughOptions($instance->newQuery(), $this, $through, $firstKey, $secondKey, $localKey, $secondLocalKey);
     }
     
     /**
@@ -226,6 +227,16 @@ class Attribute extends Model
         }
         return $this->entity;
     }
+
+    /**
+     * Check if attribute is static
+     *
+     * @return bool
+     */
+    public function isStatic()
+    {
+        return $this->getAttribute('backend_type') == self::TYPE_STATIC || $this->getAttribute('backend_type') == '';
+    }
     
     /**
      * Retrieve backend instance
@@ -318,6 +329,7 @@ class Attribute extends Model
         return $this->dataTable;
     }
     
+    /*
     protected function getDefaultBackendClass()
     {
         return static::DEFAULT_BACKEND_CLASS;
@@ -327,6 +339,7 @@ class Attribute extends Model
     {
         return static::DEFAULT_FRONTEND_CLASS;
     }
+    */
     
     /**
      * Create a new Eloquent Collection instance.
@@ -464,30 +477,6 @@ class Attribute extends Model
         $data['entity_id'] = $eavEntity->entity_id;
         
         $instance->where($data)->delete();
-    }
-    
-    /**
-     * Check if attribute is static
-     *
-     * @return bool
-     */
-    public function isStatic()
-    {
-        return $this->getAttribute('backend_type') == self::TYPE_STATIC || $this->getAttribute('backend_type') == '';
-    }
-    
-    public function optionsArray()
-    {
-        if (empty($this->optionArray) && $this->usesSource()) {
-            $this->optionArray = $this->getSource()->getOptionArray();
-        }
-        
-        return $this->optionArray;
-    }
-    
-    public function setOptionsArray($options)
-    {
-        return $this->optionArray = $options;
     }    
     
     public function addToSelect($query, $joinType = 'inner', $callback = null)

@@ -14,7 +14,7 @@ class AttributeGroup extends Model
         'attribute_set_id', 'attribute_group_name'
     ];
     
-    public function eavAttributes()
+    public function attributes()
     {
         return $this->hasManyThrough(Attribute::class, EntityAttribute::class, 'attribute_group_id', 'attribute_id');
     }
