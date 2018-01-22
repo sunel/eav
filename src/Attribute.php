@@ -3,12 +3,15 @@
 namespace Eav;
 
 use ReflectionException;
+use Eav\Attribute\Concerns;
 use Eav\Attribute\Collection;
 use Eav\Attribute\Relations\HasManyThrough as HasManyThroughOptions;
 use Illuminate\Database\Eloquent\Model;
 
 class Attribute extends Model
 {
+    use Concerns\QueryBuilder;
+
     const TYPE_STATIC = 'static';
     
     protected $primaryKey = 'attribute_id';
@@ -66,49 +69,7 @@ class Attribute extends Model
      *
      * @var string
      */
-    protected $dataTable  = null;
-    
-    
-    public function options()
-    {
-        if($this->usesSource()) {
-            return $this->getSource()->toArray();
-        }
-        return $this->optionValues->toArray();
-    }
-            
-    public function optionValues()
-    {
-        return $this->hasManyThroughOptions(AttributeOptionValue::class, AttributeOption::class, 'attribute_id', 'option_id');
-    }
-
-    /**
-     * Define a has-many-through relationship.
-     *
-     * @param  string  $related
-     * @param  string  $through
-     * @param  string|null  $firstKey
-     * @param  string|null  $secondKey
-     * @param  string|null  $localKey
-     * @param  string|null  $secondLocalKey
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
-     */
-    public function hasManyThroughOptions($related, $through, $firstKey = null, $secondKey = null, $localKey = null, $secondLocalKey = null)
-    {
-        $through = new $through;
-
-        $firstKey = $firstKey ?: $this->getForeignKey();
-
-        $secondKey = $secondKey ?: $through->getForeignKey();
-
-        $localKey = $localKey ?: $this->getKeyName();
-
-        $secondLocalKey = $secondLocalKey ?: $through->getKeyName();
-
-        $instance = $this->newRelatedInstance($related);
-
-        return new HasManyThroughOptions($instance->newQuery(), $this, $through, $firstKey, $secondKey, $localKey, $secondLocalKey);
-    }
+    protected $dataTable  = null;    
     
     /**
      * Set attribute code
@@ -142,7 +103,6 @@ class Attribute extends Model
     {
         return $this->getKey();
     }
-    
     
     /**
      * Get attribute name
@@ -212,6 +172,95 @@ class Attribute extends Model
     public function getDefaultValue()
     {
         return $this->getAttribute('default_value');
+    }
+
+    public function options()
+    {
+        if($this->usesSource()) {
+            return $this->getSource()->toArray();
+        }
+        return $this->optionValues->toArray();
+    }
+
+    public static function add($data)
+    {
+        $instance = new static;
+                
+        try {
+            $eavEntity = Entity::where('entity_code', '=', $data['entity_code'])->firstOrFail();
+        } catch (ModelNotFoundException $e) {
+            throw new \Exception("Unable to load Entity : ".$data['entity_code']);
+        }
+        
+        unset($data['entity_code']);
+        
+        $data['entity_id'] = $eavEntity->entity_id;
+        
+        $options = [];
+        
+        if ($data['frontend_type'] == 'select' && empty($data['source_class'])) {
+            if (isset($data['options'])) {
+                $options = $data['options'];
+                unset($data['options']);
+            }
+        }
+        
+        
+        $instance->fill($data)->save();
+        
+        if ($instance->getKey()) {
+            AttributeOption::add($instance, $options);
+        }
+    }
+        
+    public static function remove($data)
+    {
+        $instance = new static;
+                
+        try {
+            $eavEntity = Entity::where('entity_code', '=', $data['entity_code'])->firstOrFail();
+        } catch (ModelNotFoundException $e) {
+            throw new \Exception("Unable to load Entity : ".$data['entity_code']);
+        }
+        
+        unset($data['entity_code']);
+        
+        $data['entity_id'] = $eavEntity->entity_id;
+        
+        $instance->where($data)->delete();
+    } 
+
+    public function optionValues()
+    {
+        return $this->hasManyThroughOptions(AttributeOptionValue::class, AttributeOption::class, 'attribute_id', 'option_id');
+    }
+
+    /**
+     * Define a has-many-through relationship.
+     *
+     * @param  string  $related
+     * @param  string  $through
+     * @param  string|null  $firstKey
+     * @param  string|null  $secondKey
+     * @param  string|null  $localKey
+     * @param  string|null  $secondLocalKey
+     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
+     */
+    public function hasManyThroughOptions($related, $through, $firstKey = null, $secondKey = null, $localKey = null, $secondLocalKey = null)
+    {
+        $through = new $through;
+
+        $firstKey = $firstKey ?: $this->getForeignKey();
+
+        $secondKey = $secondKey ?: $through->getForeignKey();
+
+        $localKey = $localKey ?: $this->getKeyName();
+
+        $secondLocalKey = $secondLocalKey ?: $through->getKeyName();
+
+        $instance = $this->newRelatedInstance($related);
+
+        return new HasManyThroughOptions($instance->newQuery(), $this, $through, $firstKey, $secondKey, $localKey, $secondLocalKey);
     }
         
 
@@ -415,226 +464,5 @@ class Attribute extends Model
          return $this->newBaseQueryBuilder()
             ->from($this->getBackendTable())
             ->updateOrInsert($attributes, ['value' => $value]);
-    }
-
-    public function getAttributeInsertQuery($value, $entityId)
-    {
-        $insertData = [
-            'entity_type_id' => $this->getEntity()->getKey(),
-            'attribute_id' => $this->getKey(),
-            'entity_id' => $entityId,
-            'value' => $value
-        ];
-        
-        return $this->newBaseQueryBuilder()
-            ->from($this->getBackendTable())
-            ->getInsertSql($insertData);
-    }
-    
-    public static function add($data)
-    {
-        $instance = new static;
-                
-        try {
-            $eavEntity = Entity::where('entity_code', '=', $data['entity_code'])->firstOrFail();
-        } catch (ModelNotFoundException $e) {
-            throw new \Exception("Unable to load Entity : ".$data['entity_code']);
-        }
-        
-        unset($data['entity_code']);
-        
-        $data['entity_id'] = $eavEntity->entity_id;
-        
-        $options = [];
-        
-        if ($data['frontend_type'] == 'select' && empty($data['source_class'])) {
-            if (isset($data['options'])) {
-                $options = $data['options'];
-                unset($data['options']);
-            }
-        }
-        
-        
-        $instance->fill($data)->save();
-        
-        if ($instance->getKey()) {
-            AttributeOption::add($instance, $options);
-        }
-    }
-        
-    public static function remove($data)
-    {
-        $instance = new static;
-                
-        try {
-            $eavEntity = Entity::where('entity_code', '=', $data['entity_code'])->firstOrFail();
-        } catch (ModelNotFoundException $e) {
-            throw new \Exception("Unable to load Entity : ".$data['entity_code']);
-        }
-        
-        unset($data['entity_code']);
-        
-        $data['entity_id'] = $eavEntity->entity_id;
-        
-        $instance->where($data)->delete();
-    }    
-    
-    public function addToSelect($query, $joinType = 'inner', $callback = null)
-    {
-        if ($this->isStatic()) {
-            return $this;
-        }
-
-        $this->addAttributeJoin($query, $joinType, $callback);
-
-        $query->addSelect([$this->getSelectColumn()]);
-    }
-    
-    public function getSelectColumn()
-    {
-        return "{$this->getAttributeCode()}_attr.value as {$this->getAttributeCode()}";
-    }
-    
-    
-    public function addAttributeJoin($query, $joinType = 'inner', $callback = null)
-    {
-        if ($this->isStatic() || isset($query->joinCache[$this->getAttributeCode()])) {
-            return $this;
-        }
-
-        $query->joinCache[$this->getAttributeCode()] = 1;
-        
-        if (is_callable($callback)) {
-            $callback = function ($join) use ($query) {
-                $callback($join, $query, "{$this->getAttributeCode()}_attr");
-            };
-            
-            if ($joinType == 'left') {
-                $query->leftJoin("{$this->getBackendTable()} as {$this->getAttributeCode()}_attr", $callback);
-            } else {
-                $query->join("{$this->getBackendTable()} as {$this->getAttributeCode()}_attr", $callback);
-            }
-        } else {
-            if ($joinType == 'left') {
-                $query->leftJoin("{$this->getBackendTable()} as {$this->getAttributeCode()}_attr", function ($join) use ($query) {
-                    $join->on("{$query->from}.id", '=', "{$this->getAttributeCode()}_attr.entity_id")
-                        ->where("{$this->getAttributeCode()}_attr.attribute_id", "=", $this->getAttributeId());
-                });
-            } else {
-                $query->join("{$this->getBackendTable()} as {$this->getAttributeCode()}_attr", function ($join) use ($query) {
-                    $join->on("{$query->from}.id", '=', "{$this->getAttributeCode()}_attr.entity_id")
-                        ->where("{$this->getAttributeCode()}_attr.attribute_id", "=", $this->getAttributeId());
-                });
-            }
-        }
-        
-        return $this;
-    }
-
-    public function addAttributeOrderBy($query, $binding)
-    {
-        if ($this->isStatic()) {
-            $query->orderBy("{$query->from}.{$binding['column']}", $binding['direction']);
-        } else {
-            $query->orderBy("{$this->getAttributeCode()}_attr.value", $binding['direction']);
-        }
-    }
-    
-    public function addAttributeWhere($query, $binding)
-    {
-        $method = 'where'.lcfirst($binding['type']);
-        $this->$method($query, $binding);
-
-        return $this;
-    }
-
-    public function whereBasic($query, $binding)
-    {
-        if ($this->isStatic()) {
-            $query->where("{$query->from}.{$binding['column']}", $binding['operator'], $binding['value'], $binding['boolean']);
-        } else {
-            $query->where("{$this->getAttributeCode()}_attr.value", $binding['operator'], $binding['value'], $binding['boolean']);
-        }
-    }
-
-    public function whereBetween($query, $binding)
-    {
-        if ($this->isStatic()) {
-            $query->whereBetween("{$query->from}.{$binding['column']}", $binding['values'], $binding['boolean'], $binding['not']);
-        } else {
-            $query->whereBetween("{$this->getAttributeCode()}_attr.value", $binding['values'], $binding['boolean'], $binding['not']);
-        }
-    }
-
-    public function whereIn($query, $binding)
-    {
-        if ($this->isStatic()) {
-            $query->whereIn("{$query->from}.{$binding['column']}", $binding['values'], $binding['boolean'], $binding['not']);
-        } else {
-            $query->whereIn("{$this->getAttributeCode()}_attr.value", $binding['values'], $binding['boolean'], $binding['not']);
-        }
-    }
-
-    public function whereNotIn($query, $binding)
-    {
-        if ($this->isStatic()) {
-            $query->whereNotIn("{$query->from}.{$binding['column']}", $binding['values'], $binding['boolean'], $binding['not']);
-        } else {
-            $query->whereNotIn("{$this->getAttributeCode()}_attr.value", $binding['values'], $binding['boolean'], $binding['not']);
-        }
-    }
-
-    public function whereNull($query, $binding)
-    {
-        if ($this->isStatic()) {
-            $query->whereNull("{$query->from}.{$binding['column']}", $binding['boolean'], $binding['not']);
-        } else {
-            $query->whereNull("{$this->getAttributeCode()}_attr.value", $binding['boolean'], $binding['not']);
-        }
-    }
-
-    public function whereNotNull($query, $binding)
-    {
-        if ($this->isStatic()) {
-            $query->whereNotNull("{$query->from}.{$binding['column']}", $binding['boolean'], $binding['not']);
-        } else {
-            $query->whereNotNull("{$this->getAttributeCode()}_attr.value", $binding['boolean'], $binding['not']);
-        }
-    }
-
-    public function whereDate($query, $binding)
-    {
-        if ($this->isStatic()) {
-            $query->whereDate("{$query->from}.{$binding['column']}", $binding['operator'], $binding['value'], $binding['boolean']);
-        } else {
-            $query->whereDate("{$this->getAttributeCode()}_attr.value", $binding['operator'], $binding['value'], $binding['boolean']);
-        }
-    }
-
-    public function whereDay($query, $binding)
-    {
-        if ($this->isStatic()) {
-            $query->whereDay("{$query->from}.{$binding['column']}", $binding['operator'], $binding['value'], $binding['boolean']);
-        } else {
-            $query->whereDay("{$this->getAttributeCode()}_attr.value", $binding['operator'], $binding['value'], $binding['boolean']);
-        }
-    }
-
-    public function whereMonth($query, $binding)
-    {
-        if ($this->isStatic()) {
-            $query->whereMonth("{$query->from}.{$binding['column']}", $binding['operator'], $binding['value'], $binding['boolean']);
-        } else {
-            $query->whereMonth("{$this->getAttributeCode()}_attr.value", $binding['operator'], $binding['value'], $binding['boolean']);
-        }
-    }
-
-    public function whereYear($query, $binding)
-    {
-        if ($this->isStatic()) {
-            $query->whereYear("{$query->from}.{$binding['column']}", $binding['operator'], $binding['value'], $binding['boolean']);
-        } else {
-            $query->whereYear("{$this->getAttributeCode()}_attr.value", $binding['operator'], $binding['value'], $binding['boolean']);
-        }
     }
 }
