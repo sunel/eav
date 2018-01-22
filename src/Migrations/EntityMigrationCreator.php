@@ -115,7 +115,7 @@ class EntityMigrationCreator
      */
     protected function getClassName($name, $suffix)
     {
-        return 'Entity'.Str::studly($name).$suffix;
+        return 'Create'.Str::studly($name).'Entity'.$suffix.'Table';
     }
 
     /**
@@ -150,7 +150,7 @@ class EntityMigrationCreator
      */
     protected function getPath($name, $path)
     {
-        return $path.'/'.$this->getDatePrefix().'_entity_'.$name.'.php';
+        return $path.'/'.$this->getDatePrefix().'_create_'.$name.'_entity_table.php';
     }
     
     /**
@@ -162,7 +162,7 @@ class EntityMigrationCreator
      */
     protected function getMainPath($name, $path)
     {
-        return $path.'/'.$this->getDatePrefix().'_entity_'.$name.'_main.php';
+        return $path.'/'.$this->getDatePrefix().'_create_'.$name.'_entity_main_table.php';
     }
 
     /**

@@ -16,13 +16,6 @@ class AttributeMigrationCreator
     protected $files;
 
     /**
-     * The registered post create hooks.
-     *
-     * @var array
-     */
-    protected $postCreate = [];
-
-    /**
      * Create a new migration creator instance.
      *
      * @param  \Illuminate\Filesystem\Filesystem  $files
@@ -36,24 +29,16 @@ class AttributeMigrationCreator
     /**
      * Create a new migration at the given path.
      *
-     * @param  string  $name
+     * @param  string  $attributes
+     * @param  string  $entity
      * @param  string  $path
-     * @param  string  $table
-     * @param  bool    $create
      * @return string
      */
-    public function create($name, $entity, $path)
+    public function create($attributes, $entity, $path)
     {
-        $path = $this->getPath(md5($name.'attributes'.$entity), $path);
+        $path = $this->getPath("create_{$entity}_entity_attributes_".date('His'), $path);
 
-        // First we will get the stub file for the migration, which serves as a type
-        // of template for the migration. Once we have those we will populate the
-        // various place-holders, save the file, and run the post create event.
-        $stub = $this->getStub();
-
-        $this->files->put($path, $this->populateStub($name, $entity, $stub));
-
-        $this->firePostCreateHooks();
+        $this->files->put($path, $this->populateStub($attributes, $entity, $this->getStub()));
 
         return $path;
     }
@@ -97,26 +82,25 @@ class AttributeMigrationCreator
     /**
      * Populate the place-holders in the migration stub.
      *
-     * @param  string  $name
+     * @param  string  $attributes
+     * @param  string  $entity
      * @param  string  $stub
-     * @param  string  $table
      * @return string
      */
-    protected function populateStub($name, $entity, $stub)
+    protected function populateStub($attributes, $entity, $stub)
     {
-        $stub = str_replace('DummyClass', $this->getClassName(md5($name.'attributes'.$entity)), $stub);
+        $stub = str_replace('DummyClass', $this->getClassName("create_{$entity}_entity_attributes_".date('His')), $stub);
         
         $attStub = $attStubR =  '';
         $attAddStubDefault = $this->getAttributeAddStub();
         $attRemoveStubDefault = $this->getAttributeRemoveStub();
-        foreach (explode(',', $name) as $attribute) {
+        foreach (explode(',', $attributes) as $attribute) {
             $attStub .= str_replace('ATTRIBUTECODE', $attribute, $attAddStubDefault);
             $attStubR .= str_replace('ATTRIBUTECODE', $attribute, $attRemoveStubDefault);
         }
         
-        $stub = str_replace('ADDATTRIBUTE', $attStub, $stub);
-        $stub = str_replace('REMOVEATTRIBUTE', $attStubR, $stub);
-        
+        $stub = str_replace(['ADDATTRIBUTE', 'REMOVEATTRIBUTE'], [$attStub, $attStubR], $stub);
+
         $stub = str_replace('ENTITYCODE', $entity, $stub);
 
         return $stub;
@@ -130,30 +114,7 @@ class AttributeMigrationCreator
      */
     protected function getClassName($name)
     {
-        return 'Entity'.Str::studly($name);
-    }
-
-    /**
-     * Fire the registered post create hooks.
-     *
-     * @return void
-     */
-    protected function firePostCreateHooks()
-    {
-        foreach ($this->postCreate as $callback) {
-            call_user_func($callback);
-        }
-    }
-
-    /**
-     * Register a post migration create hook.
-     *
-     * @param  \Closure  $callback
-     * @return void
-     */
-    public function afterCreate(Closure $callback)
-    {
-        $this->postCreate[] = $callback;
+        return Str::studly($name);
     }
 
     /**
@@ -165,7 +126,7 @@ class AttributeMigrationCreator
      */
     protected function getPath($name, $path)
     {
-        return $path.'/'.$this->getDatePrefix().'_entity_'.$name.'.php';
+        return $path.'/'.$this->getDatePrefix().'_'.$name.'.php';
     }
 
     /**

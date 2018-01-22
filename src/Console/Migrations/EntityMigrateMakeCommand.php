@@ -60,9 +60,6 @@ class EntityMigrateMakeCommand extends Command
      */
     public function handle()
     {
-        // It's possible for the developer to specify the tables to modify in this
-        // schema operation. The developer may also specify if this table needs
-        // to be freshly created so we can create the appropriate migrations.
         $name = $this->input->getArgument('name');
         
         $class = $this->input->getArgument('class');
