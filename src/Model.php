@@ -5,12 +5,12 @@ namespace Eav;
 use Eav\Traits\Attribute as AttributeTraits;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model as Eloquent;
 use Eav\Database\Query\Builder as EavQueryBuilder;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-abstract class EavModel extends Model
+abstract class Model extends Eloquent
 {
     use AttributeTraits;
 

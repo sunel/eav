@@ -2,7 +2,7 @@
 
 namespace DummyNamespace;
 
-use Eav\EavModel as Model;
+use Eav\Model;
 
 class DummyClass extends Model
 {
