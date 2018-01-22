@@ -44,11 +44,12 @@ class Builder extends QueryBuilder
      * @param  \Illuminate\Database\Query\Processors\Processor  $processor
      * @return void
      */
-    public function __construct(ConnectionInterface $connection,
-                                Grammar $grammar = null,
-                                Processor $processor = null,
-                                Entity $baseEntity = null)
-    {
+    public function __construct(
+        ConnectionInterface $connection,
+        Grammar $grammar = null,
+        Processor $processor = null,
+        Entity $baseEntity = null
+    ) {
         $this->connection = $connection;
         $this->grammar = $grammar ?: $connection->getQueryGrammar();
         $this->processor = $processor ?: $connection->getPostProcessor();
@@ -203,11 +204,11 @@ class Builder extends QueryBuilder
     }
     
 
-     /**
-     * Get the SQL representation of the query.
-     *
-     * @return string
-     */
+    /**
+    * Get the SQL representation of the query.
+    *
+    * @return string
+    */
     public function toSql()
     {
         if ($this->canUseFlat()) {
@@ -290,7 +291,9 @@ class Builder extends QueryBuilder
         // passed to the method, we will assume that the operator is an equals sign
         // and keep going. Otherwise, we'll require the operator to be passed in.
         list($value, $operator) = $this->prepareValueAndOperator(
-            $value, $operator, func_num_args() == 2
+            $value,
+            $operator,
+            func_num_args() == 2
         );
 
         // If the given operator is not found in the list of valid operators we will
@@ -343,7 +346,7 @@ class Builder extends QueryBuilder
     {
         if ($this->canUseFlat()) {
             return $this->whereNested($callback, $boolean);
-        }        
+        }
 
         call_user_func($callback, $query = $this->forNestedWhere());
 
@@ -461,13 +464,13 @@ class Builder extends QueryBuilder
         return $this->addWhereAttribute($column, compact('column', 'values', 'boolean', 'not', 'type'));
     }
 
-     /**
-     * Add an "or where in" clause to the query.
-     *
-     * @param  string  $column
-     * @param  mixed   $values
-     * @return \Illuminate\Database\Query\Builder|static
-     */
+    /**
+    * Add an "or where in" clause to the query.
+    *
+    * @param  string  $column
+    * @param  mixed   $values
+    * @return \Illuminate\Database\Query\Builder|static
+    */
     public function orWhereInAttribute($column, $values)
     {
         return $this->whereInAttribute($column, $values, 'or');

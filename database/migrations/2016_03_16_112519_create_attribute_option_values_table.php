@@ -19,7 +19,8 @@ class CreateAttributeOptionValuesTable extends Migration
             
             $table->foreign('option_id')
                   ->references('option_id')->on('attribute_options')
-                  ->onDelete('cascade');;
+                  ->onDelete('cascade');
+            ;
         });
     }
 

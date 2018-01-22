@@ -22,7 +22,6 @@ class CreateAttributeGroupsTable extends Migration
                   ->onDelete('cascade');
                   
             $table->unique(['attribute_set_id', 'attribute_group_name']);
-            
         });
     }
 

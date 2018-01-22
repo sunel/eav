@@ -22,7 +22,7 @@ abstract class Model extends Eloquent
 
     protected static $unguarded = true;
 
-    protected static $baseEntity = [];    
+    protected static $baseEntity = [];
     
     /**
      * Create a new Eloquent model instance.
@@ -57,7 +57,7 @@ abstract class Model extends Eloquent
 
     public function baseEntityId()
     {
-        if($value = $this->getAttributeValue('entity_id')) {
+        if ($value = $this->getAttributeValue('entity_id')) {
             return $value;
         }
 
@@ -110,7 +110,9 @@ abstract class Model extends Eloquent
         $attributes = $this->attributes;
         
         $loadedAttributes = $this->loadAttributes(
-            array_keys($attributes), true, true
+            array_keys($attributes),
+            true,
+            true
         )->validate($attributes);
     }
 
@@ -124,7 +126,10 @@ abstract class Model extends Eloquent
         $connection = $this->getConnection();
 
         return new EavQueryBuilder(
-            $connection, $connection->getQueryGrammar(), $connection->getPostProcessor(), $this->baseEntity()
+            $connection,
+            $connection->getQueryGrammar(),
+            $connection->getPostProcessor(),
+            $this->baseEntity()
         );
     }
 
@@ -158,7 +163,6 @@ abstract class Model extends Eloquent
         $loadedAttributes->validate($attributes);
         
         return $this->getConnection()->transaction(function () use ($query, $options, $attributes, $loadedAttributes) {
-            
             if ($this->fireModelEvent('creating') === false) {
                 return false;
             }
@@ -175,7 +179,7 @@ abstract class Model extends Eloquent
              
             return true;
         });
-    }    
+    }
 
 
     public function insertMainTable($query, $options, $attributes, $loadedAttributes)
@@ -206,7 +210,7 @@ abstract class Model extends Eloquent
     {
         $loadedAttributes->each(function ($attribute, $key) use ($modelData) {
             if (!$attribute->isStatic()) {
-                $attribute->setEntity($this->baseEntity());                
+                $attribute->setEntity($this->baseEntity());
                 $attribute->insertAttribute($modelData[$attribute->getAttributeCode()], $this->getKey());
             }
         });
@@ -299,7 +303,7 @@ abstract class Model extends Eloquent
     {
         $loadedAttributes->each(function ($attribute, $key) use ($modelData) {
             if (!$attribute->isStatic()) {
-                $attribute->setEntity($this->baseEntity());                
+                $attribute->setEntity($this->baseEntity());
                 $attribute->updateAttribute($modelData[$attribute->getAttributeCode()], $this->getKey());
             }
         });

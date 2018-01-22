@@ -19,7 +19,6 @@ class CreateEntitiesTable extends Migration
             $table->string('entity_table');
             $table->integer('default_attribute_set_id')->unsigned()->nullable();
             $table->string('additional_attribute_table')->nullable();
-            
         });
     }
 

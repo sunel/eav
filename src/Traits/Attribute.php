@@ -39,17 +39,17 @@ trait Attribute
         $loadedAttributes = $this->baseEntity()
             ->attributes()
             ->where(function ($query) use ($static, $required, $attributes) {
-    			 if (!empty($attributes)) {	
-    				$query->orWhereIn('attribute_code', $attributes);
-    			 }
-    			
-    			if ($static) {
+                if (!empty($attributes)) {
+                    $query->orWhereIn('attribute_code', $attributes);
+                }
+                
+                if ($static) {
                     $query->orWhere('backend_type', 'static');
                 }
                 if ($required) {
                     $query->orWhere('is_required', 1);
-                }	
-    		})->get()->patch();
+                }
+            })->get()->patch();
 
 
         return $loadedAttributes;

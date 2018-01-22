@@ -66,7 +66,6 @@ class EntityComplierCommand extends Command
         $entityCode = $this->input->getArgument('entity');
 
         try {
-            
             $entity = Entity::findByCode($entityCode);
 
             $this->info("Compiling `{$entityCode}` entity.");
@@ -74,9 +73,8 @@ class EntityComplierCommand extends Command
             (new EntityComplier($entity, $this->files, $this))->compile();
             
             $this->info("Entity is compiled successfully and flat table is created.");
-
-        } catch(ModelNotFoundException $e) {
+        } catch (ModelNotFoundException $e) {
             $this->error("`{$entityCode}` entity doesn't exists.");
-        }		    
+        }
     }
 }

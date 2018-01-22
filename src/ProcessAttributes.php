@@ -1,4 +1,5 @@
 <?php
+
 namespace Eav;
 
 class ProcessAttributes
@@ -9,11 +10,10 @@ class ProcessAttributes
 
         $usedAttributes = $loadedAttributes
             ->filter(function ($attribute) use ($filterAttr) {
-               return isset($filterAttr[$attribute->getAttributeCode()]);
-            });   
+                return isset($filterAttr[$attribute->getAttributeCode()]);
+            });
 
         foreach ((array) $query->attributeOrderBy['binding'] as $bindings) {
-
             foreach ($bindings as $binding) {
                 $attribute = $usedAttributes->get($binding['column']);
                 if ($attribute) {
@@ -40,7 +40,7 @@ class ProcessAttributes
                     break;
                 case 'Basic':
                 default:
-                    foreach ($bindings as $binding) {                        
+                    foreach ($bindings as $binding) {
                         $attribute = $usedAttributes->get($binding['column']);
                         if ($attribute) {
                             $attribute->setEntity($baseEntity);

@@ -2,9 +2,9 @@
 
 namespace Eav\Attribute\Concerns;
 
-trait QueryBuilder {
-
-	public function getAttributeInsertQuery($value, $entityId)
+trait QueryBuilder
+{
+    public function getAttributeInsertQuery($value, $entityId)
     {
         $insertData = [
             'entity_type_id' => $this->getEntity()->getKey(),
@@ -16,7 +16,7 @@ trait QueryBuilder {
         return $this->newBaseQueryBuilder()
             ->from($this->getBackendTable())
             ->getInsertSql($insertData);
-    }   
+    }
     
     public function addToSelect($query, $joinType = 'inner', $callback = null)
     {
@@ -176,5 +176,4 @@ trait QueryBuilder {
             $query->whereYear("{$this->getAttributeCode()}_attr.value", $binding['operator'], $binding['value'], $binding['boolean']);
         }
     }
-
 }

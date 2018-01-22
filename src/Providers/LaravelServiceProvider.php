@@ -44,11 +44,11 @@ class LaravelServiceProvider extends ServiceProvider
         $this->loadMigrationsFrom(__DIR__.'/../../database/migrations/');
     }
     
-     /**
-     * Register the migration creator.
-     *
-     * @return void
-     */
+    /**
+    * Register the migration creator.
+    *
+    * @return void
+    */
     protected function registerCreator()
     {
         $this->app->singleton('eav.entity.migration.creator', function ($app) {
@@ -64,11 +64,11 @@ class LaravelServiceProvider extends ServiceProvider
         });
     }
     
-     /**
-     * Register all of the migration commands.
-     *
-     * @return void
-     */
+    /**
+    * Register all of the migration commands.
+    *
+    * @return void
+    */
     protected function registerCommands()
     {
         $commands = [
@@ -103,7 +103,6 @@ class LaravelServiceProvider extends ServiceProvider
     protected function registerEntityComplierCommand()
     {
         $this->app->singleton('command.entity.complier', function ($app) {
-
             return new EntityComplierCommand($app['files'], $app['composer']);
         });
     }
@@ -178,11 +177,11 @@ class LaravelServiceProvider extends ServiceProvider
     }
     
     
-     /**
-     * Get the services provided by the provider.
-     *
-     * @return array
-     */
+    /**
+    * Get the services provided by the provider.
+    *
+    * @return array
+    */
     public function provides()
     {
         return [

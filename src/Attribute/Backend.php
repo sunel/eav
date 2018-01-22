@@ -59,11 +59,11 @@ abstract class Backend implements BackendContract
         return $this->getAttribute()->getBackendType();
     }
     
-     /**
-     * Get table name for the values of the attribute
-     *
-     * @return string
-     */
+    /**
+    * Get table name for the values of the attribute
+    *
+    * @return string
+    */
     public function getTable()
     {
         if (empty($this->table)) {

@@ -31,7 +31,7 @@ class Collection extends BaseCollection
             }
         });
         
-        $attributeValidator = Validator::make($data, $rules);       
+        $attributeValidator = Validator::make($data, $rules);
 
         if ($attributeValidator->fails()) {
             throw new ValidationException($attributeValidator);

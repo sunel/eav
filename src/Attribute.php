@@ -69,7 +69,7 @@ class Attribute extends Model
      *
      * @var string
      */
-    protected $dataTable  = null;    
+    protected $dataTable  = null;
     
     /**
      * Set attribute code
@@ -176,7 +176,7 @@ class Attribute extends Model
 
     public function options()
     {
-        if($this->usesSource()) {
+        if ($this->usesSource()) {
             return $this->getSource()->toArray();
         }
         return $this->optionValues->toArray();
@@ -228,7 +228,7 @@ class Attribute extends Model
         $data['entity_id'] = $eavEntity->entity_id;
         
         $instance->where($data)->delete();
-    } 
+    }
 
     public function optionValues()
     {
@@ -461,7 +461,7 @@ class Attribute extends Model
             'entity_id' => $entityId,
         ];
 
-         return $this->newBaseQueryBuilder()
+        return $this->newBaseQueryBuilder()
             ->from($this->getBackendTable())
             ->updateOrInsert($attributes, ['value' => $value]);
     }

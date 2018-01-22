@@ -34,10 +34,10 @@ class Complier
         $this->createTable();
         $this->insertValues();
     }
-	
-	protected function insertValues()
+    
+    protected function insertValues()
     {
-    	$entity = app($this->entity->entity_class);
+        $entity = app($this->entity->entity_class);
 
         $flatEntity = app($this->entity->entity_class);
     
@@ -45,13 +45,13 @@ class Complier
 
         $this->console->info("\t Updating `{$this->entity->entity_table}` flat table.");
 
-        $entity->select('attr.*')->chunk(100, function($chunk) use($flatEntity) {
+        $entity->select('attr.*')->chunk(100, function ($chunk) use ($flatEntity) {
             $flatEntity->setUseFlat(true);
             $flatEntity->insert($chunk->toArray());
             $flatEntity->setUseFlat(false);
         });
 
-        $this->console->info("\t Updated `{$this->entity->entity_table}` flat table.");		    	
+        $this->console->info("\t Updated `{$this->entity->entity_table}` flat table.");
     }
 
     protected function createTable()
@@ -59,19 +59,19 @@ class Complier
         $this->console->info("\t Creating flat table for `{$this->entity->entity_table}`.");
 
         $path = $this->getPath($this->entity->entity_table.'_flat');
-		
-		$this->makeDirectory($path);
-		
-		$this->files->put($path, $this->compileMigrationStub());
-		
-		$this->files->requireOnce($path);
-		
+        
+        $this->makeDirectory($path);
+        
+        $this->files->put($path, $this->compileMigrationStub());
+        
+        $this->files->requireOnce($path);
+        
         $this->console->info("\t Migrating `{$this->entity->entity_table}` flat schema.");
 
-		$this->runUp($path);
+        $this->runUp($path);
     }
-	
-	/**
+    
+    /**
      * Run "up" a migration instance.
      *
      * @param  string  $file
@@ -81,7 +81,7 @@ class Complier
      */
     protected function runUp($file)
     {
-    	// First we will resolve a "real" instance of the migration class from this
+        // First we will resolve a "real" instance of the migration class from this
         // migration file name. Once we have the instances we can run the actual
         // command such as "up" or "down", or we can just simulate the action.
         $migration = $this->resolve($file);
@@ -95,13 +95,13 @@ class Complier
 
         //$this->note("<info>Migrated:</info> $file");
     }
-	
-	 /**
-     * Resolve a migration instance from a file.
-     *
-     * @param  string  $file
-     * @return object
-     */
+    
+    /**
+    * Resolve a migration instance from a file.
+    *
+    * @param  string  $file
+    * @return object
+    */
     public function resolve($file)
     {
         $file = basename($file, ".php");
@@ -113,29 +113,26 @@ class Complier
 
     protected function buildSchema()
     {
-    	
-		$table = $this->entity->describe()->map(function ($attribute) {
-			
-			if ($attribute['COLUMN_KEY'] == 'PRI') {
+        $table = $this->entity->describe()->map(function ($attribute) {
+            if ($attribute['COLUMN_KEY'] == 'PRI') {
                 $schema = "{$attribute['COLUMN_NAME']}:{$this->getColumn($attribute['DATA_TYPE'])}:unsigned";
             } else {
-            	
-            	if ($attribute['DATA_TYPE'] == 'decimal') {
-                	$schema = "{$attribute['COLUMN_NAME']}:{$this->getColumn($attribute['DATA_TYPE'])}({$attribute['NUMERIC_PRECISION']} , {$attribute['NUMERIC_SCALE']})";
-				} else if ($attribute['DATA_TYPE'] == 'int') {
-					$schema = "{$attribute['COLUMN_NAME']}:{$this->getColumn($attribute['DATA_TYPE'])}";
-					if(!Str::contains($attribute['COLUMN_TYPE'] , 'unsigned')) {
-						$schema .= "({$attribute['NUMERIC_PRECISION']})";
-					} 
-				} else if ($attribute['DATA_TYPE'] == 'varchar') {
-					$schema = "{$attribute['COLUMN_NAME']}:{$this->getColumn($attribute['DATA_TYPE'])}({$attribute['CHARACTER_MAXIMUM_LENGTH']})";
-				} else {
-					$schema = "{$attribute['COLUMN_NAME']}:{$this->getColumn($attribute['DATA_TYPE'])}";
-				}
-			
-				if(Str::contains($attribute['COLUMN_TYPE'] , 'unsigned')) {
-					 $schema .= ":unsigned";
-				}
+                if ($attribute['DATA_TYPE'] == 'decimal') {
+                    $schema = "{$attribute['COLUMN_NAME']}:{$this->getColumn($attribute['DATA_TYPE'])}({$attribute['NUMERIC_PRECISION']} , {$attribute['NUMERIC_SCALE']})";
+                } elseif ($attribute['DATA_TYPE'] == 'int') {
+                    $schema = "{$attribute['COLUMN_NAME']}:{$this->getColumn($attribute['DATA_TYPE'])}";
+                    if (!Str::contains($attribute['COLUMN_TYPE'], 'unsigned')) {
+                        $schema .= "({$attribute['NUMERIC_PRECISION']})";
+                    }
+                } elseif ($attribute['DATA_TYPE'] == 'varchar') {
+                    $schema = "{$attribute['COLUMN_NAME']}:{$this->getColumn($attribute['DATA_TYPE'])}({$attribute['CHARACTER_MAXIMUM_LENGTH']})";
+                } else {
+                    $schema = "{$attribute['COLUMN_NAME']}:{$this->getColumn($attribute['DATA_TYPE'])}";
+                }
+            
+                if (Str::contains($attribute['COLUMN_TYPE'], 'unsigned')) {
+                    $schema .= ":unsigned";
+                }
                 
                 if ($attribute['IS_NULLABLE'] != 'NO') {
                     $schema .= ":nullable";
@@ -147,12 +144,10 @@ class Complier
             }
             
             return $schema;
-            
         });
         
         
         $attributes = $this->collectAttributes()->where('backend_type', '!=', 'static')->get()->map(function ($attribute) {
-            
             $schema = "{$attribute->getAttributeCode()}";
             
             if ($attribute->getBackendType() == 'decimal') {
@@ -168,13 +163,12 @@ class Complier
             }
             
             return $schema;
-            
         });
         
         $this->console->info("\t Found {$attributes->count()} attributes.");
         
         $schema = (new SchemaParser)->parse($table->implode(',').','.$attributes->implode(','));
-		
+        
         return (new SyntaxBuilder)->create($schema);
     }
 
@@ -258,15 +252,15 @@ class Complier
             case 'int':
                 return 'integer';
                 break;
-			case 'timestamp':
+            case 'timestamp':
                 return 'timestamp';
-                break;	
+                break;
             case 'datetime':
                 return 'dateTime';
                 break;
-			case 'decimal':
+            case 'decimal':
                 return 'decimal';
-                break;	
+                break;
             case 'varchar':
             default:
                 return 'string';
