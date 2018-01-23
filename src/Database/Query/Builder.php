@@ -49,11 +49,9 @@ class Builder extends QueryBuilder
         Grammar $grammar = null,
         Processor $processor = null,
         Entity $baseEntity = null
-    ) {
-        $this->connection = $connection;
-        $this->grammar = $grammar ?: $connection->getQueryGrammar();
-        $this->processor = $processor ?: $connection->getPostProcessor();
+    ) {        
         $this->baseEntity = $baseEntity;
+        parent::__construct($connection, $grammar, $processor);
     }
     
     public function baseEntity()
