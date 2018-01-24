@@ -79,7 +79,7 @@ trait QueryBuilder
         }
     }
     
-    protected function addAttributeWhere($query, $binding)
+    public function addAttributeWhere($query, $binding)
     {
         $method = 'where'.lcfirst($binding['type']);
         $this->$method($query, $binding);
