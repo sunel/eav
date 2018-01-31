@@ -16,11 +16,11 @@ class HasManyThrough extends Relation
      */
     protected function getKeys(array $models, $key = null)
     {
-        return array_filter(array_unique(array_values(array_map(function ($value) use ($key) {
-            if ($this->canRelate($value)) {
-                return $key ? $value->getAttribute($key) : $value->getKey();
-            }
-        }, $models))));
+        return collect($models)->filter(function($value) {
+            return $this->canRelate($value);
+        })->map(function ($value) use ($key) {
+            return $key ? $value->getAttribute($key) : $value->getKey();
+        })->values()->unique()->sort()->all();
     }
 
     /**
@@ -58,19 +58,16 @@ class HasManyThrough extends Relation
         // matching very convenient and easy work. Then we'll just return them.
         foreach ($models as $model) {
             if ($this->canRelate($model)) {
-                $key = $model->getKey();
-    
-                if (isset($dictionary[$key])) {
-                    $value = $this->related->newCollection($dictionary[$key]);
-    
-                    $model->setRelation($relation, $value);
-                    $model->setOptionsArray($value->toArray());
+                if (isset($dictionary[$key = $model->getAttribute($this->localKey)])) {
+                    $model->setRelation(
+                        $relation, $this->related->newCollection($dictionary[$key])
+                    );
                 }
             }
         }
 
         return $models;
-    }
+    }    
     
     private function canRelate($model)
     {

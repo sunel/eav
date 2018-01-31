@@ -5,9 +5,10 @@ namespace Eav;
 use Eav\Traits\Attribute as AttributeTraits;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Eav\Database\Eloquent\Builder as EavEloquentBuilder;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Eav\Database\Query\Builder as EavQueryBuilder;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 abstract class Model extends Eloquent
@@ -114,6 +115,17 @@ abstract class Model extends Eloquent
             true,
             true
         )->validate($attributes);
+    }
+
+     /**
+     * Create a new Eloquent query builder for the model.
+     *
+     * @param  \Illuminate\Database\Query\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder|static
+     */
+    public function newEloquentBuilder($query)
+    {
+        return new EavEloquentBuilder($query);
     }
 
     /**
