@@ -7,6 +7,7 @@ use Eav\ProcessAttributes;
 use Eav\Traits\Attribute;
 use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
+use Illuminate\Database\Query\Expression;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Database\Query\Grammars\Grammar;
 use Illuminate\Database\Query\Processors\Processor;
@@ -141,6 +142,7 @@ class Builder extends QueryBuilder
             return;
         }
 
+        $loadedAttributes = null;    
         $columns = $this->columns;
         if ($columns == ['attr.*'] || $columns == 'attr.*') {
             $loadedAttributes = $this->loadAttributes();
@@ -154,27 +156,31 @@ class Builder extends QueryBuilder
         } else {
             $filterAttr = (array) $this->attributeColumns['columns'];
 
-            $loadedAttributes = null;
+            if ($columns == ['*']) {
+                $columns = ["{$this->from}.*"];
+            } else {
+                $orgColumns = collect((array) $columns)->mapToGroups(function ($item, $key) {
+                    if(is_a($item, Expression::class)) {
+                        return ['expression' => $item];
+                    } else {
+                        return ['columns' => $item];
+                    }
+                });
 
-            if ($columns != ['*']) {
-                $orgColumns = (array) $columns;
-                $filterAttr = array_merge($filterAttr, $orgColumns);
-                $loadedAttributes = $this->loadAttributes($filterAttr);
-            }
-
-            $columns = ["{$this->from}.*"];
-            if ($loadedAttributes) {
-                $loadedAttributes->each(function ($attribute, $key) use (&$columns, $orgColumns) {
-                    if (!$attribute->isStatic()) {
-                        if (in_array($attribute->getAttributeCode(), $orgColumns)) {
+                $columns = [];
+                $filterAttr = $orgColumns->get('columns')->merge($filterAttr)->all();
+                $loadedAttributes = $this->loadAttributes($filterAttr)
+                    ->each(function ($attribute, $key) use (&$columns, $orgColumns) {
+                        if ($orgColumns->get('columns')->contains($attribute->getAttributeCode())) {
                             $columns[] = $attribute->setEntity($this->baseEntity())
                                     ->addAttributeJoin($this, 'left')->getSelectColumn();
                         } else {
                             $attribute->setEntity($this->baseEntity())
                                     ->addAttributeJoin($this);
                         }
-                    }
-                });
+                    });
+
+                $columns = $orgColumns->get('expression')->merge($columns)->all();
             }
         }
         
