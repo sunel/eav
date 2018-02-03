@@ -5,7 +5,6 @@ namespace Eav;
 use ReflectionException;
 use Eav\Attribute\Concerns;
 use Eav\Attribute\Collection;
-use Eav\Attribute\Relations\HasManyThrough as HasManyThroughOptions;
 use Illuminate\Database\Eloquent\Model;
 
 class Attribute extends Model
@@ -23,10 +22,6 @@ class Attribute extends Model
         'backend_table', 'frontend_class', 'frontend_type',
         'frontend_label', 'source_class',  'default_value',
         'is_required', 'required_validate_class', 'entity_id'
-    ];
-    
-    protected $with = [
-        //'optionValues'
     ];
 
     /**
@@ -179,7 +174,7 @@ class Attribute extends Model
         if ($this->usesSource()) {
             return $this->getSource()->toArray();
         }
-        return $this->optionValues->toArray();
+        return $this->optionValues->toOptions();
     }
 
     public static function add($data)
@@ -232,37 +227,8 @@ class Attribute extends Model
 
     public function optionValues()
     {
-        return $this->hasManyThroughOptions(AttributeOptionValue::class, AttributeOption::class, 'attribute_id', 'option_id');
-    }
-
-    /**
-     * Define a has-many-through relationship.
-     *
-     * @param  string  $related
-     * @param  string  $through
-     * @param  string|null  $firstKey
-     * @param  string|null  $secondKey
-     * @param  string|null  $localKey
-     * @param  string|null  $secondLocalKey
-     * @return \Illuminate\Database\Eloquent\Relations\HasManyThrough
-     */
-    public function hasManyThroughOptions($related, $through, $firstKey = null, $secondKey = null, $localKey = null, $secondLocalKey = null)
-    {
-        $through = new $through;
-
-        $firstKey = $firstKey ?: $this->getForeignKey();
-
-        $secondKey = $secondKey ?: $through->getForeignKey();
-
-        $localKey = $localKey ?: $this->getKeyName();
-
-        $secondLocalKey = $secondLocalKey ?: $through->getKeyName();
-
-        $instance = $this->newRelatedInstance($related);
-
-        return new HasManyThroughOptions($instance->newQuery(), $this, $through, $firstKey, $secondKey, $localKey, $secondLocalKey);
-    }
-        
+        return $this->hasMany(AttributeOption::class, 'attribute_id');
+    }        
 
     /**
      * Retrieve entity instance

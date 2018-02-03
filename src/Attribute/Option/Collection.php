@@ -12,10 +12,10 @@ class Collection extends BaseCollection
      *
      * @return array
      */
-    public function toArray()
+    public function toOptions()
     {
         return array_reduce($this->items, function ($result, $item) {
-            $result[$item->option_id] = $item->value;
+            $result[$item->value] = $item->label;
             return $result;
         }, array());
     }
