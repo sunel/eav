@@ -26,7 +26,9 @@ class Builder extends QueryBuilder
      *
      * @var array
      */
-    public $attributeWheres;
+    public $attributeWheres = [];
+
+    public $attributeWheresRef = [];
 
     public $attributeOrderBy;
 
@@ -167,7 +169,7 @@ class Builder extends QueryBuilder
                     }
                 });
 
-                $columns = [];
+                $columns = ($orgColumns->get('columns')->contains('*'))?["{$this->from}.*"]:[];
                 $filterAttr = $orgColumns->get('columns')->merge($filterAttr)->all();
                 $loadedAttributes = $this->loadAttributes($filterAttr)
                     ->each(function ($attribute, $key) use (&$columns, $orgColumns) {
@@ -180,7 +182,9 @@ class Builder extends QueryBuilder
                         }
                     });
 
-                $columns = $orgColumns->get('expression')->merge($columns)->all();
+                if($expression = $orgColumns->get('expression')) {
+                    $columns = $expression->merge($columns)->all();
+                }               
             }
         }
         
@@ -239,20 +243,20 @@ class Builder extends QueryBuilder
     /**
      * Add a basic where clause to the query.
      *
-     * @param  string|array|\Closure  $column
-     * @param  string  $operator
-     * @param  mixed   $value
-     * @param  string  $boolean
+     * @param  string $column
+     * @param  array  $values
      * @return $this
      *
      * @throws \InvalidArgumentException
      */
-    protected function addWhereAttribute($column, $values)
+    public function addWhereAttribute($column, $values)
     {
         $this->hasAttributeConditions = true;
 
         $this->attributeColumns['columns'] = array_merge((array)$this->attributeColumns['columns'], (array)$column);
         $this->attributeWheres['binding'][$values['type']][] = $values;
+
+        $this->attributeWheresRef[$column][] = $values;
 
         return $this;
     }
