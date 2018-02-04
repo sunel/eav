@@ -270,6 +270,6 @@ class Complier
 
     protected function collectAttributes()
     {
-        return $this->entity->eavAttributes();
+        return $this->entity->attributes();
     }
 }

@@ -228,7 +228,7 @@ class Attribute extends Model
     public function optionValues()
     {
         return $this->hasMany(AttributeOption::class, 'attribute_id');
-    }        
+    }
 
     /**
      * Retrieve entity instance

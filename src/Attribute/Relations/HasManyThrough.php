@@ -16,7 +16,7 @@ class HasManyThrough extends Relation
      */
     protected function getKeys(array $models, $key = null)
     {
-        return collect($models)->filter(function($value) {
+        return collect($models)->filter(function ($value) {
             return $this->canRelate($value);
         })->map(function ($value) use ($key) {
             return $key ? $value->getAttribute($key) : $value->getKey();
@@ -60,14 +60,15 @@ class HasManyThrough extends Relation
             if ($this->canRelate($model)) {
                 if (isset($dictionary[$key = $model->getAttribute($this->localKey)])) {
                     $model->setRelation(
-                        $relation, $this->related->newCollection($dictionary[$key])
+                        $relation,
+                        $this->related->newCollection($dictionary[$key])
                     );
                 }
             }
         }
 
         return $models;
-    }    
+    }
     
     private function canRelate($model)
     {

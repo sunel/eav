@@ -52,7 +52,7 @@ class Builder extends QueryBuilder
         Grammar $grammar = null,
         Processor $processor = null,
         Entity $baseEntity = null
-    ) {        
+    ) {
         $this->baseEntity = $baseEntity;
         parent::__construct($connection, $grammar, $processor);
     }
@@ -144,7 +144,7 @@ class Builder extends QueryBuilder
             return;
         }
 
-        $loadedAttributes = null;    
+        $loadedAttributes = null;
         $columns = $this->columns;
         if ($columns == ['attr.*'] || $columns == 'attr.*') {
             $loadedAttributes = $this->loadAttributes();
@@ -162,7 +162,7 @@ class Builder extends QueryBuilder
                 $columns = ["{$this->from}.*"];
             } else {
                 $orgColumns = collect((array) $columns)->mapToGroups(function ($item, $key) {
-                    if(is_a($item, Expression::class)) {
+                    if (is_a($item, Expression::class)) {
                         return ['expression' => $item];
                     } else {
                         return ['columns' => $item];
@@ -182,9 +182,9 @@ class Builder extends QueryBuilder
                         }
                     });
 
-                if($expression = $orgColumns->get('expression')) {
+                if ($expression = $orgColumns->get('expression')) {
                     $columns = $expression->merge($columns)->all();
-                }               
+                }
             }
         }
         
