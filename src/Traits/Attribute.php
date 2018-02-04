@@ -6,30 +6,31 @@ use Eav\Attribute\Collection;
 
 trait Attribute
 {
-    protected $attributesCollection = null;
+    protected static $attributesCollection = null;
     
-    protected $attributesCollectionKeys = [];
+    protected static $attributesCollectionKeys = [];
         
     public function loadAttributes($attributes = [], $static = false, $required = false)
     {
         $attributes = array_unique($attributes);
 
-        $alreadyLoadedAttkeys = array_intersect($this->attributesCollectionKeys, $attributes);
+        $alreadyLoadedAttkeys = array_intersect(static::$attributesCollectionKeys, $attributes);
         
         if (count($alreadyLoadedAttkeys) && count($alreadyLoadedAttkeys) == count($attributes)) {
-            return $this->attributesCollection->intersectKeys($attributes);
+            return static::$attributesCollection->intersectKeys($attributes);
         } elseif (count($alreadyLoadedAttkeys) && count($alreadyLoadedAttkeys) < count($attributes)) {
-            $newAttkeys = array_diff($attributes, $this->attributesCollectionKeys);
+            $newAttkeys = array_diff($attributes, static::$attributesCollectionKeys);
             $loadedAttributes = $this->fetchAttributes($newAttkeys, $static);
 
-            $this->attributesCollection = $this->attributesCollection->merge($loadedAttributes);
-            $loadedAttributes = $this->attributesCollection->intersectKeys($attributes);
+            static::$attributesCollection = static::$attributesCollection->merge($loadedAttributes);
+
+            $loadedAttributes = static::$attributesCollection->intersectKeys($attributes);
         } else {
             $loadedAttributes = $this->fetchAttributes($attributes, $static, $required);
-            $this->attributesCollection = $loadedAttributes;
+            static::$attributesCollection = $loadedAttributes;
         }
         
-        $this->attributesCollectionKeys = array_merge($this->attributesCollectionKeys, $loadedAttributes->code()->toArray());
+        static::$attributesCollectionKeys = array_merge(static::$attributesCollectionKeys, $loadedAttributes->code()->toArray());
                 
         return $loadedAttributes;
     }
@@ -55,11 +56,6 @@ trait Attribute
         return $loadedAttributes;
     }
     
-    public function extractAttributes($columns = null)
-    {
-        return [['*'], $this->getEavTableAttribute($columns)];
-    }
-    
     public function getMainTableAttribute($loadedAttributes)
     {
         $mainTableAttributeCollection = $loadedAttributes->filter(function ($attribute) {
@@ -72,23 +68,5 @@ trait Attribute
         $mainTableAttribute[] = 'attribute_set_id';
         
         return $mainTableAttribute;
-    }
-    
-    protected function getEavTableAttribute($columns)
-    {
-        $loadedAttributes = $this->loadAttributes();
-
-        $eavTableAttributeCollection = $loadedAttributes->filter(function ($attribute) use ($columns) {
-            if (!$attribute->isStatic() && ($columns == null || in_array($attribute->getAttributeCode(), $columns))) {
-                return true;
-            }
-            return false;
-        });
-        
-        /*$eavTableAttribute = $eavTableAttributeCollection->map(function($attribute) {
-            return $attribute->getAttributeCode();
-        })->toArray();*/
-        
-        return $eavTableAttributeCollection;
     }
 }
