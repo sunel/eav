@@ -15,6 +15,9 @@ Entity–attribute–value model (EAV) is a data model to encode, in a space-eff
 * In EAV model the entity data is more fragmented and so selecting an entire entity record requires multiple table joins. [Piss Check this ](#flat)
 
 
+| [Usage](#usage)| [Inserting & Updating Entity](#inserting--updating-entity)| Cool  |
+| -------------- | --------------| ------|
+
 ## Installation
 
 Via [composer](http://getcomposer.org):
@@ -23,12 +26,90 @@ Via [composer](http://getcomposer.org):
 $ composer require sunel/eav
 ```
 
+You'll need to register the service provider, in your `config/app.php`:
+
+```php
+'providers' => [
+	...
+	Eav\Providers\LaravelServiceProvider::class,
+]
+```
+
+## Usage
+
+To create a [Entity](#entity)
+
+```bash
+$ php artisan eav:make:entity product \\App\\Products 
+```
+
+Here ```product``` is the entity code and ```\\App\\Products``` is the model related to the entity.
+
+This will create the ```Products``` Model file and the migration for the entity [ER](#er-diagram-for-entity)
+
+
+To create a [Attribute](#attribute)
+
+```bash
+$ php artisan eav:make:attribute sku,name,search,description product 
+```
+
+Here ```name,sku,upc,description,search``` are the attributes that needs to be added to  ```product``` entity.
+
+This is will create the migration that is needed to create the attibute and map it to the entity.
+
+
+Now run the migration
+
+```bash
+$ php artisan migrate
+```
+
+
+## Inserting & Updating Entity
+
+
+#### Insert
+
+```php
+
+use App\Products;
+
+Products::create([
+    'name' => 'Flamethrower',
+    'sku'  => '1HJK92',
+    'upc'  => 'SHNDUU451888',
+    'description' => 'Not a Flamethrower',
+    'search' => 1
+]);
+
+```
+
+#### Update
+
+
+```php
+
+use App\Products;
+
+$product = Products::find(1);
+
+$product->name = 'Not a Flamethrower';
+
+$product->save();
+
+```
+
 
 ## EAV Concepts
 
 ### Entity
 
 ### Attribute
+
+#### Attribute Set
+
+#### Attribute group 
 
 ### Value
 
