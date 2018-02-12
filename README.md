@@ -15,7 +15,7 @@ Entity–attribute–value model (EAV) is a data model to encode, in a space-eff
 * In EAV model the entity data is more fragmented and so selecting an entire entity record requires multiple table joins. [Piss Check this ](#flat)
 
 
-| [Usage](#usage)| [Inserting & Updating Entity](#inserting--updating-entity)| Cool  |
+| [Usage](#usage)| [Inserting & Updating Entity](#inserting--updating-entity)| [Retrieving Models](#retrieving-models)|
 | -------------- | --------------| ------|
 
 ## Installation
@@ -100,12 +100,83 @@ $product->save();
 
 ```
 
+#### Retrieving Models
+
+You are ready to start retrieving data from your database. Think of each Eav model as a Eloquent model.
+
+```php
+
+use App\Products;
+
+$product = Products::all();
+
+```
+
+In the example above, will retrieve data only from the entity table. Why? Retrieving all the attributes for the entity is a expensive operation.
+
+
+```php
+$product = Products::all(['attr.*']);
+```
+
+Above will retrieve data containing all the attributes value for the entity.
+
+```php
+$product = Products::all(['upc','color']);
+```
+
+Above will retrieve data containing only ```'upc'``` & ```'color'```.
+
+```php
+$product = Products::all(['*', 'upc', 'color']);
+```
+
+Above will retrieve data from the entity table and also ```'upc'``` & ```'color'```.
+
+```php
+$product = Products::all(['id', 'upc', 'color']);
+```
+
+You can also select any field from the main entity table as shown in above example.
+
+
 
 ## EAV Concepts
 
 ### Entity
 
 ### Attribute
+
+| [Add](#add-attribute)| [Update](#update-attribute)| [Add Options](#add-options) |
+| -------------- | --------------| ------|
+
+
+#### Add
+
+```php
+Eav\Attribute::add([
+    'attribute_code' => 'status',
+    'entity_code' => 'product',
+    'backend_class' => null,
+    'backend_type' => 'int',
+    'backend_table' =>  null,
+    'frontend_class' =>  null,
+    'frontend_type' => 'select',
+    'frontend_label' => 'Status',
+    'source_class' =>  Eav\Attribute\Source\Boolean::class,
+    'default_value' => 0,
+    'is_required' => 0,
+    'required_validate_class' =>  null
+]);
+
+Eav\EntityAttribute::map([
+    'attribute_code' => 'status',
+    'entity_code' => 'product',
+    'attribute_set' => 'Default',
+    'attribute_group' => 'General'
+]);
+```
+
 
 #### Attribute Set
 
