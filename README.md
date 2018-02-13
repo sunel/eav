@@ -15,8 +15,8 @@ Entity–attribute–value model (EAV) is a data model to encode, in a space-eff
 * In EAV model the entity data is more fragmented and so selecting an entire entity record requires multiple table joins. [Piss Check this ](#flat)
 
 
-| [Usage](#usage)| [Inserting & Updating Entity](#inserting--updating-entity)| [Retrieving Models](#retrieving-models)|
-| -------------- | --------------| ------|
+| [Usage](#usage)| [Inserting & Updating Entity](#inserting--updating-entity)| [Retrieving Models](#retrieving-models)| [Where Clauses](#where-clauses)|
+| -------------- | --------------| ------|------|
 
 ## Installation
 
@@ -100,12 +100,11 @@ $product->save();
 
 ```
 
-#### Retrieving Models
+## Retrieving Models
 
 You are ready to start retrieving data from your database. Think of each Eav model as a Eloquent model.
 
 ```php
-
 use App\Products;
 
 $product = Products::all();
@@ -138,6 +137,51 @@ $product = Products::all(['id', 'upc', 'color']);
 ```
 
 You can also select any field from the main entity table as shown in above example.
+
+
+## Where Clauses
+
+#### Simple Where Clauses
+
+You may use the `whereAttribute` method on a query builder instance to add `where` clauses to the query. This has the same arguments as the `where`.
+
+```php
+$product = Products::whereAttribute('upc', 'SHNDUU451885')->get();
+```
+
+Of course, you may use a variety of other operators when writing a `whereAttribute` clause ```>=, <> , =<, like ```.
+
+
+#### Or Statements
+
+```php
+$product = Products::whereAttribute('upc', 'SHNDUU451885')
+		   ->orWhereAttribute('color', 'like', 'Green%')
+           ->get();
+```
+
+add `or` clauses to the query.
+
+
+#### Additional Where Clauses
+
+**whereBetween**
+
+**whereBetweenAttribute / orWhereBetweenAttribute**
+
+**whereNotBetweenAttribute / orWhereNotBetweenAttribute**
+
+**whereInAttribute / orWhereInAttribute**
+
+**whereNotInAttribute / orWhereNotInAttribute**
+
+**whereNullAttribute / orWhereNullAttribute**
+
+**whereNotNullAttribute / orWhereNotNullAttribute**
+
+**whereDateAttribute / whereDayAttribute / whereMonthAttribute / whereYearAttribute**
+
+**orderByAttribute**
 
 
 
