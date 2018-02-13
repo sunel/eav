@@ -176,4 +176,13 @@ trait QueryBuilder
             $query->whereYear("{$this->getAttributeCode()}_attr.value", $binding['operator'], $binding['value'], $binding['boolean']);
         }
     }
+
+    protected function whereTime($query, $binding)
+    {
+        if ($this->isStatic()) {
+            $query->whereTime("{$query->from}.{$binding['column']}", $binding['operator'], $binding['value'], $binding['boolean']);
+        } else {
+            $query->whereTime("{$this->getAttributeCode()}_attr.value", $binding['operator'], $binding['value'], $binding['boolean']);
+        }
+    }
 }
