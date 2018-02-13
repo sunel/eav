@@ -165,24 +165,54 @@ add `or` clauses to the query.
 
 #### Additional Where Clauses
 
-**whereBetween**
-
 **whereBetweenAttribute / orWhereBetweenAttribute**
+
+The `whereBetweenAttribute` method verifies that a attribute's value is between two values
 
 **whereNotBetweenAttribute / orWhereNotBetweenAttribute**
 
+The `whereNotBetweenAttribute` method verifies that a attribute's value lies outside of two values
+
 **whereInAttribute / orWhereInAttribute**
+
+The `whereInAttribute` method verifies that a given attribute's value is contained within the given array
 
 **whereNotInAttribute / orWhereNotInAttribute**
 
+The `whereNotInAttribute` method verifies that the given attribute's value is **not** contained in the given array
+
 **whereNullAttribute / orWhereNullAttribute**
+
+The `whereNullAttribute` method verifies that the value of the given attribute is `NULL`
 
 **whereNotNullAttribute / orWhereNotNullAttribute**
 
-**whereDateAttribute / whereDayAttribute / whereMonthAttribute / whereYearAttribute**
+The `whereNotNullAttribute` method verifies that the attribute's value is not `NULL`
+
+**whereDateAttribute/ orWhereDateAttribute / whereDayAttribute / whereMonthAttribute / whereYearAttribute / whereTimeAttribute / orWhereTimeAttribute**
+
+The `whereDateAttribute` method may be used to compare a attribute's value against a date
+
+The `whereMonthAttribute` method may be used to compare a attribute's value against a specific month of a year
+
+The `whereDayAttribute` method may be used to compare a attribute's value against a specific day of a month
+
+The `whereYearAttribute` method may be used to compare a attribute's value against a specific year
+
+The `whereTimeAttribute` method may be used to compare a attribute's value against a specific time
+
+**whereNestedAttribute**
 
 **orderByAttribute**
 
+The `orderByAttribute` method allows you to sort the result of the query by a given attribute. 
+
+```php
+$search = Products::whereAttribute('upc', 'like', 'SHNDUU%')
+	->whereAttribute('color', 'like', 'Green%')
+	->whereAttribute('size', '=', 's')
+	->select(['*','color']);
+```
 
 
 ## EAV Concepts
