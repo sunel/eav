@@ -1,3 +1,5 @@
+> WIP
+
 ![EAV](https://i.imgur.com/FmFQX8E.png)
 
 Entity–attribute–value model (EAV) is a data model to encode, in a space-efficient manner, entities where the number of attributes (properties, parameters) that can be used to describe them is potentially vast, but the number that will actually apply to a given entity is relatively modest.
@@ -14,6 +16,8 @@ Entity–attribute–value model (EAV) is a data model to encode, in a space-eff
 
 * In EAV model the entity data is more fragmented and so selecting an entire entity record requires multiple table joins. [Piss Check this ](#flat)
 
+
+___
 
 | [Usage](#usage)| [Inserting & Updating Entity](#inserting--updating-entity)| [Retrieving Models](#retrieving-models)| [Where Clauses](#where-clauses)|
 | -------------- | --------------| ------|------|
@@ -47,6 +51,8 @@ Here ```product``` is the entity code and ```\\App\\Products``` is the model rel
 
 This will create the ```Products``` Model file and the migration for the entity [ER](#er-diagram-for-entity)
 
+The migration contains schema for creating different data type like `varchar`, `text`, `int`, `decimal`, `datetime`. We will aslo have schema to create default [attribute set](#attribute-set) `Default` and [attribute group](#attribute-group) `General`.
+
 
 To create a [Attribute](#attribute)
 
@@ -58,6 +64,7 @@ Here ```name,sku,upc,description,search``` are the attributes that needs to be a
 
 This is will create the migration that is needed to create the attibute and map it to the entity.
 
+> Refer [Add Attribute](#add-attribute) for more info.
 
 Now run the migration
 
@@ -72,7 +79,6 @@ $ php artisan migrate
 #### Insert
 
 ```php
-
 use App\Products;
 
 Products::create([
@@ -89,7 +95,6 @@ Products::create([
 
 
 ```php
-
 use App\Products;
 
 $product = Products::find(1);
@@ -189,7 +194,7 @@ The `whereNullAttribute` method verifies that the value of the given attribute i
 
 The `whereNotNullAttribute` method verifies that the attribute's value is not `NULL`
 
-**whereDateAttribute/ orWhereDateAttribute / whereDayAttribute / whereMonthAttribute / whereYearAttribute / whereTimeAttribute / orWhereTimeAttribute**
+**whereDateAttribute / orWhereDateAttribute / whereDayAttribute / whereMonthAttribute / whereYearAttribute / whereTimeAttribute / orWhereTimeAttribute**
 
 The `whereDateAttribute` method may be used to compare a attribute's value against a date
 
@@ -219,13 +224,46 @@ $search = Products::whereAttribute('upc', 'like', 'SHNDUU%')
 
 ### Entity
 
+Entity actually refers to data item. For example product.
+
+To Create a Entity and store data, we need to create a table structure as shown in this [ER](#er-diagram-for-entity) diagram and to store values to these tables we need to create a model that does it.
+
+This package provides commands that will simplify the process of creating tables and models.
+
+
+```bash
+$ php artisan eav:make:entity [entity_code] [entity_class_name] 
+```
+The above command will create both the migration for the entity and also the entity model file.
+
+Here two migration files will be created `main table` and `entity data type table`. The `main table` is the master table which hold the primary key for the entity and also few meta-data. 
+
+You can also add additional columns to this `main table`, these columns are refered as [static](#static) attibutes.
+
+
+```bash
+$ php artisan eav:make:model [entity_class_name] -e [entity_code]
+```
+
+The above command will create entity model file for the given entity code. This model is just a eloquent model with additional functions to support EAV.
+
+
 ### Attribute
+
+Attribute refers to the different attributes of the Entity. Like for example product have different attributes like color, size, price, etc.
 
 | [Add](#add-attribute)| [Update](#update-attribute)| [Add Options](#add-options) |
 | -------------- | --------------| ------|
 
 
+<a name="add-attribute"></a>
 #### Add
+
+```bash
+$ php artisan eav:make:attribute [n,number,of,attibutes] [entity_code] 
+```
+
+The above command will create the migration that is needed to create the attibutes and also map it to the given entity. If you check the mogration files it will be have code that is similiar to the code given below.
 
 ```php
 Eav\Attribute::add([
@@ -251,12 +289,19 @@ Eav\EntityAttribute::map([
 ]);
 ```
 
+The first part is one which added the attribute to the system and the second one will map the attribute to the entity and also assing to a set and group.
+
+
+
+
 
 #### Attribute Set
 
 #### Attribute group 
 
 ### Value
+
+Value refers to the actual value of the attribute of the entity. Like color has value red, price has value $25, etc
 
 
 
