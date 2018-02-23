@@ -161,8 +161,8 @@ Of course, you may use a variety of other operators when writing a `whereAttribu
 
 ```php
 $product = Products::whereAttribute('upc', 'SHNDUU451885')
-		   ->orWhereAttribute('color', 'like', 'Green%')
-           ->get();
+    	->orWhereAttribute('color', 'like', 'Green%')
+        ->get();
 ```
 
 add `or` clauses to the query.
@@ -228,15 +228,14 @@ Entity actually refers to data item. For example product.
 
 To create a Entity and store data, we need to create a table structure as shown in this [ER](#er-diagram-for-entity) diagram and to store values to these tables we need to create a model that does it.
 
-This package provides commands that will simplify the process of creating tables and models.
-
+This package provides artisan commands that will simplify the process of creating tables and models.
 
 ```bash
 $ php artisan eav:make:entity [entity_code] [entity_class_name] 
 ```
-The above command will create both the migration for the entity and also the entity model file.
+The above command will create both the migration and model for the entity.
 
-Here two migration files will be created `main table` and `entity data type table`. The `main table` is the master table which hold the primary key for the entity and also few meta-data. 
+Two migrations will be created `main table` and `entity data type table`. The `main table` is the master table which hold the primary key, meta-data for the entity. 
 
 You can also add additional columns to this `main table`, these columns are refered as [static](#static) attibutes.
 
@@ -248,22 +247,47 @@ $ php artisan eav:make:model [entity_class_name] -e [entity_code]
 The above command will create entity model file for the given entity code. This is just a eloquent model with additional logics to support EAV.
 
 
+```php
+namespace App;
+
+use Eav\Model;
+
+class Products extends Model
+{
+    const ENTITY  = 'product';
+
+    //
+}
+```
+
+To view the Entity model 
+
+```php
+$product = Products::find(1);
+
+# instance of Eav\Entity
+
+$product->baseEntity;
+```
+
 ### Attribute
 
-Attribute refers to the different attributes of the Entity. Like for example product have different attributes like color, size, price, etc.
+Refers to the different attributes of the Entity. Like for example product have different attributes like color, size, price, etc.
 
-| [Add](#add-attribute)| [Update](#update-attribute)| [Add Options](#add-options) |
-| -------------- | --------------| ------|
+| [Add](#add-attribute)| [Add Options](#add-options) |
+| -------------------- | --------------------------- |
 
 
 <a name="add-attribute"></a>
 #### Add
 
+To create a migration, use the `eav:make:attribute`
+
 ```bash
 $ php artisan eav:make:attribute [n,number,of,attibutes] [entity_code] 
 ```
 
-The above command will create the migration that is needed to create the attibutes and also map it to the given entity. If you check the migration file it will have code that is similiar to the code given below.
+This will create the attibutes and also map it to the given entity. Once the code is genrated you need to update `backend_type`, `frontend_type` for the attributes. If you check the migration file it will have code that is similar to the code given below.
 
 ```php
 Eav\Attribute::add([
@@ -289,13 +313,11 @@ Eav\EntityAttribute::map([
 ]);
 ```
 
-The first part is one which added the attribute to the system and the second one will map the attribute to the entity and also assing to a set and group.
-
-Once the code  is genrated you need to update `backend_type`, `frontend_type` for the attributes.
+The `Eav\Attribute::add` add's the attribute to the system and `Eav\EntityAttribute::map` will map the attribute to the entity and also assign to a set and group.
 
 
 | Field | Description |
-| ------| -------|
+| ------| ------- |
 | attribute_code| Specify the code for the attribute.|
 | entity_code| Specify the entity code for the attibute.|
 | backend_class| When specified will be used to add aditional control to the attribute when it intracts with the database.|
@@ -307,22 +329,96 @@ Once the code  is genrated you need to update `backend_type`, `frontend_type` fo
 | source_class|  When specified will be used to populate a field’s default options, if the frontend_type is `select`.|
 | default_value| Specify the default value that will stored if not given.|
 | is_required| If enabled, value needs to given for the attribute.|
-| required_validate_class| Custome validate rules.|
+| required_validate_class| Custom validation rules.|
 
 
+
+```php
+# To retrive the attributes related to a entity
+
+$entity = Eav\Entity::findByCode('code');
+
+$attributes = $entity->attributes;
+
+````
 
 #### Attribute Set
 
+Its used as a template for the enity. The attribute set determines the fields that are available during data entry, and the values that appear when retrieved.
+
+`Default` is the set that is create initialy.
+
+A set is created while mapping a attribute to a entity. If a set already exists it will be used or else created. Attribute set will be unique for entity. A Entity can have many set's.
+
+To create a new set
+
+```php
+Eav\AttributeSet::create([
+    'attribute_set_name' => $code,
+    'entity_id' => $entity->entity_id,
+]);
+```
+
+```php
+# To retrive the set related to a entity
+
+$entity = Eav\Entity::findByCode('code');
+
+$sets = $entity->attributeSet;
+
+# To retrieve the attributes related to the set.
+
+$sets->first()->attributes;
+
+```
+
 #### Attribute group
+
+The attributes are organized into groups.
+
+`General` is the set that is create initialy.
+
+To create a new set
+
+```php
+Eav\AttributeGroup::create([
+    'attribute_group_name' => $code,
+    'attribute_set_id' => $attributeSet->attribute_set_id,
+]);
+```
+
+```php
+# To retrieve the group related to the set.
+
+$groups = $sets->first()->attributeGroup;
+
+# To retrieve the attributes related to the group.
+
+$groups->first()->attributes
+
+```
+
 
 #### Static Attribute
 
+Static attributes are attributes stored in the main table of an entity. Static attributes are always loaded and are useful especially if you want to retrieve information quickly or to optimize lookup of data.
+
+If you want to use static attributes, you have to do 2 things in your migration script. First, you need to add a column to the main entity table, with the correct column definition. Next, you need to add the attribute using the `Eav\Attribute::add` method, and define your attribute as `'backend_type' => 'static'`.  
+
 ### Value
 
-Value refers to the actual value of the attribute of the entity. Like color has value red, price has value $25, etc
+Value refers to the actual value of the attribute of the entity. Like color has value red, price has value $25, etc.
+
+The value are stored in tables corresponding to the data types such as `product_varchar, product_int, product_decimal, product_datetime, product_text`.
 
 
 ### Flat Table
+
+Flat tables on the other hand means, storing all data in a single table instead of multiple tables. So this reduces the number of queries required and hence increases the speed.
+
+So all attributes of an EAV entity become column name of a single table and all attribute data relating to an entity is stored in a single table.
+
+Flat table can be activated by
 
 ```bash
 $ php artisan eav:compile:entity [entity_code]
