@@ -14,7 +14,7 @@ Entity–attribute–value model (EAV) is a data model to encode, in a space-eff
 
 ## Limitation of EAV
 
-* In EAV model the entity data is more fragmented and so selecting an entire entity record requires multiple table joins. [Piss Check this ](#flat)
+* In EAV model the entity data is more fragmented and so selecting an entire entity record requires multiple table joins. [Piss Check this ](#flat-table)
 
 
 ___
@@ -170,47 +170,47 @@ add `or` clauses to the query.
 
 #### Additional Where Clauses
 
-**whereBetweenAttribute / orWhereBetweenAttribute**
+- **whereBetweenAttribute / orWhereBetweenAttribute**
 
-The `whereBetweenAttribute` method verifies that a attribute's value is between two values
+> The `whereBetweenAttribute` method verifies that a attribute's value is between two values
 
-**whereNotBetweenAttribute / orWhereNotBetweenAttribute**
+- **whereNotBetweenAttribute / orWhereNotBetweenAttribute**
 
-The `whereNotBetweenAttribute` method verifies that a attribute's value lies outside of two values
+> The `whereNotBetweenAttribute` method verifies that a attribute's value lies outside of two values
 
-**whereInAttribute / orWhereInAttribute**
+- **whereInAttribute / orWhereInAttribute**
 
-The `whereInAttribute` method verifies that a given attribute's value is contained within the given array
+> The `whereInAttribute` method verifies that a given attribute's value is contained within the given array
 
-**whereNotInAttribute / orWhereNotInAttribute**
+- **whereNotInAttribute / orWhereNotInAttribute**
 
-The `whereNotInAttribute` method verifies that the given attribute's value is **not** contained in the given array
+> The `whereNotInAttribute` method verifies that the given attribute's value is **not** contained in the given array
 
-**whereNullAttribute / orWhereNullAttribute**
+- **whereNullAttribute / orWhereNullAttribute**
 
-The `whereNullAttribute` method verifies that the value of the given attribute is `NULL`
+> The `whereNullAttribute` method verifies that the value of the given attribute is `NULL`
 
-**whereNotNullAttribute / orWhereNotNullAttribute**
+- **whereNotNullAttribute / orWhereNotNullAttribute**
 
-The `whereNotNullAttribute` method verifies that the attribute's value is not `NULL`
+> The `whereNotNullAttribute` method verifies that the attribute's value is not `NULL`
 
-**whereDateAttribute / orWhereDateAttribute / whereDayAttribute / whereMonthAttribute / whereYearAttribute / whereTimeAttribute / orWhereTimeAttribute**
+- **whereDateAttribute / orWhereDateAttribute / whereDayAttribute / whereMonthAttribute / whereYearAttribute / whereTimeAttribute / orWhereTimeAttribute**
 
-The `whereDateAttribute` method may be used to compare a attribute's value against a date
+> The `whereDateAttribute` method may be used to compare a attribute's value against a date
 
-The `whereMonthAttribute` method may be used to compare a attribute's value against a specific month of a year
+> The `whereMonthAttribute` method may be used to compare a attribute's value against a specific month of a year
 
-The `whereDayAttribute` method may be used to compare a attribute's value against a specific day of a month
+> The `whereDayAttribute` method may be used to compare a attribute's value against a specific day of a month
 
-The `whereYearAttribute` method may be used to compare a attribute's value against a specific year
+> The `whereYearAttribute` method may be used to compare a attribute's value against a specific year
 
-The `whereTimeAttribute` method may be used to compare a attribute's value against a specific time
+> The `whereTimeAttribute` method may be used to compare a attribute's value against a specific time
 
-**whereNestedAttribute**
+- **whereNestedAttribute**
 
-**orderByAttribute**
+- **orderByAttribute**
 
-The `orderByAttribute` method allows you to sort the result of the query by a given attribute. 
+> The `orderByAttribute` method allows you to sort the result of the query by a given attribute. 
 
 ```php
 $search = Products::whereAttribute('upc', 'like', 'SHNDUU%')
@@ -226,7 +226,7 @@ $search = Products::whereAttribute('upc', 'like', 'SHNDUU%')
 
 Entity actually refers to data item. For example product.
 
-To Create a Entity and store data, we need to create a table structure as shown in this [ER](#er-diagram-for-entity) diagram and to store values to these tables we need to create a model that does it.
+To create a Entity and store data, we need to create a table structure as shown in this [ER](#er-diagram-for-entity) diagram and to store values to these tables we need to create a model that does it.
 
 This package provides commands that will simplify the process of creating tables and models.
 
@@ -245,7 +245,7 @@ You can also add additional columns to this `main table`, these columns are refe
 $ php artisan eav:make:model [entity_class_name] -e [entity_code]
 ```
 
-The above command will create entity model file for the given entity code. This model is just a eloquent model with additional functions to support EAV.
+The above command will create entity model file for the given entity code. This is just a eloquent model with additional logics to support EAV.
 
 
 ### Attribute
@@ -263,7 +263,7 @@ Attribute refers to the different attributes of the Entity. Like for example pro
 $ php artisan eav:make:attribute [n,number,of,attibutes] [entity_code] 
 ```
 
-The above command will create the migration that is needed to create the attibutes and also map it to the given entity. If you check the mogration files it will be have code that is similiar to the code given below.
+The above command will create the migration that is needed to create the attibutes and also map it to the given entity. If you check the migration file it will have code that is similiar to the code given below.
 
 ```php
 Eav\Attribute::add([
@@ -291,19 +291,42 @@ Eav\EntityAttribute::map([
 
 The first part is one which added the attribute to the system and the second one will map the attribute to the entity and also assing to a set and group.
 
+Once the code  is genrated you need to update `backend_type`, `frontend_type` for the attributes.
 
+
+| Field | Description |
+| ------| -------|
+| attribute_code| Specify the code for the attribute.|
+| entity_code| Specify the entity code for the attibute.|
+| backend_class| When specified will be used to add aditional control to the attribute when it intracts with the database.|
+| backend_type| Specify the column type. Supports `int`, `varchar`, `text`, `datetime`, `decimal`.|
+| backend_table| When specified it will store the data to the given.|
+| frontend_class| When specified will be used to add aditional control to the attribute when is used in the frontend.|
+| frontend_type| Specify the type of html field.|
+| frontend_label| Specify the label.|
+| source_class|  When specified will be used to populate a field’s default options, if the frontend_type is `select`.|
+| default_value| Specify the default value that will stored if not given.|
+| is_required| If enabled, value needs to given for the attribute.|
+| required_validate_class| Custome validate rules.|
 
 
 
 #### Attribute Set
 
-#### Attribute group 
+#### Attribute group
+
+#### Static Attribute
 
 ### Value
 
 Value refers to the actual value of the attribute of the entity. Like color has value red, price has value $25, etc
 
 
+### Flat Table
+
+```bash
+$ php artisan eav:compile:entity [entity_code]
+```
 
 ## ER Diagram for Core EAV 
 ![ER](https://i.imgur.com/O5O5egA.png)
