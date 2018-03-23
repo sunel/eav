@@ -21,6 +21,6 @@ class AttributeSet extends Model
     
     public function attributeGroup()
     {
-        return $this->hasMany(AttributeGroup::class);
+        return $this->hasMany(AttributeGroup::class, 'attribute_set_id');
     }
 }
