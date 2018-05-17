@@ -64,6 +64,8 @@ Here ```name,sku,upc,description,search``` are the attributes that needs to be a
 
 This is will create the migration that is needed to create the attibute and map it to the entity. **YOU NEED TO EDIT THE ATTRIBUTES INFO IN THE MIGRATION**
 
+If the type are left empty it is considered as [Static Attributes](#static-attribute)
+
 > Refer [Add Attribute](#add-attribute) for more info.
 
 Now run the migration
