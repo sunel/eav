@@ -62,7 +62,7 @@ $ php artisan eav:make:attribute sku,name,search,description product
 
 Here ```name,sku,upc,description,search``` are the attributes that needs to be added to  ```product``` entity.
 
-This is will create the migration that is needed to create the attibute and map it to the entity.
+This is will create the migration that is needed to create the attibute and map it to the entity. **YOU NEED TO EDIT THE ATTRIBUTES INFO IN THE MIGRATION**
 
 > Refer [Add Attribute](#add-attribute) for more info.
 
