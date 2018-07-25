@@ -5,7 +5,7 @@
     "license": "MIT",
     "require": {
         "php": ">=7.0.0",
-        "illuminate/database": "5.5.*"
+        "illuminate/database": "^5.5"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
