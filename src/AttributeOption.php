@@ -11,11 +11,22 @@ class AttributeOption extends Model
     
     public $timestamps = false;
     
+    /**
+     * @{inheriteDoc}
+     */
     protected $fillable = [
         'attribute_id', 'label', 'value'
     ];
     
-    public static function add(Attribute $attribute, $options)
+    /**
+     * Add options for the attribute.
+     * 
+     * @param Attribute $attribute
+     * @param array     $options
+     *
+     * @return void
+     */
+    public static function add(Attribute $attribute, array $options)
     {
         foreach ($options as $value => $label) {
             $option = static::create([
@@ -23,6 +34,27 @@ class AttributeOption extends Model
                 'label' => $label,
                 'value' => $value
             ]);
+        }
+    }
+
+    /**
+     * Remove options for the attribute.
+     * 
+     * @param Attribute $attribute
+     * @param array     $options
+     *
+     * @return void
+     */
+    public static function remove(Attribute $attribute, array $options)
+    {
+        $instance = new static;        
+        
+        foreach ($options as $value => $label) {
+            $instance->where([
+                'attribute_id' => $attribute->attribute_id,
+                'label' => $label,
+                'value' => $value
+            ])->delete();
         }
     }
 
