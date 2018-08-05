@@ -1,0 +1,18 @@
+			
+		Schema::create('DummyTable_FIELDTYPE', function (Blueprint $table) {
+            $table->increments('value_id')->comment('Value ID');
+            $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
+            $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
+            $table->integer('entity_id')->unsigned()->default(0)->comment('Entity ID');
+            
+            $table->FIELDTYPE('value')->default(NULL)->nullable()->comment('Value');
+            
+            $table->foreign('entity_id')
+            	  ->references('id')->on('DummyTables')
+				  ->onDelete('cascade');
+            
+            $table->unique(['entity_id','attribute_id']);
+			$table->index('attribute_id');
+			$table->index('entity_id');        	  
+        });
+	        

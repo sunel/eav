@@ -18,90 +18,7 @@ class DummyClass extends Migration
      */
     public function up()
     {
-    	Schema::create('DummyTable_datetime', function (Blueprint $table) {
-            $table->increments('value_id')->comment('Value ID');
-            $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
-            $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
-            $table->integer('entity_id')->unsigned()->default(0)->comment('Entity ID');
-            
-            $table->dateTime('value')->default(NULL)->nullable()->comment('Value');
-            
-            $table->foreign('entity_id')
-            	  ->references('id')->on('DummyTables')
-				  ->onDelete('cascade');
-            
-            $table->unique(['entity_id','attribute_id']);
-			$table->index('attribute_id');
-			$table->index('entity_id');        	  
-        });
-        
-        Schema::create('DummyTable_decimal', function (Blueprint $table) {
-            $table->increments('value_id')->comment('Value ID');
-            $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
-            $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
-            $table->integer('entity_id')->unsigned()->default(0)->comment('Entity ID');
-            
-            $table->decimal('value', 12 , 4)->default(NULL)->nullable()->comment('Value');
-            
-            $table->foreign('entity_id')
-            	  ->references('id')->on('DummyTables')
-				  ->onDelete('cascade');
-            
-            $table->unique(['entity_id','attribute_id']);
-			$table->index('attribute_id');
-			$table->index('entity_id');        	  
-        });
-        
-        Schema::create('DummyTable_int', function (Blueprint $table) {
-            $table->increments('value_id')->comment('Value ID');
-            $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
-            $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
-            $table->integer('entity_id')->unsigned()->default(0)->comment('Entity ID');
-            
-            $table->integer('value')->default(NULL)->nullable()->comment('Value');
-            
-            $table->foreign('entity_id')
-            	  ->references('id')->on('DummyTables')
-				  ->onDelete('cascade');
-            
-            $table->unique(['entity_id','attribute_id']);
-			$table->index('attribute_id');
-			$table->index('entity_id');        	  
-        });
-        
-         Schema::create('DummyTable_text', function (Blueprint $table) {
-            $table->increments('value_id')->comment('Value ID');
-            $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
-            $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
-            $table->integer('entity_id')->unsigned()->default(0)->comment('Entity ID');
-            
-            $table->text('value')->comment('Value');
-            
-            $table->foreign('entity_id')
-            	  ->references('id')->on('DummyTables')
-				  ->onDelete('cascade');
-            
-            $table->unique(['entity_id','attribute_id']);        
-			$table->index('attribute_id');
-			$table->index('entity_id');        	  
-        });
-        
-        Schema::create('DummyTable_varchar', function (Blueprint $table) {
-            $table->increments('value_id')->comment('Value ID');
-            $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
-            $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
-            $table->integer('entity_id')->unsigned()->default(0)->comment('Entity ID');
-            
-            $table->string('value')->default(NULL)->nullable()->comment('Value');
-            
-            $table->foreign('entity_id')
-            	  ->references('id')->on('DummyTables')
-				  ->onDelete('cascade');
-            
-            $table->unique(['entity_id','attribute_id']);
-			$table->index('attribute_id');
-			$table->index('entity_id');        	  
-        });
+    	UPMIGRATION
         
         $entity = Entity::create([
         	'entity_code' => 'DummyTable',
@@ -136,12 +53,7 @@ class DummyClass extends Migration
     {
         $this->removeTimeStampAttributes();
         
-    	Schema::drop('DummyTable_datetime');
-        Schema::drop('DummyTable_decimal');
-        Schema::drop('DummyTable_int');
-        Schema::drop('DummyTable_text');
-        Schema::drop('DummyTable_varchar');
-        
+    	DOWNMIGRATION        
         
         $entity = Entity::where('entity_code', '=', 'DummyTable');               
         $attributeSet = AttributeSet::where('attribute_set_name', '=', 'Default')

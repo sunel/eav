@@ -5,6 +5,7 @@ namespace Eav\Migrations;
 use Closure;
 use Illuminate\Support\Str;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Contracts\Config\Repository as Config;
 
 class EntityMigrationCreator
 {
@@ -16,6 +17,13 @@ class EntityMigrationCreator
     protected $files;
 
     /**
+     * The filesystem instance.
+     *
+     * @var \Illuminate\Contracts\Config\Repository
+     */
+    protected $config;
+
+    /**
      * The registered post create hooks.
      *
      * @var array
@@ -25,12 +33,14 @@ class EntityMigrationCreator
     /**
      * Create a new migration creator instance.
      *
-     * @param  \Illuminate\Filesystem\Filesystem  $files
+     * @param  \Illuminate\Filesystem\Filesystem        $files
+     * @param  \Illuminate\Contracts\Config\Repository  $config
      * @return void
      */
-    public function __construct(Filesystem $files)
+    public function __construct(Filesystem $files, Config $config)
     {
         $this->files = $files;
+        $this->config = $config;
     }
 
     /**
@@ -67,8 +77,6 @@ class EntityMigrationCreator
     /**
      * Get the migration stub file.
      *
-     * @param  string  $table
-     * @param  bool    $create
      * @return string
      */
     protected function getStub()
@@ -79,8 +87,6 @@ class EntityMigrationCreator
     /**
      * Get the migration stub file.
      *
-     * @param  string  $table
-     * @param  bool    $create
      * @return string
      */
     protected function getMainStub()
@@ -98,6 +104,11 @@ class EntityMigrationCreator
      */
     protected function populateStub($name, $stub, $class, $suffix='')
     {
+
+        $stub = $this->addUpMigration($this->getAttributeUpStub(), $stub);
+
+        $stub = $this->addDownMigration($this->getAttributeDownStub(), $stub);
+
         $stub = str_replace('DummyClass', $this->getClassName($name, $suffix), $stub);
 
         $stub = str_replace('DummyTable', $name, $stub);
@@ -105,6 +116,64 @@ class EntityMigrationCreator
         $stub = str_replace('DummyBaseClass', $class, $stub);
 
         return $stub;
+    }
+
+
+    /**
+     * Get the Attribute up migration stub file.
+     *
+     * @param  string  $attributeStub
+     * @param  string  $mainStub
+     * @return string
+     */
+    protected function addUpMigration($attributeStub, $mainStub) {
+
+        $fieldTypes = $this->config->get('eav.fieldTypes', []);
+
+        $stub = '';
+        foreach ($fieldTypes as $type) {
+            $stub .= str_replace('FIELDTYPE', $type, $attributeStub);      
+        }    
+
+        return str_replace('UPMIGRATION', $stub, $mainStub);       
+    }
+
+    /**
+     * Get the Attribute down migration stub file.
+     *
+     * @param  string  $attributeStub
+     * @param  string  $mainStub
+     * @return string
+     */
+    protected function addDownMigration($attributeStub, $mainStub) {
+
+        $fieldTypes = $this->config->get('eav.fieldTypes', []);
+
+        $stub = '';
+        foreach ($fieldTypes as $type) {
+            $stub .= str_replace('FIELDTYPE', $type, $attributeStub);        
+        }
+        
+        return str_replace('DOWNMIGRATION', $stub, $mainStub);       
+    }
+
+
+    /**
+     * Get the Attribute up migration stub file.
+     * @return string
+     */
+    protected function getAttributeUpStub()
+    {
+        return $this->files->get($this->getStubPath()."/attribute.type.up.migration.stub");
+    }
+
+    /**
+     * Get the Attribute down migration stub file.
+     * @return string
+     */
+    protected function getAttributeDownStub()
+    {
+        return $this->files->get($this->getStubPath()."/attribute.type.down.migration.stub");
     }
 
     /**

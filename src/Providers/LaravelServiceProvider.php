@@ -39,7 +39,7 @@ class LaravelServiceProvider extends ServiceProvider
     {
         $this->publishes([
             __DIR__.'/../../config/eav.php' => config_path('eav.php'),
-        ], 'config');
+        ], 'eav.config');
         
         $this->loadMigrationsFrom(__DIR__.'/../../database/migrations/');
     }
@@ -52,7 +52,7 @@ class LaravelServiceProvider extends ServiceProvider
     protected function registerCreator()
     {
         $this->app->singleton('eav.entity.migration.creator', function ($app) {
-            return new EntityMigrationCreator($app['files']);
+            return new EntityMigrationCreator($app['files'], $app['config']);
         });
         
         $this->app->singleton('eav.attribute.migration.creator', function ($app) {

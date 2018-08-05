@@ -76,6 +76,8 @@ After editing run the migration.
 $ php artisan migrate
 ```
 
+Thats it, you eav based model is ready now you can start doing CRUD oporations.
+
 
 ## Inserting & Updating Entity
 
@@ -325,7 +327,7 @@ The `Eav\Attribute::add` add's the attribute to the system and `Eav\EntityAttrib
 | attribute_code| Specify the code for the attribute.|
 | entity_code| Specify the entity code for the attibute.|
 | backend_class| When specified will be used to add aditional control to the attribute when it intracts with the database.|
-| backend_type| Specify the column type. Supports `int`, `varchar`, `text`, `datetime`, `decimal`.|
+| backend_type| Specify the column type. Supports (types)[#field-types].|
 | backend_table| When specified it will store the data to the given.|
 | frontend_class| When specified will be used to add aditional control to the attribute when is used in the frontend.|
 | frontend_type| Specify the type of html field.|
@@ -336,6 +338,68 @@ The `Eav\Attribute::add` add's the attribute to the system and `Eav\EntityAttrib
 | required_validate_class| Custom validation rules.|
 
 
+#### Field Types
+
+Currenlty we support the below types.
+
+```php
+
+'bigInteger', 'binary', 'boolean',
+'char', 'date', 'dateTime', 'dateTimeTz',
+'decimal', 'double', 'float', 'geometry',
+'geometryCollection', 'integer', 'ipAddress', 
+'json', 'jsonb', 'lineString', 'longText', 
+'macAddress', 'mediumInteger', 'mediumText', 
+'multiLineString', 'multiPoint', 'multiPolygon', 
+'point', 'polygon', 'smallInteger', 'string', 
+'text', 'time', 'timeTz', 'timestamp', 'timestampTz',
+'tinyInteger', 'unsignedBigInteger','unsignedBigInteger', 
+'unsignedInteger', 'unsignedMediumInteger','unsignedSmallInteger', 
+'unsignedTinyInteger', 'uuid', 'year',
+
+```
+
+By Default these fields are enabled.
+
+```php
+'fieldTypes' => [
+    'boolean', 'date', 'dateTime', 'double', 
+    'integer', 'text', 'string', 
+],
+```
+
+You can edit the the fields by publish the config
+
+```bash
+php artisan vendor:publish --tag="eav.config"
+```
+
+#### Custom Table or New Field Type
+
+To Register new Field Type or to store date in custome table you can create the Schema as follows.
+
+```php
+Schema::create('[field_type_table_name]', function (Blueprint $table) {
+    $table->increments('value_id')->comment('Value ID');
+    $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
+    $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
+    $table->integer('entity_id')->unsigned()->default(0)->comment('Entity ID');
+    
+    $table->[FILED_TYPE]('value')->nullable()->comment('Value'); // update the type
+
+    // Any additional fields
+    // ....
+
+    
+    $table->foreign('entity_id')
+          ->references('id')->on('[ENTITY]') // changes this (this is main entity table )
+          ->onDelete('cascade');
+    
+    $table->unique(['entity_id','attribute_id']);
+    $table->index('attribute_id');
+    $table->index('entity_id');           
+});
+```
 
 ```php
 # To retrive the attributes related to a entity
@@ -343,8 +407,7 @@ The `Eav\Attribute::add` add's the attribute to the system and `Eav\EntityAttrib
 $entity = Eav\Entity::findByCode('code');
 
 $attributes = $entity->attributes;
-
-````
+```
 
 #### Attribute Set
 
