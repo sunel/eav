@@ -280,8 +280,8 @@ $product->baseEntity;
 
 Refers to the different attributes of the Entity. Like for example product have different attributes like color, size, price, etc.
 
-| [Add](#add-attribute)| [Add Options](#add-options) | [Remove Options](#remove-options) |
-| -------------------- | --------------------------- | --------------------------------- |
+| [Add](#add-attribute)| [Retrieve](#retrieve-attributes)| [Add Options](#add-options) | [Remove Options](#remove-options) |
+| -------------------- | ----------------------------- | --------------------------- | --------------------------------- |
 
 
 <a name="add-attribute"></a>
@@ -403,9 +403,10 @@ In case of Custom Table,
 
 In the Attribute Migration file you can find `backend_table`, it is empty but if you provide a table name, it will store the value in that table.
 
+#### Retrieve Attributes
 
 ```php
-# To retrive the attributes related to a entity
+# To retrieve the attributes related to a entity
 
 $entity = Eav\Entity::findByCode('code');
 
