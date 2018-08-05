@@ -327,8 +327,8 @@ The `Eav\Attribute::add` add's the attribute to the system and `Eav\EntityAttrib
 | attribute_code| Specify the code for the attribute.|
 | entity_code| Specify the entity code for the attibute.|
 | backend_class| When specified will be used to add aditional control to the attribute when it intracts with the database.|
-| backend_type| Specify the column type. Supports (types)[#field-types].|
-| backend_table| When specified it will store the data to the given.|
+| backend_type| Specify the column type. Supports [types](#field-types).|
+| backend_table| When specified it will store the data to the given. [DOC](#custom-table-or-new-field-type)|
 | frontend_class| When specified will be used to add aditional control to the attribute when is used in the frontend.|
 | frontend_type| Specify the type of html field.|
 | frontend_label| Specify the label.|
@@ -343,7 +343,6 @@ The `Eav\Attribute::add` add's the attribute to the system and `Eav\EntityAttrib
 Currenlty we support the below types.
 
 ```php
-
 'bigInteger', 'binary', 'boolean',
 'char', 'date', 'dateTime', 'dateTimeTz',
 'decimal', 'double', 'float', 'geometry',
@@ -376,7 +375,7 @@ php artisan vendor:publish --tag="eav.config"
 
 #### Custom Table or New Field Type
 
-To Register new Field Type or to store date in custome table you can create the Schema as follows.
+To register new Field Type or to store data in Custom Table you can create the Schema as follows.
 
 ```php
 Schema::create('[field_type_table_name]', function (Blueprint $table) {
@@ -400,6 +399,10 @@ Schema::create('[field_type_table_name]', function (Blueprint $table) {
     $table->index('entity_id');           
 });
 ```
+In case of Custom Table,
+
+In the Attribute Migration file you can find `backend_table`, it is empty but if you provide a table name, it will store the value in that table.
+
 
 ```php
 # To retrive the attributes related to a entity
