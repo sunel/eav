@@ -25,8 +25,11 @@
     },
     "autoload-dev": {
     },
-    "scripts": {
-    },
-    "config": {        
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Eav\\Providers\\LaravelServiceProvider"
+            ]
+        }
     }
 }
