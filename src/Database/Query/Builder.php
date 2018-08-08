@@ -66,6 +66,43 @@ class Builder extends QueryBuilder
     {
         return ($this->baseEntity() && $this->baseEntity()->canUseFlat());
     }
+
+    /**
+     * Update a record in the database.
+     *
+     * @param  array  $values
+     * @return int
+     */
+    public function update(array $values)
+    {
+        if ($this->canUseFlat()) {
+            return parent::update($values);
+        }
+
+        $loadedAttributes = $this->loadAttributes(array_keys($values));
+        
+        $loadedAttributes->validate($values);
+
+        $this->select($this->baseEntity()->getEnityKey(), ...$loadedAttributes->keys()->toArray());
+
+        $entityIds = $this->pluck($this->baseEntity()->getEnityKey())->toArray();
+
+        $loadedAttributes->each(function($attr, $code) use(&$values, $entityIds) {
+            if(!$attr->isStatic()) {
+                $attr->massUpdate($values[$attr->getAttributeCode()], $entityIds);
+                unset($values[$attr->getAttributeCode()]);               
+            }
+        });
+        
+        $query = $this->newQuery()->from($this->from)
+            ->whereIn($this->baseEntity()->getEnityKey(), $entityIds);
+
+        $sql = $this->grammar->compileUpdate($query, $values);
+
+        return $query->connection->update($sql, $query->cleanBindings(
+            $query->grammar->prepareBindingsForUpdate($query->bindings, $values)
+        ));
+    }
     
     /**
      * Insert a new record into the database.
@@ -184,6 +221,10 @@ class Builder extends QueryBuilder
 
                 if ($expression = $orgColumns->get('expression')) {
                     $columns = $expression->merge($columns)->all();
+                }
+
+                if($orgColumns->get('columns')->contains($this->baseEntity()->getEnityKey())) {
+                   $columns[] =  $this->baseEntity()->getEnityKey();
                 }
             }
         }

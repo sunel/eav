@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 class Entity extends Model
 {
     protected $primaryKey = 'entity_id';
+
+    protected $entityKey;
     
     protected static $baseEntity = [];
     protected static $entityIdCache = [];
@@ -20,6 +22,27 @@ class Entity extends Model
     ];
     
     public $timestamps = false;
+
+    /**
+     * Get the primary key for the Entity.
+     *
+     * @return string
+     */
+    public function getEnityKey()
+    {
+        return $this->entityKey;
+    }
+    /**
+     * Set the primary key for the Entity.
+     *
+     * @param  string  $key
+     * @return $this
+     */
+    public function setEnityKey($key)
+    {
+        $this->entityKey = $key;
+        return $this;
+    }
     
     public function canUseFlat()
     {

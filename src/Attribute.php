@@ -431,4 +431,11 @@ class Attribute extends Model
             ->from($this->getBackendTable())
             ->updateOrInsert($attributes, ['value' => $value]);
     }
+
+    public function massUpdate($value, array $entityIds)
+    {
+        return collect($entityIds)->map(function($entityId) use($value) {
+            return $this->updateAttribute($value, $entityId);
+        });
+    }
 }
