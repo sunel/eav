@@ -22,8 +22,8 @@ return [
 	|   'multiLineString', 'multiPoint', 'multiPolygon', 
 	|   'point', 'polygon', 'smallInteger', 'string', 
 	|   'text', 'time', 'timeTz', 'timestamp', 'timestampTz',
-	|   'tinyInteger', 'unsignedBigInteger','unsignedBigInteger', 
-	|   'unsignedInteger', 'unsignedMediumInteger','unsignedSmallInteger', 
+	|   'tinyInteger', 'unsignedBigInteger', 'unsignedInteger',
+    |   'unsignedMediumInteger','unsignedSmallInteger', 
 	|   'unsignedTinyInteger', 'uuid', 'year',
     */
 

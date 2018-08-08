@@ -21,8 +21,18 @@ abstract class Model extends Eloquent
      */
     const ENTITY  = '';
 
+    /**
+     * Indicates if all mass assignment is enabled.
+     *
+     * @var bool
+     */
     protected static $unguarded = true;
 
+    /**
+     * Array of loaded Entity.
+     *
+     * @var array
+     */
     protected static $baseEntity = [];
     
     /**
@@ -47,6 +57,7 @@ abstract class Model extends Eloquent
         if (!isset(static::$baseEntity[static::ENTITY])) {
             try {
                 $eavEntity = Entity::findByCode(static::ENTITY);
+                $eavEntity->setEnityKey($this->getKeyName());
             } catch (ModelNotFoundException $e) {
                 throw new \Exception("Unable to load Entity : ".static::ENTITY);
             }
