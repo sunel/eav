@@ -1,7 +1,7 @@
 module.exports = {
   title: 'EAV',
   description: 'Entity–attribute–value model (EAV) for Laravel Artisan',
-  base: '/docs/',
+  base: '/eav/',
 
   head: [    
   ],
@@ -13,10 +13,9 @@ module.exports = {
 
     nav: [
       {
-        text: 'Version',
+        text: 'Documentation',
         items: [
-          { text: 'master', link: '/master/' },
-          { text: '1.0', link: '/1.0/' }
+          { text: 'master', link: '/master/' }
         ]
       }
     ],
