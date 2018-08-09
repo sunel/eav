@@ -32,5 +32,4 @@ Currenlty we support the below types.
 'tinyInteger', 'unsignedBigInteger', 'unsignedInteger', 
 'unsignedMediumInteger','unsignedSmallInteger', 
 'unsignedTinyInteger', 'uuid', 'year',
-
 ```

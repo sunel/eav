@@ -13,6 +13,7 @@ module.exports = [
     collapsable: false,
     children: [
       'model',
+      'queries',
     ],
   },
   {
@@ -25,8 +26,17 @@ module.exports = [
       'attribute-group',
       'value',
       'static-attribute',
-      'flat-table'
+      'flat-table',
+      'attribute-options',
     ]),
+  },
+  {
+    title: 'Advance',
+    collapsable: false,
+    children: [
+      'custom-table',
+      'er',
+    ],
   },
 ]
 

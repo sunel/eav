@@ -2,6 +2,15 @@
 
 [[toc]]
 
+The Attributes are attached to the entity through relation.
+
+```php
+public function attributes()
+{
+    return $this->hasMany(Attribute::class, 'entity_id');
+}
+```
+
 ## Add
 
 To create a migration, use the `eav:make:attribute`
@@ -36,7 +45,7 @@ Eav\EntityAttribute::map([
 ]);
 ```
 
-The `Eav\Attribute::add` add's the attribute to the system and `Eav\EntityAttribute::map` will map the attribute to the entity and also assign to a set and group.
+The `Eav\Attribute::add` add's the attribute to the system and `Eav\EntityAttribute::map` will map the attribute to the entity and also assign to a [set](attribute-set.html) and [group](attribute-group.html).
 
 
 | Field | Description |
@@ -44,8 +53,8 @@ The `Eav\Attribute::add` add's the attribute to the system and `Eav\EntityAttrib
 | attribute_code| Specify the code for the attribute.|
 | entity_code| Specify the entity code for the attibute.|
 | backend_class| When specified will be used to add aditional control to the attribute when it intracts with the database.|
-| backend_type| Specify the column type. Supports [types](#field-types).|
-| backend_table| When specified it will store the data to the given. [DOC](#custom-table-or-new-field-type)|
+| backend_type| Specify the column type. Supports [types](../configuration.html#field-types).|
+| backend_table| When specified it will store the data to the given. [DOC](../custom-table.html)|
 | frontend_class| When specified will be used to add aditional control to the attribute when is used in the frontend.|
 | frontend_type| Specify the type of html field.|
 | frontend_label| Specify the label.|
@@ -53,3 +62,14 @@ The `Eav\Attribute::add` add's the attribute to the system and `Eav\EntityAttrib
 | default_value| Specify the default value that will stored if not given.|
 | is_required| If enabled, value needs to given for the attribute.|
 | required_validate_class| Custom validation rules.|
+
+
+## Retrieve
+
+To retrieve the attributes related to a entity.
+
+```php
+$entity = \Eav\Entity::findByCode('code');
+
+$attributes = $entity->attributes;
+```
