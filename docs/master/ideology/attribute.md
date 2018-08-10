@@ -34,6 +34,7 @@ Eav\Attribute::add([
     'source_class' =>  Eav\Attribute\Source\Boolean::class,
     'default_value' => 0,
     'is_required' => 0,
+    'is_filterable' => 0,
     'required_validate_class' =>  null
 ]);
 
@@ -61,6 +62,7 @@ The `Eav\Attribute::add` add's the attribute to the system and `Eav\EntityAttrib
 | source_class|  When specified will be used to populate a field’s default options, if the frontend_type is `select`.|
 | default_value| Specify the default value that will stored if not given.|
 | is_required| If enabled, value needs to given for the attribute.|
+| is_filterable| If enabled, attribute are included in the [faceted navigation](../facet.html).|
 | required_validate_class| Custom validation rules.|
 
 

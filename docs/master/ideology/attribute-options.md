@@ -71,7 +71,7 @@ Eav\AttributeOption::add($statusAttr, [
 
 ```php
 
-$statusAttr = Eav\Attribute::findByCode('size', 'product');
+$statusAttr = Eav\Attribute::with('optionValues')->findByCode('size', 'product');
 
 $statusAttr->frontend_type // This will return the type in this case 'select'
 

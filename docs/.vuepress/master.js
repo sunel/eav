@@ -14,6 +14,7 @@ module.exports = [
     children: [
       'model',
       'queries',
+      'facet',
     ],
   },
   {
