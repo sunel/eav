@@ -6,16 +6,31 @@ use Illuminate\Database\Eloquent\Model;
 
 class EntityAttribute extends Model
 {
+    /**
+     * @{inheriteDoc}
+     */
     protected $primaryKey = 'attribute_id';
     
+    /**
+     * @{inheriteDoc}
+     */
     public $timestamps = false;
     
+    /**
+     * @{inheriteDoc}
+     */
     protected $fillable = [
         'entity_id', 'attribute_set_id', 'attribute_group_id',
         'attribute_id'
     ];
     
-    public static function map($data)
+    /**
+     * Attach the attribute to the entity.
+     *
+     * @param  array $data
+     * @return bool
+     */
+    public static function map(array $data)
     {
         $instance = new static;
                 
@@ -36,7 +51,13 @@ class EntityAttribute extends Model
     }
     
     
-    public static function unmap($data)
+    /**
+     * Un attach the attribute to the entity.
+     *
+     * @param  array $data
+     * @return bool
+     */
+    public static function unmap(array $data)
     {
         $instance = new static;
                 
@@ -49,11 +70,11 @@ class EntityAttribute extends Model
             'attribute_id' => $eavAttribute->attribute_id
         ])->delete();
     }
-    
+       
     private function findEntity($code)
     {
         try {
-            return Entity::where('entity_code', '=', $code)->firstOrFail();
+            return Entity::findByCode($code);
         } catch (ModelNotFoundException $e) {
             throw new \Exception("Unable to load Entity : ".$code);
         }

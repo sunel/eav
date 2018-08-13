@@ -13,10 +13,20 @@ class Attribute extends Model
 
     const TYPE_STATIC = 'static';
     
+    /**
+     * @{inheriteDoc}
+     */
     protected $primaryKey = 'attribute_id';
 
+    /**
+     * @{inheriteDoc}
+     */
     public $timestamps = false;
     
+
+    /**
+     * @{inheriteDoc}
+     */
     protected $fillable = [
         'attribute_code', 'backend_class', 'backend_type',
         'backend_table', 'frontend_class', 'frontend_type',
@@ -72,23 +82,21 @@ class Attribute extends Model
      * @param   string $code
      * @return $this
      */
-    public function setAttributeCode($code)
+    public function setAttributeCode(string $code)
     {
         return $this->setAttribute('attribute_code', $code);
     }
     
     /**
-     * Set attribute entity instance
+     * Get attribute name
      *
-     * @param Eav\Entity $entity
-     * @return $this
+     * @return string
      */
-    public function setEntity($entity)
+    public function getAttributeCode()
     {
-        $this->entity = $entity;
-        return $this;
+        return $this->getAttribute('attribute_code');
     }
-    
+
     /**
      * Get attribute identifuer
      *
@@ -100,13 +108,28 @@ class Attribute extends Model
     }
     
     /**
-     * Get attribute name
+     * Set attribute entity instance
      *
-     * @return string
+     * @param Eav\Entity $entity
+     * @return $this
      */
-    public function getAttributeCode()
+    public function setEntity(Entity $entity)
     {
-        return $this->getAttribute('attribute_code');
+        $this->entity = $entity;
+        return $this;
+    }
+
+    /**
+     * Retrieve entity instance
+     *
+     * @return Eav\Entity
+     */
+    public function getEntity()
+    {
+        if (!$this->entity) {
+            $this->entity = $this->getEntityType();
+        }
+        return $this->entity;
     }
     
     /**
@@ -169,15 +192,13 @@ class Attribute extends Model
         return $this->getAttribute('default_value');
     }
 
-    public function options()
-    {
-        if ($this->usesSource()) {
-            return $this->getSource()->toArray();
-        }
-        return $this->optionValues->toOptions();
-    }
-
-    public static function add($data)
+    /**
+     * Create a new attribute.
+     *
+     * @param array $data
+     * @return void
+     */
+    public static function add(array $data)
     {
         $instance = new static;
                 
@@ -207,8 +228,14 @@ class Attribute extends Model
             AttributeOption::add($instance, $options);
         }
     }
-        
-    public static function remove($data)
+    
+    /**
+     * Delete a attribute from the database.
+     *
+     * @param array $data
+     * @return mixed
+     */
+    public static function remove(array $data)
     {
         $instance = new static;
                 
@@ -225,22 +252,27 @@ class Attribute extends Model
         $instance->where($data)->delete();
     }
 
-    public function optionValues()
+    /**
+     * Get All the option for the attribute.
+     *
+     * @return array
+     */
+    public function options()
     {
-        return $this->hasMany(AttributeOption::class, 'attribute_id');
+        if ($this->usesSource()) {
+            return $this->getSource()->toArray();
+        }
+        return $this->optionValues->toOptions();
     }
 
     /**
-     * Retrieve entity instance
+     * Relates to the option table.
      *
-     * @return Eav\Entity
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function getEntity()
+    public function optionValues()
     {
-        if (!$this->entity) {
-            $this->entity = $this->getEntityType();
-        }
-        return $this->entity;
+        return $this->hasMany(AttributeOption::class, 'attribute_id');
     }
 
     /**
@@ -321,6 +353,11 @@ class Attribute extends Model
         return $this->source;
     }
 
+    /**
+     * Check if the atribute uses any source for options.
+     *
+     * @return bool
+     */
     public function usesSource()
     {
         return ($this->getAttribute('frontend_type') === 'select' || $this->getAttribute('frontend_type') === 'multiselect')
@@ -344,18 +381,6 @@ class Attribute extends Model
         return $this->dataTable;
     }
     
-    /*
-    protected function getDefaultBackendClass()
-    {
-        return static::DEFAULT_BACKEND_CLASS;
-    }
-
-    protected function getDefaultFrontendClass()
-    {
-        return static::DEFAULT_FRONTEND_CLASS;
-    }
-    */
-    
     /**
      * Create a new Eloquent Collection instance.
      *
@@ -367,7 +392,14 @@ class Attribute extends Model
         return new Collection($models);
     }
     
-    public static function findByCode($code, $entityCode)
+    /**
+     * Find the attribute by code.
+     *
+     * @param  string $code
+     * @param  string $entityCode
+     * @return \Eav\Attribute
+     */
+    public static function findByCode(string $code, string $entityCode)
     {
         $entity = Entity::findByCode($entityCode);
         
@@ -383,11 +415,11 @@ class Attribute extends Model
     /**
      * Return attribute id
      *
-     * @param string $entityType
      * @param string $code
+     * @param string $entityType
      * @return int | null
      */
-    public function getIdByCode($entityType, $code)
+    public function getIdByCode(string $code, int $entityType)
     {
         $k = "{$entityType}|{$code}";
         if (!isset($this->attributeIdCache[$k])) {
@@ -405,6 +437,13 @@ class Attribute extends Model
         return $this->attributeIdCache[$k];
     }
     
+    /**
+     * Insert the data for the attribute.
+     *
+     * @param  mixed $value
+     * @param  int $entityId
+     * @return bool
+     */
     public function insertAttribute($value, $entityId)
     {
         $insertData = [
@@ -419,6 +458,13 @@ class Attribute extends Model
             ->insert($insertData);
     }
 
+    /**
+     * Update the data for the attribute.
+     *
+     * @param  mixed $value
+     * @param  int $entityId
+     * @return bool
+     */
     public function updateAttribute($value, $entityId)
     {
         $attributes = [
@@ -432,9 +478,16 @@ class Attribute extends Model
             ->updateOrInsert($attributes, ['value' => $value]);
     }
 
+    /**
+     * Mass Update the data for the attribute.
+     *
+     * @param  mixed $value
+     * @param  array  $entityIds
+     * @return mixed
+     */
     public function massUpdate($value, array $entityIds)
     {
-        return collect($entityIds)->map(function($entityId) use($value) {
+        return collect($entityIds)->map(function ($entityId) use ($value) {
             return $this->updateAttribute($value, $entityId);
         });
     }

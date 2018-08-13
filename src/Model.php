@@ -52,6 +52,12 @@ abstract class Model extends Eloquent
         parent::__construct($attributes);
     }
     
+    /**
+     * Get the Entity related to the model.
+     *
+     * @return \Eav\Entity
+     * @throws \Exception.
+     */
     public function baseEntity()
     {
         if (!isset(static::$baseEntity[static::ENTITY])) {
@@ -67,6 +73,11 @@ abstract class Model extends Eloquent
         return static::$baseEntity[static::ENTITY];
     }
 
+    /**
+     * Get the Entity ID related to the model.
+     *
+     * @return int.
+     */
     public function baseEntityId()
     {
         if ($value = $this->getAttributeValue('entity_id')) {
@@ -76,31 +87,6 @@ abstract class Model extends Eloquent
         return $this->baseEntity()->entity_id;
     }
 
-    protected function addModelEvent()
-    {
-        $model = $this;
-
-        static::saving(function () use ($model) {
-            if (!$model->exists) {
-                if (!$model->attribute_set_id) {
-                    $model->setAttribute('attribute_set_id', $model->baseEntity()->default_attribute_set_id);
-                }
-            }
-            $model->setAttribute('entity_id', $this->baseEntityId());
-        }, 9999);
-    }
-    
-    
-    public function setUseFlat($flag)
-    {
-        $this->baseEntity()->is_flat_enabled = $flag;
-    }
-    
-    public function canUseFlat()
-    {
-        return $this->baseEntity()->canUseFlat();
-    }
-    
     /**
      * Get the table associated with the model.
      *
@@ -117,6 +103,31 @@ abstract class Model extends Eloquent
         return $table;
     }
     
+    /**
+     * Enable or Disable Flat table.
+     *
+     * @param bool $flag
+     */
+    public function setUseFlat($flag)
+    {
+        $this->baseEntity()->is_flat_enabled = $flag;
+    }
+    
+    /**
+     * Check if the Entity can use flat table.
+     *
+     * @return bool
+     */
+    public function canUseFlat()
+    {
+        return $this->baseEntity()->canUseFlat();
+    }
+
+    /**
+     * Validate the attributes.
+     *
+     * @throws \Illuminate\Validation\ValidationException
+     */
     public function validate()
     {
         $attributes = $this->attributes;
@@ -205,7 +216,14 @@ abstract class Model extends Eloquent
     }
 
 
-    public function insertMainTable($query, $options, $attributes, $loadedAttributes)
+    /**
+     * Perform a model insert operation on the main entity table.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  array  $options
+     * @return bool
+     */
+    public function insertMainTable(Builder $query, array $options, $attributes, $loadedAttributes)
     {
         if ($this->fireModelEvent('creating.main') === false) {
             return false;
@@ -229,7 +247,14 @@ abstract class Model extends Eloquent
         return true;
     }
 
-    public function insertAttributes($query, $options, $modelData, $loadedAttributes)
+    /**
+     * Perform a model insert operation on the attributes related to entity.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  array  $options
+     * @return bool
+     */
+    public function insertAttributes(Builder $query, array $options, $modelData, $loadedAttributes)
     {
         $loadedAttributes->each(function ($attribute, $key) use ($modelData) {
             if (!$attribute->isStatic()) {
@@ -305,7 +330,14 @@ abstract class Model extends Eloquent
         return true;
     }
 
-    public function updateMainTable($query, $options, $attributes, $loadedAttributes)
+    /**
+     * Perform a model update operation on the main entity table.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  array  $options
+     * @return bool
+     */
+    public function updateMainTable(Builder $query, array $options, $attributes, $loadedAttributes)
     {
         if ($this->fireModelEvent('updating.main') === false) {
             return false;
@@ -322,7 +354,14 @@ abstract class Model extends Eloquent
         return true;
     }
 
-    public function updateAttributes($query, $options, $modelData, $loadedAttributes)
+    /**
+     * Perform a model update operation on the attributes related to entity.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  array  $options
+     * @return bool
+     */
+    public function updateAttributes(Builder $query, array $options, $modelData, $loadedAttributes)
     {
         $loadedAttributes->each(function ($attribute, $key) use ($modelData) {
             if (!$attribute->isStatic()) {
@@ -332,5 +371,23 @@ abstract class Model extends Eloquent
         });
         
         return true;
+    }
+
+    /**
+     * Add a model event on saving, to save the entity meta data.
+     * @return void
+     */
+    protected function addModelEvent()
+    {
+        $model = $this;
+
+        static::saving(function () use ($model) {
+            if (!$model->exists) {
+                if (!$model->attribute_set_id) {
+                    $model->setAttribute('attribute_set_id', $model->baseEntity()->default_attribute_set_id);
+                }
+            }
+            $model->setAttribute('entity_id', $this->baseEntityId());
+        }, 9999);
     }
 }

@@ -104,7 +104,6 @@ class EntityMigrationCreator
      */
     protected function populateStub($name, $stub, $class, $suffix='')
     {
-
         $stub = $this->addUpMigration($this->getAttributeUpStub(), $stub);
 
         $stub = $this->addDownMigration($this->getAttributeDownStub(), $stub);
@@ -126,16 +125,16 @@ class EntityMigrationCreator
      * @param  string  $mainStub
      * @return string
      */
-    protected function addUpMigration($attributeStub, $mainStub) {
-
+    protected function addUpMigration($attributeStub, $mainStub)
+    {
         $fieldTypes = $this->config->get('eav.fieldTypes', []);
 
         $stub = '';
         foreach ($fieldTypes as $type) {
-            $stub .= str_replace('FIELDTYPE', $type, $attributeStub);      
-        }    
+            $stub .= str_replace('FIELDTYPE', $type, $attributeStub);
+        }
 
-        return str_replace('UPMIGRATION', $stub, $mainStub);       
+        return str_replace('UPMIGRATION', $stub, $mainStub);
     }
 
     /**
@@ -145,16 +144,16 @@ class EntityMigrationCreator
      * @param  string  $mainStub
      * @return string
      */
-    protected function addDownMigration($attributeStub, $mainStub) {
-
+    protected function addDownMigration($attributeStub, $mainStub)
+    {
         $fieldTypes = $this->config->get('eav.fieldTypes', []);
 
         $stub = '';
         foreach ($fieldTypes as $type) {
-            $stub .= str_replace('FIELDTYPE', $type, $attributeStub);        
+            $stub .= str_replace('FIELDTYPE', $type, $attributeStub);
         }
         
-        return str_replace('DOWNMIGRATION', $stub, $mainStub);       
+        return str_replace('DOWNMIGRATION', $stub, $mainStub);
     }
 
 

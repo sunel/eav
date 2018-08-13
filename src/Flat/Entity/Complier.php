@@ -87,13 +87,6 @@ class Complier
         $migration = $this->resolve($file);
 
         $migration->up();
-
-        // Once we have run a migrations class, we will log that it was run in this
-        // repository so that we don't try to run it next time we do a migration
-        // in the application. A migration repository keeps the migrate order.
-        //$this->repository->log($file, $batch);
-
-        //$this->note("<info>Migrated:</info> $file");
     }
     
     /**
@@ -102,7 +95,7 @@ class Complier
     * @param  string  $file
     * @return object
     */
-    public function resolve($file)
+    protected function resolve($file)
     {
         $file = basename($file, ".php");
 

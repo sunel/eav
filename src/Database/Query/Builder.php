@@ -16,9 +16,21 @@ use Illuminate\Database\Query\Builder as QueryBuilder;
 class Builder extends QueryBuilder
 {
     use Attribute;
-            
+    
+    /**
+     * Flag to indicate the current attribute for the query
+     * is processed.
+     *
+     * @var boolean
+     */
     protected $isProcessed = false;
-            
+    
+    /**
+     * Flag to indicate the query has conditions based on
+     * attributes.
+     *
+     * @var boolean
+     */
     public $hasAttributeConditions = false;
     
     /**
@@ -28,14 +40,39 @@ class Builder extends QueryBuilder
      */
     public $attributeWheres = [];
 
+    /**
+     * Holds the column added to where constraints for the query.
+     *
+     * @var array
+     */
     public $attributeWheresRef = [];
 
-    public $attributeOrderBy;
+    /**
+     * The order by attribute.
+     *
+     * @var array
+     */
+    public $attributeOrderBy = [];
 
-    public $attributeColumns;
+    /**
+     * The holds the attribute column.
+     *
+     * @var array
+     */
+    public $attributeColumns = [];
     
+    /**
+     * Holds Entity Instance.
+     *
+     * @var \Eav\Entity
+     */
     protected $baseEntity;
 
+    /**
+     * Holds the ref to the attibute that is added to join clause.
+     *
+     * @var array
+     */
     public $joinCache = [];
 
     
@@ -57,11 +94,22 @@ class Builder extends QueryBuilder
         parent::__construct($connection, $grammar, $processor);
     }
     
+    /**
+     * Get the Entity related to the model.
+     *
+     * @return \Eav\Entity
+     * @throws \Exception.
+     */
     public function baseEntity()
     {
         return $this->baseEntity;
     }
     
+    /**
+     * Check if the Entity can use flat table.
+     *
+     * @return bool
+     */
     public function canUseFlat()
     {
         return ($this->baseEntity() && $this->baseEntity()->canUseFlat());
@@ -87,10 +135,10 @@ class Builder extends QueryBuilder
 
         $entityIds = $this->pluck($this->baseEntity()->getEnityKey())->toArray();
 
-        $loadedAttributes->each(function($attr, $code) use(&$values, $entityIds) {
-            if(!$attr->isStatic()) {
+        $loadedAttributes->each(function ($attr, $code) use (&$values, $entityIds) {
+            if (!$attr->isStatic()) {
                 $attr->massUpdate($values[$attr->getAttributeCode()], $entityIds);
-                unset($values[$attr->getAttributeCode()]);               
+                unset($values[$attr->getAttributeCode()]);
             }
         });
         
@@ -160,6 +208,13 @@ class Builder extends QueryBuilder
         return $sql;
     }
 
+    /**
+     * Adds the requested attribute to the query.
+     *
+     * @param  Collection $loadedAttributes
+     * @param  boolean    $noJoin
+     * @return void
+     */
     public function processAttributes($loadedAttributes = null, $noJoin = false)
     {
         if (!$this->hasAttributeConditions || $this->isProcessed) {
@@ -175,6 +230,12 @@ class Builder extends QueryBuilder
         $this->isProcessed = true;
     }
 
+    /**
+     * Reads the column that is added to the select clause and process it
+     * based on the given sudo code eg : attr.*, *
+     *
+     * @return Collection
+     */
     protected function fixColumns()
     {
         if (!$this->baseEntity()) {
@@ -206,11 +267,24 @@ class Builder extends QueryBuilder
                     }
                 });
 
-                $columns = ($orgColumns->get('columns')->contains('*'))?["{$this->from}.*"]:[];
-                $filterAttr = $orgColumns->get('columns')->merge($filterAttr)->all();
+                $columns = [];
+
+                if ($orgColumns->get('columns')->contains('*')) {
+                    $columns[] = "{$this->from}.*";
+                    $filterAttr = $orgColumns->get('columns')->merge($filterAttr)->all();
+                } elseif ($orgColumns->get('columns')->contains('attr.*')) {
+                    $columns[] = "{$this->from}.*";
+                    $filterAttr = [];
+                }
+
+                if ($orgColumns->get('columns')->contains($this->baseEntity()->getEnityKey())) {
+                    $columns[] =  $this->baseEntity()->getEnityKey();
+                }
+
                 $loadedAttributes = $this->loadAttributes($filterAttr)
                     ->each(function ($attribute, $key) use (&$columns, $orgColumns) {
-                        if ($orgColumns->get('columns')->contains($attribute->getAttributeCode())) {
+                        if ($orgColumns->get('columns')->contains('attr.*')
+                            || $orgColumns->get('columns')->contains($attribute->getAttributeCode())) {
                             $columns[] = $attribute->setEntity($this->baseEntity())
                                     ->addAttributeJoin($this, 'left')->getSelectColumn();
                         } else {
@@ -222,18 +296,21 @@ class Builder extends QueryBuilder
                 if ($expression = $orgColumns->get('expression')) {
                     $columns = $expression->merge($columns)->all();
                 }
-
-                if($orgColumns->get('columns')->contains($this->baseEntity()->getEnityKey())) {
-                   $columns[] =  $this->baseEntity()->getEnityKey();
-                }
             }
         }
-        
         $this->columns = $columns;
 
         return $loadedAttributes;
     }
 
+    /**
+     * TODO
+     *
+     * Reads the column that is added to the select clause and process it
+     * based on the given sudo code eg : attr.*, * for flat table.
+     *
+     * @return void
+     */
     protected function fixFlatColumns()
     {
         $columns = $this->columns;
@@ -621,14 +698,14 @@ class Builder extends QueryBuilder
         return $this->addDateBasedWhereAttribute('Date', $column, $operator, $value, $boolean);
     }
 
-     /**
-     * Add an "or where date" statement to the query.
-     *
-     * @param  string  $column
-     * @param  string  $operator
-     * @param  string  $value
-     * @return \Illuminate\Database\Query\Builder|static
-     */
+    /**
+    * Add an "or where date" statement to the query.
+    *
+    * @param  string  $column
+    * @param  string  $operator
+    * @param  string  $value
+    * @return \Illuminate\Database\Query\Builder|static
+    */
     public function orWhereDateAttribute($column, $operator, $value)
     {
         return $this->whereDateAttribute($column, $operator, $value, 'or');

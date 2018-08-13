@@ -7,8 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 
 class AttributeOption extends Model
 {
+    /**
+     * @{inheriteDoc}
+     */
     protected $primaryKey = 'option_id';
     
+    /**
+     * @{inheriteDoc}
+     */
     public $timestamps = false;
     
     /**
@@ -20,7 +26,7 @@ class AttributeOption extends Model
     
     /**
      * Add options for the attribute.
-     * 
+     *
      * @param Attribute $attribute
      * @param array     $options
      *
@@ -39,7 +45,7 @@ class AttributeOption extends Model
 
     /**
      * Remove options for the attribute.
-     * 
+     *
      * @param Attribute $attribute
      * @param array     $options
      *
@@ -47,7 +53,7 @@ class AttributeOption extends Model
      */
     public static function remove(Attribute $attribute, array $options)
     {
-        $instance = new static;        
+        $instance = new static;
         
         foreach ($options as $value => $label) {
             $instance->where([

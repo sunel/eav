@@ -5,9 +5,14 @@ use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 
 class Builder extends EloquentBuilder
 {
+    public function baseEntity()
+    {
+        return $this->getModel()->baseEntity();
+    }
+
     public function getFacets($count = false)
     {
-        $baseEntity = $this->getModel()->baseEntity();
+        $baseEntity = $this->baseEntity();
         $filterable = $baseEntity
             ->attributes()
             ->with('optionValues')

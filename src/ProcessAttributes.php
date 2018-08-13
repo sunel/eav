@@ -2,10 +2,31 @@
 
 namespace Eav;
 
+use Eav\Database\Query\Builder;
+use Illuminate\Support\Collection;
+
 class ProcessAttributes
 {
-    public static function process($query, $loadedAttributes, $baseEntity, $noJoin = false)
-    {
+    /**
+     * Adds the requested attribute to the query.
+     *
+     * Until now we have not added the attribute to the query.
+     * He have the list of query and bindinds, now we will
+     * inner join the attribute and add the querying
+     * conditions.
+     *
+     * @param  Builder    $query
+     * @param  Collection $loadedAttributes
+     * @param  Entity     $baseEntity
+     * @param  boolean    $noJoin
+     * @return void
+     */
+    public static function process(
+        Builder $query,
+        Collection $loadedAttributes,
+        Entity $baseEntity,
+        boolean $noJoin = false
+    ) {
         $filterAttr = array_flip($query->attributeColumns['columns']);
 
         $usedAttributes = $loadedAttributes

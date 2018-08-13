@@ -4,6 +4,13 @@ namespace Eav\Attribute\Concerns;
 
 trait QueryBuilder
 {
+    /**
+     * Retrives the insert query.
+     *
+     * @param  mixed $value
+     * @param  int $entityId
+     * @return string
+     */
     public function getAttributeInsertQuery($value, $entityId)
     {
         $insertData = [
@@ -18,6 +25,13 @@ trait QueryBuilder
             ->getInsertSql($insertData);
     }
     
+    /**
+     * Add a new select column to the query.
+     *
+     * @param Illuminate\Database\Query\Builder $query
+     * @param string $joinType
+     * @param \Closure $callback
+     */
     public function addToSelect($query, $joinType = 'inner', $callback = null)
     {
         if ($this->isStatic()) {
@@ -29,6 +43,11 @@ trait QueryBuilder
         $query->addSelect([$this->getSelectColumn()]);
     }
     
+    /**
+     * Retrive the select column for the attribute.
+     *
+     * @return string
+     */
     public function getSelectColumn()
     {
         if ($this->isStatic()) {
@@ -38,6 +57,11 @@ trait QueryBuilder
         return "{$this->getAttributeCode()}_attr.value as {$this->getAttributeCode()}";
     }
 
+    /**
+     * Retrive the select column without `alias` for the attribute.
+     *
+     * @return string
+     */
     public function getRawSelectColumn()
     {
         if ($this->isStatic()) {
@@ -48,6 +72,13 @@ trait QueryBuilder
     }
     
     
+    /**
+     * Add a join clause to the query for the attribute.
+     *
+     * @param Illuminate\Database\Query\Builder $query
+     * @param string $joinType
+     * @param \Closure $callback
+     */
     public function addAttributeJoin($query, $joinType = 'inner', $callback = null)
     {
         if ($this->isStatic() || isset($query->joinCache[$this->getAttributeCode()])) {
@@ -83,6 +114,13 @@ trait QueryBuilder
         return $this;
     }
 
+    /**
+     * Add an "order by" clause to the query.
+     *
+     * @param Illuminate\Database\Query\Builder $query
+     * @param array  $binding
+     * @return $this
+     */
     public function addAttributeOrderBy($query, $binding)
     {
         if ($this->isStatic()) {
@@ -90,8 +128,18 @@ trait QueryBuilder
         } else {
             $query->orderBy("{$this->getAttributeCode()}_attr.value", $binding['direction']);
         }
+
+        return $this;
     }
     
+
+    /**
+     * Add a basic where based on the type.
+     *
+     * @param Illuminate\Database\Query\Builder $query
+     * @param array  $binding
+     * @return $this
+     */
     public function addAttributeWhere($query, $binding)
     {
         $method = 'where'.lcfirst($binding['type']);
@@ -100,6 +148,13 @@ trait QueryBuilder
         return $this;
     }
 
+    /**
+     * Add a basic where clause to the query.
+     *
+     * @param Illuminate\Database\Query\Builder $query
+     * @param array  $binding
+     * @return void
+     */
     protected function whereBasic($query, $binding)
     {
         if ($this->isStatic()) {
@@ -109,6 +164,13 @@ trait QueryBuilder
         }
     }
 
+    /**
+     * Add a where between statement to the query.
+     *
+     * @param Illuminate\Database\Query\Builder $query
+     * @param array  $binding
+     * @return void
+     */
     protected function whereBetween($query, $binding)
     {
         if ($this->isStatic()) {
@@ -118,6 +180,13 @@ trait QueryBuilder
         }
     }
 
+    /**
+     * Add a where in statement to the query.
+     *
+     * @param Illuminate\Database\Query\Builder $query
+     * @param array  $binding
+     * @return void
+     */
     protected function whereIn($query, $binding)
     {
         if ($this->isStatic()) {
@@ -127,6 +196,13 @@ trait QueryBuilder
         }
     }
 
+    /**
+     * Add a where not in statement to the query.
+     *
+     * @param Illuminate\Database\Query\Builder $query
+     * @param array  $binding
+     * @return void
+     */
     protected function whereNotIn($query, $binding)
     {
         if ($this->isStatic()) {
@@ -136,6 +212,13 @@ trait QueryBuilder
         }
     }
 
+    /**
+     * Add a where null statement to the query.
+     *
+     * @param Illuminate\Database\Query\Builder $query
+     * @param array  $binding
+     * @return void
+     */
     protected function whereNull($query, $binding)
     {
         if ($this->isStatic()) {
@@ -145,6 +228,13 @@ trait QueryBuilder
         }
     }
 
+    /**
+     * Add a where not null statement to the query.
+     *
+     * @param Illuminate\Database\Query\Builder $query
+     * @param array  $binding
+     * @return void
+     */
     protected function whereNotNull($query, $binding)
     {
         if ($this->isStatic()) {
@@ -154,6 +244,13 @@ trait QueryBuilder
         }
     }
 
+    /**
+     * Add a where date statement to the query.
+     *
+     * @param Illuminate\Database\Query\Builder $query
+     * @param array  $binding
+     * @return void
+     */
     protected function whereDate($query, $binding)
     {
         if ($this->isStatic()) {
@@ -163,6 +260,13 @@ trait QueryBuilder
         }
     }
 
+    /**
+     * Add a where day statement to the query.
+     *
+     * @param Illuminate\Database\Query\Builder $query
+     * @param array  $binding
+     * @return void
+     */
     protected function whereDay($query, $binding)
     {
         if ($this->isStatic()) {
@@ -172,6 +276,13 @@ trait QueryBuilder
         }
     }
 
+    /**
+     * Add a where month statement to the query.
+     *
+     * @param Illuminate\Database\Query\Builder $query
+     * @param array  $binding
+     * @return void
+     */
     protected function whereMonth($query, $binding)
     {
         if ($this->isStatic()) {
@@ -181,6 +292,13 @@ trait QueryBuilder
         }
     }
 
+    /**
+     * Add a where year statement to the query.
+     *
+     * @param Illuminate\Database\Query\Builder $query
+     * @param array  $binding
+     * @return void
+     */
     protected function whereYear($query, $binding)
     {
         if ($this->isStatic()) {
@@ -190,6 +308,13 @@ trait QueryBuilder
         }
     }
 
+    /**
+     * Add a where time statement to the query.
+     *
+     * @param Illuminate\Database\Query\Builder $query
+     * @param array  $binding
+     * @return void
+     */
     protected function whereTime($query, $binding)
     {
         if ($this->isStatic()) {

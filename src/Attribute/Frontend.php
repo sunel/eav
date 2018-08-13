@@ -2,6 +2,7 @@
 
 namespace Eav\Attribute;
 
+use Eav\Attribute;
 use Eav\Contracts\Attribute\Frontend as FrontendContract;
 
 class Frontend implements FrontendContract
@@ -19,7 +20,7 @@ class Frontend implements FrontendContract
      * @param Eav\Attribute
      * @return Eav\Attribute\Backend
      */
-    public function setAttribute($attribute)
+    public function setAttribute(Attribute $attribute)
     {
         $this->attribute = $attribute;
         return $this;
@@ -28,7 +29,7 @@ class Frontend implements FrontendContract
     /**
      * Get attribute instance
      *
-     * @return Eav\Attribute\Backend
+     * @return Eav\Attribute
      */
     public function getAttribute()
     {

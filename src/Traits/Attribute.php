@@ -2,6 +2,7 @@
 
 namespace Eav\Traits;
 
+use Cache;
 use Eav\Attribute\Collection;
 
 trait Attribute
@@ -16,11 +17,11 @@ trait Attribute
 
         $alreadyLoadedAttkeys = array_intersect(static::$attributesCollectionKeys, $attributes);
         
-        if (count($alreadyLoadedAttkeys) && count($alreadyLoadedAttkeys) == count($attributes)) {
+        if (count($alreadyLoadedAttkeys) && (count($alreadyLoadedAttkeys) == count($attributes))) {
             return static::$attributesCollection->intersectKeys($attributes);
-        } elseif (count($alreadyLoadedAttkeys) && count($alreadyLoadedAttkeys) < count($attributes)) {
+        } elseif (count($alreadyLoadedAttkeys) && (count($alreadyLoadedAttkeys) < count($attributes))) {
             $newAttkeys = array_diff($attributes, static::$attributesCollectionKeys);
-            $loadedAttributes = $this->fetchAttributes($newAttkeys, $static);
+            $loadedAttributes = $this->fetchAttributes($newAttkeys, $static, $required);
 
             static::$attributesCollection = static::$attributesCollection->merge($loadedAttributes);
 
@@ -37,7 +38,7 @@ trait Attribute
     
     protected function fetchAttributes($attributes = [], $static = false, $required = false)
     {
-        $loadedAttributes = $this->baseEntity()
+        $query = $this->baseEntity()
             ->attributes()
             ->where(function ($query) use ($static, $required, $attributes) {
                 if (!empty($attributes)) {
@@ -50,10 +51,10 @@ trait Attribute
                 if ($required) {
                     $query->orWhere('is_required', 1);
                 }
-            })->get()->patch();
-
-
-        return $loadedAttributes;
+            });
+        return Cache::remember($query->toSql(), 10, function () use ($query) {
+            return $query->get()->patch();
+        });
     }
     
     public function getMainTableAttribute($loadedAttributes)

@@ -2,6 +2,7 @@
 
 namespace Eav\Attribute;
 
+use Eav\Attribute;
 use Eav\Contracts\Attribute\Backend as BackendContract;
 
 abstract class Backend implements BackendContract
@@ -33,7 +34,7 @@ abstract class Backend implements BackendContract
      * @param Eav\Attribute
      * @return Eav\Attribute\Backend
      */
-    public function setAttribute($attribute)
+    public function setAttribute(Attribute $attribute)
     {
         $this->attribute = $attribute;
         return $this;
@@ -42,7 +43,7 @@ abstract class Backend implements BackendContract
     /**
      * Get attribute instance
      *
-     * @return Eav\Attribute\Backend
+     * @return Eav\Attribute
      */
     public function getAttribute()
     {
