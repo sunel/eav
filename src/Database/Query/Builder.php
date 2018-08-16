@@ -253,8 +253,9 @@ class Builder extends QueryBuilder
                         ->addAttributeJoin($this, 'left')->getSelectColumn();
                 }
             });
-        } else {
-            $filterAttr = (array) $this->attributeColumns['columns'];
+        } else {          
+
+            $filterAttr = isset($this->attributeColumns['columns']) ? (array) $this->attributeColumns['columns'] : [];
 
             if ($columns == ['*']) {
                 $columns = ["{$this->from}.*"];
@@ -285,19 +286,33 @@ class Builder extends QueryBuilder
                     ->each(function ($attribute, $key) use (&$columns, $orgColumns) {
                         if ($orgColumns->get('columns')->contains('attr.*')
                             || $orgColumns->get('columns')->contains($attribute->getAttributeCode())) {
-                            $columns[] = $attribute->setEntity($this->baseEntity())
-                                    ->addAttributeJoin($this, 'left')->getSelectColumn();
-                        } else {
+                            $attribute->setEntity($this->baseEntity())
+                                    ->addAttributeJoin($this, 'left');
+
+                            if($attribute->isStatic()) {
+                                $columns[] = "{$this->from}.{$attribute->getSelectColumn()}";    
+                            } else {
+                                $columns[] = $attribute->getSelectColumn();
+                            }       
+                            
+                        } else if($this->hasAttributeConditions) {
                             $attribute->setEntity($this->baseEntity())
                                     ->addAttributeJoin($this);
                         }
                     });
+                $columns = $orgColumns
+                    ->get('columns')
+                    ->merge($columns)
+                    ->filter(function ($value, $key) {
+                        return !(($value == 'attr.*') || ($value == '*'));
+                    })->unique()->toArray();
 
                 if ($expression = $orgColumns->get('expression')) {
                     $columns = $expression->merge($columns)->all();
                 }
             }
         }
+
         $this->columns = $columns;
 
         return $loadedAttributes;
