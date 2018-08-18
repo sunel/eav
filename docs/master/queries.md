@@ -35,11 +35,17 @@ You can also select any field from the main entity table as shown in above examp
 $product = Products::all(['id', 'upc', 'color']);
 ```
 
-The same can done with the `get` 
+The same can done with the `get` & `select`
 
 ```php
 Products::whereAttribute('upc', 'SHNDUU451885')
 	->get(['color'])
+```
+
+```php
+Products::whereAttribute('upc', 'SHNDUU451885')
+	->select(['attr.*'])
+	->get()
 ```
 
 ## Where Clauses

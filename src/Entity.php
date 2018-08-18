@@ -28,7 +28,7 @@ class Entity extends Model
     ];
 
     /**
-     * Holds the primary key name of Entity instance.
+     * Holds the primary key name of Orginal Entity instance.
      *
      * @var string
      */
@@ -81,7 +81,7 @@ class Entity extends Model
     }
     
     /**
-     * Get the table with preefix if it has one.
+     * Get the table with prefix if it has one.
      *
      * @return string
      */
