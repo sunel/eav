@@ -215,18 +215,15 @@ class Builder extends QueryBuilder
      * @param  boolean    $noJoin
      * @return void
      */
-    public function processAttributes($loadedAttributes = null, $noJoin = false)
+    public function processAttributes($noJoin = false)
     {
         if (!$this->hasAttributeConditions || $this->isProcessed) {
             return;
         }
-
-        if (!$loadedAttributes) {
-            $filterAttr = (array) $this->attributeColumns['columns'];
-            $loadedAttributes = $this->loadAttributes($filterAttr);
-        }
         
+        $loadedAttributes = $this->loadAttributes($this->attributeColumns);        
         ProcessAttributes::process($this, $loadedAttributes, $this->baseEntity(), $noJoin);
+        
         $this->isProcessed = true;
     }
 
@@ -234,7 +231,7 @@ class Builder extends QueryBuilder
      * Reads the column that is added to the select clause and process it
      * based on the given sudo code eg : attr.*, *
      *
-     * @return Collection
+     * @return $this
      */
     protected function fixColumns()
     {
@@ -244,78 +241,75 @@ class Builder extends QueryBuilder
 
         $loadedAttributes = null;
         $columns = $this->columns;
-        if ($columns == ['attr.*'] || $columns == 'attr.*') {
-            $loadedAttributes = $this->loadAttributes();
-            $columns = ["{$this->from}.*"];
-            $loadedAttributes->each(function ($attribute, $key) use (&$columns) {
-                if (!$attribute->isStatic()) {
-                    $columns[] = $attribute->setEntity($this->baseEntity())
-                        ->addAttributeJoin($this, 'left')->getSelectColumn();
-                }
-            });
-        } else {          
 
-            $filterAttr = isset($this->attributeColumns['columns']) ? (array) $this->attributeColumns['columns'] : [];
-
-            if ($columns == ['*']) {
-                $columns = ["{$this->from}.*"];
+        $orgColumns = collect((array) $columns)->mapToGroups(function ($item, $key) {
+            if (is_a($item, Expression::class)) {
+                return ['expression' => $item];
             } else {
-                $orgColumns = collect((array) $columns)->mapToGroups(function ($item, $key) {
-                    if (is_a($item, Expression::class)) {
-                        return ['expression' => $item];
-                    } else {
-                        return ['columns' => $item];
-                    }
-                });
-
-                $columns = [];
-
-                if ($orgColumns->get('columns')->contains('*')) {
-                    $columns[] = "{$this->from}.*";
-                    $filterAttr = $orgColumns->get('columns')->merge($filterAttr)->all();
-                } elseif ($orgColumns->get('columns')->contains('attr.*')) {
-                    $columns[] = "{$this->from}.*";
-                    $filterAttr = [];
-                }
-
-                if ($orgColumns->get('columns')->contains($this->baseEntity()->getEnityKey())) {
-                    $columns[] =  $this->baseEntity()->getEnityKey();
-                }
-
-                $loadedAttributes = $this->loadAttributes($filterAttr)
-                    ->each(function ($attribute, $key) use (&$columns, $orgColumns) {
-                        if ($orgColumns->get('columns')->contains('attr.*')
-                            || $orgColumns->get('columns')->contains($attribute->getAttributeCode())) {
-                            $attribute->setEntity($this->baseEntity())
-                                    ->addAttributeJoin($this, 'left');
-
-                            if($attribute->isStatic()) {
-                                $columns[] = "{$this->from}.{$attribute->getSelectColumn()}";    
-                            } else {
-                                $columns[] = $attribute->getSelectColumn();
-                            }       
-                            
-                        } else if($this->hasAttributeConditions) {
-                            $attribute->setEntity($this->baseEntity())
-                                    ->addAttributeJoin($this);
-                        }
-                    });
-                $columns = $orgColumns
-                    ->get('columns')
-                    ->merge($columns)
-                    ->filter(function ($value, $key) {
-                        return !(($value == 'attr.*') || ($value == '*'));
-                    })->unique()->toArray();
-
-                if ($expression = $orgColumns->get('expression')) {
-                    $columns = $expression->merge($columns)->all();
-                }
+                return ['columns' => $item];
             }
+        });
+
+        $columns = [];
+        $removeCol = [
+            'attr.*', '*', $this->baseEntity()->getEnityKey()
+        ];
+
+        $allAttr = $orgColumns->get('columns')->contains('attr.*');
+        $allMain = $orgColumns->get('columns')->contains('*');        
+
+        // ->select(['attr.*']) or ->select(['*'])
+        if($allAttr || $allMain) {
+            $columns[] = "{$this->from}.*";
+        } 
+        // ->select(['id']) or ->select(['id', 'color'])
+        else if ($orgColumns->get('columns')->contains($this->baseEntity()->getEnityKey())) {
+            $columns[] =  "{$this->from}.{$this->baseEntity()->getEnityKey()}";
+        }       
+
+        // We check if the select has only `*`, if so then we have nothing
+        // to do.
+        if($allMain && $orgColumns->get('columns')->count() == 1) {
+            $this->columns = $columns;
+            return $this;
+        }
+
+        if ($allAttr) {
+            $fetchAttr = [];            
+        } else {            
+            $fetchAttr = $orgColumns->get('columns')->filter(function ($value, $key) use ($removeCol) {
+                return !(in_array($value, $removeCol));
+            })->all();
+        }
+
+        $loadedAttributes = $this->loadAttributes($fetchAttr)
+            ->each(function ($attribute, $key) use (&$columns, &$removeCol) {
+                if($attribute->isStatic()) {
+                    $columns[] = "{$this->from}.{$attribute->getSelectColumn()}";    
+                } else {
+                    $attribute->setEntity($this->baseEntity())
+                            ->addAttributeJoin($this, 'left');
+                    $columns[] = $attribute->getSelectColumn();
+                }
+                $removeCol[] = $attribute->getAttributeCode();            
+            });
+        // We might have join select clause in the original column
+            
+        $columns = $orgColumns
+            ->get('columns')
+            ->merge($columns)
+            ->filter(function ($value, $key) use ($removeCol) {
+                return !(in_array($value, $removeCol));
+            })->unique()->toArray();
+
+        // Merge the expression back to the query
+        
+        if ($expression = $orgColumns->get('expression')) {
+            $columns = $expression->merge($columns)->all();
         }
 
         $this->columns = $columns;
-
-        return $loadedAttributes;
+        return $this;
     }
 
     /**
@@ -357,8 +351,8 @@ class Builder extends QueryBuilder
             
             return parent::toSql();
         }
-        
-        $this->processAttributes($this->fixColumns());
+
+        $this->fixColumns()->processAttributes();
 
         return $this->grammar->compileSelect($this);
     }
@@ -386,7 +380,7 @@ class Builder extends QueryBuilder
     {
         $this->hasAttributeConditions = true;
 
-        $this->attributeColumns['columns'] = array_merge((array)$this->attributeColumns['columns'], (array)$column);
+        $this->attributeColumns = array_merge($this->attributeColumns, (array) $column);
         $this->attributeWheres['binding'][$values['type']][] = $values;
 
         $this->attributeWheresRef[$column][] = $values;
@@ -505,7 +499,7 @@ class Builder extends QueryBuilder
     {
         if ($query->hasAttributeConditions) {
             $type = 'Nested';
-            $this->addWhereAttribute($query->attributeColumns['columns'], compact('type', 'query', 'boolean'));
+            $this->addWhereAttribute($query->attributeColumns, compact('type', 'query', 'boolean'));
         }
 
         return $this;
@@ -841,8 +835,8 @@ class Builder extends QueryBuilder
 
         $this->hasAttributeConditions = true;
 
-        $this->attributeColumns['columns'] = array_merge((array)$this->attributeColumns['columns'], (array)$column);
-        $this->attributeOrderBy['binding'][$property][] = compact('column', 'direction');
+        $this->attributeColumns = array_merge($this->attributeColumns, (array)$column);
+        $this->attributeOrderBy[$property][] = compact('column', 'direction');
 
         return $this;
     }

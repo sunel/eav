@@ -13,27 +13,37 @@ trait Attribute
         
     public function loadAttributes($attributes = [], $static = false, $required = false)
     {
-        $attributes = array_unique($attributes);
+        $attributes = collect($attributes)->unique();
 
-        $alreadyLoadedAttkeys = array_intersect(static::$attributesCollectionKeys, $attributes);
-        
-        if (count($alreadyLoadedAttkeys) && (count($alreadyLoadedAttkeys) == count($attributes))) {
-            return static::$attributesCollection->intersectKeys($attributes);
-        } elseif (count($alreadyLoadedAttkeys) && (count($alreadyLoadedAttkeys) < count($attributes))) {
-            $newAttkeys = array_diff($attributes, static::$attributesCollectionKeys);
-            $loadedAttributes = $this->fetchAttributes($newAttkeys, $static, $required);
-
-            static::$attributesCollection = static::$attributesCollection->merge($loadedAttributes);
-
-            $loadedAttributes = static::$attributesCollection->intersectKeys($attributes);
+        if($attributes->isEmpty()) {
+            $this->saveAttribute(
+                $this->fetchAttributes([], $static, $required)
+            );
         } else {
-            $loadedAttributes = $this->fetchAttributes($attributes, $static, $required);
-            static::$attributesCollection = $loadedAttributes;
+            $newAttribute = $attributes->diff(static::$attributesCollectionKeys);
+            if($newAttribute->isNotEmpty()) {
+                $this->saveAttribute(
+                    $this->fetchAttributes($newAttribute->all(), $static, $required)
+                );
+            }
+        }         
+
+        if($attributes->isEmpty()) {
+            return static::$attributesCollection;
         }
-        
-        static::$attributesCollectionKeys = array_merge(static::$attributesCollectionKeys, $loadedAttributes->code()->toArray());
-                
-        return $loadedAttributes;
+
+        return static::$attributesCollection->only($attributes->all())->patch();
+    }
+
+    protected function saveAttribute(Collection $loadedAttributes)
+    {
+        if(static::$attributesCollection === null) {
+            static::$attributesCollection = $loadedAttributes;
+        } else {
+            static::$attributesCollection = static::$attributesCollection->merge($loadedAttributes);
+        }
+
+        static::$attributesCollectionKeys = static::$attributesCollection->code()->toArray();
     }
     
     protected function fetchAttributes($attributes = [], $static = false, $required = false)
@@ -51,8 +61,9 @@ trait Attribute
                 if ($required) {
                     $query->orWhere('is_required', 1);
                 }
-            });
-        return Cache::remember($query->toSql(), 10, function () use ($query) {
+            }); 
+        $cacheKey = md5(implode('|', $attributes)."|{$query->toSql()}");    
+        return Cache::remember($cacheKey, 10, function () use ($query) {
             return $query->get()->patch();
         });
     }

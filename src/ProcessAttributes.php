@@ -25,16 +25,16 @@ class ProcessAttributes
         Builder $query,
         Collection $loadedAttributes,
         Entity $baseEntity,
-        boolean $noJoin = false
+        $noJoin = false
     ) {
-        $filterAttr = array_flip($query->attributeColumns['columns']);
+        $filterAttr = array_flip($query->attributeColumns);
 
         $usedAttributes = $loadedAttributes
             ->filter(function ($attribute) use ($filterAttr) {
                 return isset($filterAttr[$attribute->getAttributeCode()]);
-            });
+            });  
 
-        foreach ((array) $query->attributeOrderBy['binding'] as $bindings) {
+        foreach ((array) $query->attributeOrderBy as $bindings) {
             foreach ($bindings as $binding) {
                 $attribute = $usedAttributes->get($binding['column']);
                 if ($attribute) {
@@ -49,7 +49,7 @@ class ProcessAttributes
             switch ($type) {
                 case 'Nested':
                     foreach ($bindings as $binding) {
-                        $binding['query']->processAttributes($loadedAttributes, true);
+                        $binding['query']->processAttributes(true);
                         $query->addNestedWhereQuery($binding['query'], $binding['boolean']);
                     }
 
@@ -62,7 +62,7 @@ class ProcessAttributes
                 case 'Basic':
                 default:
                     foreach ($bindings as $binding) {
-                        $attribute = $usedAttributes->get($binding['column']);
+                        $attribute = $usedAttributes->get($binding['column'], false);
                         if ($attribute) {
                             $attribute->setEntity($baseEntity);
                             if (!$noJoin) {
