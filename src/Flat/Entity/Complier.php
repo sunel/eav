@@ -131,7 +131,7 @@ class Complier
                     $schema .= ":nullable";
                 }
                 
-                if ($attribute['COLUMN_DEFAULT'] != null) {
+                if ($attribute['COLUMN_DEFAULT'] != null && $attribute['COLUMN_DEFAULT'] != "NULL") {
                     $schema .= ":default('{$attribute['COLUMN_DEFAULT']}')";
                 }
             }
