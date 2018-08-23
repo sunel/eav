@@ -28,6 +28,15 @@ class Entity extends Model
     ];
 
     /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'is_flat_enabled' => 'boolean',
+    ];
+
+    /**
      * Holds the primary key name of Orginal Entity instance.
      *
      * @var string
