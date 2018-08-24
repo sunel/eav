@@ -45,6 +45,8 @@ class Complier
 
         $this->console->info("\t Updating `{$this->entity->entity_table}` flat table.");
 
+        $flatEntity->setUseFlat(false);
+        
         $entity->select('attr.*')->chunk(100, function ($chunk) use ($flatEntity) {
             $flatEntity->setUseFlat(true);
             $flatEntity->insert($chunk->toArray());

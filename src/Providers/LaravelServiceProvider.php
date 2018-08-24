@@ -5,6 +5,7 @@ namespace Eav\Providers;
 use Validator;
 use Eav\Console\ModelMakeCommand;
 use Eav\Console\EntityComplierCommand;
+use Eav\Console\ActivateFlatEntityCommand;
 use Illuminate\Support\ServiceProvider;
 use Eav\Migrations\EntityMigrationCreator;
 use Eav\Migrations\AttributeMigrationCreator;
@@ -73,7 +74,7 @@ class LaravelServiceProvider extends ServiceProvider
     {
         $commands = [
             'MakeEntityMigration', 'MakeEnityModel', 'MakeAttributeMigration',
-            'MakeEntityAttributeMap', 'EntityComplier'
+            'MakeEntityAttributeMap', 'EntityComplier', 'ActivateFlatEntity'
         ];
 
         // We'll simply spin through the list of commands that are migration related
@@ -91,8 +92,21 @@ class LaravelServiceProvider extends ServiceProvider
             'command.attribute.migrate.make',
             'command.entity.model.make',
             'command.entity.attribute.map.make',
-            'command.entity.complier'
+            'command.entity.complier',
+            'command.entity.flat.activate'
         );
+    }
+
+    /**
+     * Register the command.
+     *
+     * @return void
+     */
+    protected function registerActivateFlatEntityCommand()
+    {
+        $this->app->singleton('command.entity.flat.activate', function ($app) {
+            return new ActivateFlatEntityCommand();
+        });
     }
 
     /**
