@@ -131,9 +131,9 @@ class Builder extends QueryBuilder
         
         $loadedAttributes->validate($values);
 
-        $this->select($this->baseEntity()->getEnityKey(), ...$loadedAttributes->keys()->toArray());
+        $this->select($this->baseEntity()->getEntityKey(), ...$loadedAttributes->keys()->toArray());
 
-        $entityIds = $this->pluck($this->baseEntity()->getEnityKey())->toArray();
+        $entityIds = $this->pluck($this->baseEntity()->getEntityKey())->toArray();
 
         $loadedAttributes->each(function ($attr, $code) use (&$values, $entityIds) {
             if (!$attr->isStatic()) {
@@ -143,7 +143,7 @@ class Builder extends QueryBuilder
         });
         
         $query = $this->newQuery()->from($this->from)
-            ->whereIn($this->baseEntity()->getEnityKey(), $entityIds);
+            ->whereIn($this->baseEntity()->getEntityKey(), $entityIds);
 
         $sql = $this->grammar->compileUpdate($query, $values);
 
@@ -252,7 +252,7 @@ class Builder extends QueryBuilder
 
         $columns = [];
         $removeCol = [
-            'attr.*', '*', $this->baseEntity()->getEnityKey()
+            'attr.*', '*', $this->baseEntity()->getEntityKey()
         ];
 
         $allAttr = $orgColumns->get('columns')->contains('attr.*');
@@ -263,8 +263,8 @@ class Builder extends QueryBuilder
             $columns[] = "{$this->from}.*";
         } 
         // ->select(['id']) or ->select(['id', 'color'])
-        else if ($orgColumns->get('columns')->contains($this->baseEntity()->getEnityKey())) {
-            $columns[] =  "{$this->from}.{$this->baseEntity()->getEnityKey()}";
+        else if ($orgColumns->get('columns')->contains($this->baseEntity()->getEntityKey())) {
+            $columns[] =  "{$this->from}.{$this->baseEntity()->getEntityKey()}";
         }       
 
         // We check if the select has only `*`, if so then we have nothing

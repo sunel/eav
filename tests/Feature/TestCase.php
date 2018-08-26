@@ -2,11 +2,14 @@
 
 namespace Eav\TestCase\Feature;
 
-use Orchestra\Testbench\TestCase as Testbench;
-use Eav\Providers\LaravelServiceProvider;
+use Tests\TestCase as Testbench;
+use Illuminate\Database\Eloquent\Factory as ModelFactory;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 abstract class TestCase extends Testbench
 {
+    use RefreshDatabase;
+
     /**
      * Setup the test environment.
      */
@@ -14,20 +17,8 @@ abstract class TestCase extends Testbench
     {
         parent::setUp();
 
-        $this->withFactories(__DIR__.'/../factories');
-        $this->artisan('migrate', ['--database' => 'testing']);
-        $this->artisan('migrate', ['--path' => __DIR__ . '/database/migrations']);
-    }
+        app()->make(ModelFactory::class)->load(__DIR__.'/../factories');
 
-    /**
-     * Get package providers.
-     *
-     * @param  \Illuminate\Foundation\Application  $app
-     *
-     * @return array
-     */
-    protected function getPackageProviders($app)
-    {
-        return [LaravelServiceProvider::class];
+        $this->artisan('migrate', ['--path' => __DIR__ . '/../migrations/']);
     }
 }

@@ -13,55 +13,128 @@ class EntityTest extends TestCase
 	protected $entity;
 
 	/**
+	 * @var Eav\Entity
+	 */
+	protected $entity_flat;
+
+	/**
      * Setup the test environment.
      */
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->entity = factory(Entity::class)->create();
-        $set = factory(AttributeSet::class)->create([
-        	'entity_id' => $this->entity->entity_id,
+        $this->entity = factory(Entity::class)->create([
+        	'entity_code' => 'custom'
         ]);
 
-        $this->entity->default_attribute_set_id = $set->attribute_set_id;        
-        $this->entity->save();
-    }
-
-
-    /** @test */
-    public function it_creates_entity()
-    {
-        $entityDB = \DB::table('entities')->where('entity_id', '=', 1)->first();
-        $this->assertEquals($this->entity->entity_code, $entityDB->entity_code);       
+        $this->entity_flat = factory(Entity::class)->states('flat')->create([
+    		'entity_code' => 'custom_1'
+    	]);
     }
 
 
     /** @test */
     public function it_can_be_found_by_code()
-    {    
-     	$entity = factory(Entity::class, 2)->create();     	
-        $entityDB = Entity::findByCode($entity->last()->entity_code);
-        $this->assertEquals($entity->last()->entity_id, $entityDB->entity_id);
-        $this->assertEquals($entity->last()->entity_code, $entityDB->entity_code);       
+    {        	
+        $entityDB = Entity::findByCode($this->entity->entity_code);
+        $this->assertEquals($this->entity->entity_id, $entityDB->entity_id);
+        $this->assertEquals($this->entity->entity_code, $entityDB->entity_code);       
     }
 
     /** @test */
     public function it_can_be_found_by_id()
-    {    
-     	$entity = factory(Entity::class, 3)->create();     	
-        $entityDB = Entity::findById($entity->last()->entity_id);
-        $this->assertEquals($entity->last()->entity_code, $entityDB->entity_code);
-        $this->assertEquals($entity->last()->entity_id, $entityDB->entity_id);    
+    {   	
+        $entityDB = Entity::findById($this->entity->entity_id);
+        $this->assertEquals($this->entity->entity_code, $entityDB->entity_code);
+        $this->assertEquals($this->entity->entity_id, $entityDB->entity_id);    
     }
 
     /** @test */
     public function it_can_detect_flat_table()
-    {    
-     	$entity = factory(Entity::class)->create();     	        
-        $this->assertEquals($entity->canUseFlat(), 0);
+    {        	        
+        $this->assertEquals($this->entity->canUseFlat(), 0);	        
+        $this->assertEquals($this->entity_flat->canUseFlat(), 1);   
+    }
 
-        $entity = factory(Entity::class)->states('flat')->create();     	        
-        $this->assertEquals($entity->canUseFlat(), 1);   
+    /** @test */
+    public function it_can_detect_flat_table_name()
+    {       	      	
+    	$eloquent = new class() extends \Eav\Model {
+            const ENTITY  = 'custom';
+            protected $table = 'custom_table';
+        };
+        
+        $eloquent_1 = new class() extends \Eav\Model {
+            const ENTITY  = 'custom_1';
+            protected $table = 'custom_table';
+        };
+
+        $this->assertEquals($eloquent->getTable(), 'custom_table');
+        $this->assertEquals($eloquent_1->getTable(), 'custom_table_flat');   
+    }
+
+    /** @test */
+    public function it_can_detect_key_name()
+    {       	      	
+    	$eloquent = new class() extends \Eav\Model {
+            const ENTITY  = 'custom';
+            protected $primaryKey = 'custom_id';
+        };
+
+        $entity = $eloquent->baseEntity();
+
+        $this->assertEquals($entity->getEntityKey(), 'custom_id');
+        $this->assertEquals($eloquent->getKeyName(), $entity->getEntityKey());   
+    }
+
+    /** @test */
+    public function it_can_detect_entity_table_name()
+    {        	
+    	$eloquent = new class() extends \Eav\Model {
+            const ENTITY  = 'custom';
+            protected $table = 'custom_table';
+        };
+
+        $entity = $eloquent->baseEntity();
+
+        $this->assertEquals($entity->getEntityTableName(), $eloquent->getTable()); 
+    }
+
+    /** @test */
+    public function it_can_have_many_attributes()
+    {   
+        $entity = Entity::findByCode('product');
+
+        $this->assertTrue($entity->attributes->isNotEmpty());
+    }
+
+    /** @test */
+    public function it_can_have_many_attribute_set()
+    {   
+        $entity = Entity::findByCode('product');
+
+        $this->assertTrue($entity->attributeSet->isNotEmpty());
+    }
+
+    /** @test */
+    public function it_must_have_default_attribute_set()
+    {   
+        $set = factory(AttributeSet::class)->create([
+            'entity_id' => $this->entity->entity_id,
+        ]);
+
+        $this->entity->default_attribute_set_id = $set->attribute_set_id;        
+        $this->entity->save();
+
+        $this->assertEquals($this->entity->entity_id, $set->entity_id);
+        $this->assertEquals($this->entity->defaultAttributeSet->attribute_set_id, $set->attribute_set_id);
+    }
+
+    protected function tearDown()
+    {
+        parent::tearDown();
+
+        Entity::clearStaticCache();
     }
 }

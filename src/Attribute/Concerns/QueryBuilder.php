@@ -100,12 +100,12 @@ trait QueryBuilder
         } else {
             if ($joinType == 'left') {
                 $query->leftJoin("{$this->getBackendTable()} as {$this->getAttributeCode()}_attr", function ($join) use ($query) {
-                    $join->on("{$query->from}.{$this->getEntity()->getEnityKey()}", '=', "{$this->getAttributeCode()}_attr.entity_id")
+                    $join->on("{$query->from}.{$this->getEntity()->getEntityKey()}", '=', "{$this->getAttributeCode()}_attr.entity_id")
                         ->where("{$this->getAttributeCode()}_attr.attribute_id", "=", $this->getAttributeId());
                 });
             } else {
                 $query->join("{$this->getBackendTable()} as {$this->getAttributeCode()}_attr", function ($join) use ($query) {
-                    $join->on("{$query->from}.{$this->getEntity()->getEnityKey()}", '=', "{$this->getAttributeCode()}_attr.entity_id")
+                    $join->on("{$query->from}.{$this->getEntity()->getEntityKey()}", '=', "{$this->getAttributeCode()}_attr.entity_id")
                         ->where("{$this->getAttributeCode()}_attr.attribute_id", "=", $this->getAttributeId());
                 });
             }

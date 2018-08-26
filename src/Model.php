@@ -27,13 +27,6 @@ abstract class Model extends Eloquent
      * @var bool
      */
     protected static $unguarded = true;
-
-    /**
-     * Array of loaded Entity.
-     *
-     * @var array
-     */
-    protected static $baseEntity = [];
     
     /**
      * Create a new Eloquent model instance.
@@ -60,17 +53,15 @@ abstract class Model extends Eloquent
      */
     public function baseEntity()
     {
-        if (!isset(static::$baseEntity[static::ENTITY])) {
-            try {
-                $eavEntity = Entity::findByCode(static::ENTITY);
-                $eavEntity->setEnityKey($this->getKeyName());
-            } catch (ModelNotFoundException $e) {
-                throw new \Exception("Unable to load Entity : ".static::ENTITY);
-            }
-            static::$baseEntity[static::ENTITY] = $eavEntity;
+        try {
+            $eavEntity = Entity::findByCode(static::ENTITY);
+            $eavEntity->setEntityKey($this->getKeyName());
+            $eavEntity->setEntityCustomTable($this->table);
+        } catch (ModelNotFoundException $e) {
+            throw new \Exception("Unable to load Entity : ".static::ENTITY);
         }
-        
-        return static::$baseEntity[static::ENTITY];
+
+        return $eavEntity;
     }
 
     /**

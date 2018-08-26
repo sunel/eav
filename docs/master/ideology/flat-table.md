@@ -23,3 +23,20 @@ To Deactivate the Flat table for the entity
 ```bash
 $ php artisan eav:flat:entity [entity_code] -E false
 ```
+
+::: warning
+When Flat table is enabled and if you try to insert or update a entity, it will update only the flat table.
+
+You can temporarily enabled or disable flat table though the code.
+
+```php
+
+$product = new Product();
+
+// Disable
+$product->setUseFlat(false);
+
+// Enable
+$product->setUseFlat(true);
+```
+:::
