@@ -196,7 +196,7 @@ class Attribute extends Model
      * Create a new attribute.
      *
      * @param array $data
-     * @return void
+     * @return \Eav\Attribute
      */
     public static function add(array $data)
     {
@@ -227,6 +227,8 @@ class Attribute extends Model
         if ($instance->getKey()) {
             AttributeOption::add($instance, $options);
         }
+
+        return $instance;
     }
     
     /**

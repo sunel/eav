@@ -41,11 +41,11 @@ Eav\Attribute::add([
     'frontend_class' =>  null,
     'frontend_type' => 'select', // Assgin the type "select"
     'frontend_label' => 'Status',
-    'source_class' => null
+    'source_class' => null,
     'options' => [
        '1' => 'Yes',
        '0'  => 'No'
-     ]
+     ],
     'default_value' => 0,
     'is_required' => 0,
     'required_validate_class' =>  null
