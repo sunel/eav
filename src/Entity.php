@@ -42,6 +42,13 @@ class Entity extends Model
      * @var string
      */
     protected $entityKey;
+
+    /**
+     * Holds the custom table name of Orginal Entity instance.
+     *
+     * @var string
+     */
+    protected $entityCustomTable;
     
     /**
      * Holds instance of all loaded Entity.
@@ -57,12 +64,24 @@ class Entity extends Model
      */
     protected static $entityIdCache = [];
 
+
+    /**
+     * Use this method only if nessary.
+     * 
+     * @return void
+     */
+    public static function clearStaticCache()
+    {
+        static::$baseEntity = [];
+        static::$entityIdCache = [];
+    }
+
     /**
      * Get the primary key for the Entity.
      *
      * @return string
      */
-    public function getEnityKey()
+    public function getEntityKey()
     {
         return $this->entityKey;
     }
@@ -73,9 +92,31 @@ class Entity extends Model
      * @param  string  $key
      * @return $this
      */
-    public function setEnityKey(string $key)
+    public function setEntityKey(string $key)
     {
         $this->entityKey = $key;
+        return $this;
+    }
+
+    /**
+     * Get the table name for the Entity.
+     *
+     * @return string
+     */
+    public function getEntityCustomTable()
+    {
+        return $this->entityCustomTable;
+    }
+
+    /**
+     * Set the table name for the Entity.
+     *
+     * @param  string|null  $key
+     * @return $this
+     */
+    public function setEntityCustomTable($key)
+    {
+        $this->entityCustomTable = $key;
         return $this;
     }
     
@@ -94,9 +135,10 @@ class Entity extends Model
      *
      * @return string
      */
-    public function getEntityTablePrefix()
-    {
-        $tableName = Str::singular($this->getAttribute('entity_table'));
+    public function getEntityTableName()
+    {   
+        $tableName = ($this->entityCustomTable)?:Str::singular($this->getAttribute('entity_table'));
+
         $tablePrefix = $this->getConnection()->getTablePrefix();
         if ($tablePrefix != '') {
             $tableName = "$tablePrefix.$tableName";

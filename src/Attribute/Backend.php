@@ -69,12 +69,12 @@ abstract class Backend implements BackendContract
     {
         if (empty($this->table)) {
             if ($this->getAttribute()->isStatic()) {
-                $this->table = $this->getAttribute()->getEntityType()->getEntityTablePrefix();
+                $this->table = $this->getAttribute()->getEntityType()->getEntityTableName();
             } elseif ($this->getAttribute()->getBackendTable()) {
                 $this->table = $this->getAttribute()->getBackendTable();
             } else {
                 $entity = $this->getAttribute()->getEntity();
-                $tableName = sprintf('%s_%s', $entity->getEntityTablePrefix(), $this->getType());
+                $tableName = sprintf('%s_%s', $entity->getEntityTableName(), $this->getType());
                 $this->table = $tableName;
             }
         }
