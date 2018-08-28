@@ -98,7 +98,7 @@ class EntityTest extends TestCase
 
         $entity = $eloquent->baseEntity();
 
-        $this->assertEquals($entity->getEntityTableName(), $eloquent->getTable()); 
+        $this->assertEquals($entity->getEntityCustomTable(), $eloquent->getTable()); 
     }
 
     /** @test */
