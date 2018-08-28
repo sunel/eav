@@ -198,6 +198,102 @@ class AttributeTest extends TestCase
     	$this->assertEquals($sku->getFrontendLabel(), 'Sku');
     }
 
+    /** @test */
+    public function it_can_insert_data()
+    {
+    	$sku = $this->addSku([
+    		'attribute_code' => 'upc',
+    		'entity_code' => 'product',
+    	]);
+
+		$value = 'HGKHDGEYTT'. rand();
+
+		$eloquent = new class() extends \Eav\Model {
+            const ENTITY  = 'product';
+             protected $table = 'products';
+        };
+
+        $eloquent->save();
+
+        $sku->insertAttribute($value, $eloquent->getKey());
+
+		$this->assertDatabaseHas($sku->getBackendTable(), [
+			'entity_type_id' => $sku->getEntity()->getKey(),
+            'attribute_id' => $sku->getKey(),
+            'entity_id' => $eloquent->getKey(),
+            'value' => $value
+		]);
+    }
+
+    /** @test */
+    public function it_can_update_data()
+    {
+    	$sku = $this->addSku([
+    		'attribute_code' => 'upc',
+    		'entity_code' => 'product',
+    	]);
+
+		$value = 'HGKHDGEYTT'. rand();
+
+		$eloquent = new class() extends \Eav\Model {
+            const ENTITY  = 'product';
+             protected $table = 'products';
+        };
+
+        $eloquent->save();
+
+        $sku->insertAttribute($value, $eloquent->getKey());
+
+		$this->assertDatabaseHas($sku->getBackendTable(), [
+			'entity_type_id' => $sku->getEntity()->getKey(),
+            'attribute_id' => $sku->getKey(),
+            'entity_id' => $eloquent->getKey(),
+            'value' => $value
+		]);
+
+		$value = 'HGKHDGEYTT'. rand();
+
+		$sku->updateAttribute($value, $eloquent->getKey());
+
+		$this->assertDatabaseHas($sku->getBackendTable(), [
+			'entity_type_id' => $sku->getEntity()->getKey(),
+            'attribute_id' => $sku->getKey(),
+            'entity_id' => $eloquent->getKey(),
+            'value' => $value
+		]);
+    }
+
+    /** @test */
+    public function it_can_fetch_data()
+    {
+    	$sku = $this->addSku([
+    		'attribute_code' => 'upc',
+    		'entity_code' => 'product',
+    	]);
+
+		$value = 'HGKHDGEYTT'. rand();
+
+		$eloquent = new class() extends \Eav\Model {
+            const ENTITY  = 'product';
+             protected $table = 'products';
+        };
+
+        $eloquent->save();
+
+        $sku->insertAttribute($value, $eloquent->getKey());
+
+		$this->assertDatabaseHas($sku->getBackendTable(), [
+			'entity_type_id' => $sku->getEntity()->getKey(),
+            'attribute_id' => $sku->getKey(),
+            'entity_id' => $eloquent->getKey(),
+            'value' => $value
+		]);
+
+		$valueDB = $sku->fetchAttributeValue($eloquent->getKey());
+
+		$this->assertEquals($value, $valueDB);
+    }
+
     private function addSku($override = null)
     {
     	$data = [

@@ -468,6 +468,28 @@ class Attribute extends Model
             ->updateOrInsert($attributes, ['value' => $value]);
     }
 
+
+    /**
+     * Fetch the data for the attribute.
+     *
+     * @param  mixed $value
+     * @param  int $entityId
+     * @return mixed
+     */
+    public function fetchAttributeValue($entityId)
+    {
+        $attributes = [
+            'entity_type_id' => $this->getEntity()->getKey(),
+            'attribute_id' => $this->getKey(),
+            'entity_id' => $entityId,
+        ];
+
+        return $this->newBaseQueryBuilder()
+            ->from($this->getBackendTable())
+            ->where($attributes)
+            ->value('value');
+    }
+
     /**
      * Mass Update the data for the attribute.
      *
