@@ -23,7 +23,6 @@ class Attribute extends Model
      */
     public $timestamps = false;
     
-
     /**
      * @{inheriteDoc}
      */
@@ -77,17 +76,6 @@ class Attribute extends Model
     protected $dataTable  = null;
     
     /**
-     * Set attribute code
-     *
-     * @param   string $code
-     * @return $this
-     */
-    public function setAttributeCode(string $code)
-    {
-        return $this->setAttribute('attribute_code', $code);
-    }
-    
-    /**
      * Get attribute name
      *
      * @return string
@@ -98,7 +86,7 @@ class Attribute extends Model
     }
 
     /**
-     * Get attribute identifuer
+     * Get attribute identifier
      *
      * @return int | null
      */

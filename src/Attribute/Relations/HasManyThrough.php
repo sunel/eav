@@ -72,7 +72,7 @@ class HasManyThrough extends Relation
     
     private function canRelate($model)
     {
-        return (($model->getFrontendInput() == 'select' || $model->getAttribute('frontend_type') === 'multiselect')
+        return (($model->getFrontendInput() === 'select' || $model->getFrontendInput() === 'multiselect')
             && empty($model->getAttribute('source_class')));
     }
 }
