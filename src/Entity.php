@@ -137,7 +137,7 @@ class Entity extends Model
      */
     public function getEntityTableName()
     {   
-        $tableName = ($this->entityCustomTable)?:Str::singular($this->getAttribute('entity_table'));
+        $tableName = $this->getAttribute('entity_code');
 
         $tablePrefix = $this->getConnection()->getTablePrefix();
         if ($tablePrefix != '') {
