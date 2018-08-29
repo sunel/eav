@@ -77,6 +77,16 @@ class Entity extends Model
     }
 
     /**
+     * Get the entity code.
+     *
+     * @return string
+     */
+    public function getCode()
+    {
+        return $this->getAttribute('entity_code');
+    }
+
+    /**
      * Get the primary key for the Entity.
      *
      * @return string
