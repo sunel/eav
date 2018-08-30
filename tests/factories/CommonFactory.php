@@ -2,6 +2,7 @@
 
 use Faker\Generator;
 use Eav\AttributeSet;
+use Eav\AttributeGroup;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,7 +17,15 @@ use Eav\AttributeSet;
 
 $factory->define(AttributeSet::class, function (Generator $faker) {
     return [
-        'attribute_set_name' => 'Default',
+        'attribute_set_name' => $faker->unique()->userName,
         'entity_id' => null,
+    ];
+});
+
+
+$factory->define(AttributeGroup::class, function (Generator $faker) {
+    return [
+        'attribute_set_id' => null,
+        'attribute_group_name' => $faker->unique()->userName,
     ];
 });

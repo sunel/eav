@@ -26,4 +26,29 @@ Schema::create('[field_type_table_name]', function (Blueprint $table) {
 ```
 In case of Custom Table,
 
-In the Attribute Migration file you can find `backend_table`, it is empty but if you provide a table name, it will store the value in that table.
+In the Attribute Migration file you can find `backend_table`, it is empty. If you provide a table name, it will store the value in that table.
+
+```php
+Eav\Attribute::add([
+    'attribute_code' => 'inventory',
+    'entity_code' => 'product',
+    'backend_class' => null,
+    'backend_type' => 'int',
+    'backend_table' =>  'product_stock', // Custom Table
+    'frontend_class' =>  null,
+    'frontend_type' => 'input',
+    'frontend_label' => 'Inventory',
+    'source_class' =>  null,
+    'default_value' => 0,
+    'is_required' => 0,
+    'is_filterable' => 0,
+    'required_validate_class' =>  null
+]);
+
+Eav\EntityAttribute::map([
+    'attribute_code' => 'inventory',
+    'entity_code' => 'product',
+    'attribute_set' => 'Default',
+    'attribute_group' => 'General'
+]);
+```

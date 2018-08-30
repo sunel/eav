@@ -294,31 +294,6 @@ class AttributeTest extends TestCase
 		$this->assertEquals($value, $valueDB);
     }
 
-    private function addSku($override = null)
-    {
-    	$data = [
-			'attribute_code' => 'sku',
-			'entity_code' => 'custom',
-			'backend_class' => NULL,
-			'backend_type' => 'string',
-			'backend_table' =>  NULL,
-			'frontend_class' =>  NULL,
-			'frontend_type' => 'text',
-			'frontend_label' => ucwords(str_replace('_',' ','sku')),
-			'source_class' =>  NULL,
-			'default_value' => '',
-			'is_required' => 0,
-			'required_validate_class' =>  NULL	
-		];
-
-		if($override) {
-			$data = array_merge($data, $override);
-		}
-
-    	return Attribute::add($data);
-    }
-
-
     private function addWithSource()
     {
     	return Attribute::add([
