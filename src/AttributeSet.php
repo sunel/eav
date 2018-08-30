@@ -22,6 +22,16 @@ class AttributeSet extends Model
     protected $fillable = [
         'attribute_set_name' , 'entity_id'
     ];
+
+    /**
+     * Proxy to get the attribute set name.
+     * 
+     * @return string
+     */
+    public function name()
+    {
+        return $this->getAttribute('attribute_set_name');
+    }
     
     /**
      * Define a has-many-through relationship for attributes.

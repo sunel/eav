@@ -74,9 +74,19 @@ class Attribute extends Model
      * @var string
      */
     protected $dataTable  = null;
+
+    /**
+     * Proxy to get the attribute code.
+     *
+     * @return string
+     */
+    public function getCode()
+    {
+        return $this->getAttributeCode();
+    }
     
     /**
-     * Get attribute name
+     * Get attribute code
      *
      * @return string
      */
