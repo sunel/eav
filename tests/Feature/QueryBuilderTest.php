@@ -8,10 +8,6 @@ use Eav\AttributeSet;
 use Eav\AttributeGroup;
 use Eav\EntityAttribute;
 
-class Products extends \Eav\Model {
-    const ENTITY  = 'product';
-}
-
 class QueryBuilderTest extends TestCase
 {
 
@@ -27,7 +23,7 @@ class QueryBuilderTest extends TestCase
 	/** @test */
     public function it_can_create_entity()
     {
-        $eloquent = $this->product();
+        $eloquent = $this->car();
 
 		$this->assertNotNull($eloquent->getKey());
     }
@@ -35,7 +31,7 @@ class QueryBuilderTest extends TestCase
     /** @test */
     public function it_can_update_entity()
     {
-        $eloquent = $this->product();
+        $eloquent = $this->car();
 
 		$this->assertNotNull($eloquent->getKey());
 
@@ -43,7 +39,7 @@ class QueryBuilderTest extends TestCase
 
 		$eloquent->save();
 
-		$db = Products::select(['name'])->find($eloquent->getKey());
+		$db = Cars::select(['name'])->find($eloquent->getKey());
 
 		$this->assertEquals($db->name, 'Not a Flamethrower');
     }
@@ -51,9 +47,9 @@ class QueryBuilderTest extends TestCase
     /** @test */
     public function it_can_mass_update()
     {
-        $eloquent = $this->product();
+        $eloquent = $this->car();
 
-		Products::create([
+		Cars::create([
 		    'name' => 'Flamethrower',
 		    'sku'  => '1HJK92_2',
 		    'description' => 'Not a Flamethrower'
@@ -61,11 +57,11 @@ class QueryBuilderTest extends TestCase
 
 		$this->assertNull($eloquent->search);
 
-		$p = Products::whereNullAttribute('search');
+		$p = Cars::whereNullAttribute('search');
 
 		$p->update(['search' => 1]);
 
-		$db = Products::select(['attr.*'])->find($eloquent->getKey());
+		$db = cars::select(['attr.*'])->find($eloquent->getKey());
 
 		$this->assertNotNull($db->search);
     }
@@ -73,11 +69,11 @@ class QueryBuilderTest extends TestCase
     /** @test */
     public function it_can_fetch_without_attributes()
     {
-        $eloquent = $this->product();
+        $eloquent = $this->car();
 
-        $products = Products::all();
+        $cars = Cars::all();
 
-        $p = $products->first();
+        $p = $cars->first();
 
         $this->assertNull($p->name);
 
@@ -87,11 +83,11 @@ class QueryBuilderTest extends TestCase
     /** @test */
     public function it_can_fetch_with_attributes()
     {
-        $eloquent = $this->product();
+        $eloquent = $this->car();
 
-        $products = Products::all(['attr.*']);
+        $cars = Cars::all(['attr.*']);
 
-        $p = $products->first();
+        $p = $cars->first();
 
         $this->assertNotNull($p->name);
 
@@ -101,11 +97,11 @@ class QueryBuilderTest extends TestCase
     /** @test */
     public function it_can_fetch_specific_attributes()
     {
-        $eloquent = $this->product();
+        $eloquent = $this->car();
 
-        $products = Products::all(['name','description']);
+        $cars = Cars::all(['name','description']);
 
-        $p = $products->first();
+        $p = $cars->first();
 
         $this->assertNull($p->sku);
         $this->assertNull($p->getKey());
@@ -116,11 +112,11 @@ class QueryBuilderTest extends TestCase
     /** @test */
     public function it_can_fetch_with_entity_table()
     {
-        $eloquent = $this->product();
+        $eloquent = $this->car();
 
-        $products = Products::all(['*','name','description']);
+        $cars = Cars::all(['*','name','description']);
 
-        $p = $products->first();
+        $p = $cars->first();
 
         $this->assertNull($p->sku);
 
@@ -131,11 +127,11 @@ class QueryBuilderTest extends TestCase
     /** @test */
     public function it_can_fetch_with_specific_entity_table()
     {
-        $eloquent = $this->product();
+        $eloquent = $this->car();
 
-        $products = Products::all(['id','name','description']);
+        $cars = Cars::all(['id','name','description']);
 
-        $p = $products->first();
+        $p = $cars->first();
 
         $this->assertNull($p->sku);
 
@@ -146,12 +142,12 @@ class QueryBuilderTest extends TestCase
     /** @test */
     public function it_can_fetch_with_get()
     {
-        $eloquent = $this->product();
+        $eloquent = $this->car();
 
-        $products = Products::whereAttribute('sku', '1HJK92')
+        $cars = Cars::whereAttribute('sku', '1HJK92')
 			->get(['name']);
 
-        $p = $products->first();
+        $p = $cars->first();
 
         $this->assertNull($p->sku);
         $this->assertNull($p->getKey());
@@ -162,13 +158,13 @@ class QueryBuilderTest extends TestCase
     /** @test */
     public function it_can_fetch_with_select()
     {
-        $eloquent = $this->product();
+        $eloquent = $this->car();
 
-        $products = Products::whereAttribute('sku', '1HJK92')
+        $cars = Cars::whereAttribute('sku', '1HJK92')
 			->select(['attr.*'])
 			->get();
 
-        $p = $products->first();
+        $p = $cars->first();
 
         $this->assertNotNull($p->sku);
         $this->assertNotNull($p->getKey());
@@ -178,18 +174,18 @@ class QueryBuilderTest extends TestCase
     /** @test */
     public function it_can_join_an_attribute()
     {
-    	$products = Products::select('*');
+    	$cars = Cars::select('*');
 
-	    $attribute = \Eav\Attribute::findByCode('sku', 'product');
-	    $attribute->setEntity($products->baseEntity());
-	    $attribute->addAttributeJoin($products->getQuery(), 'left');
+	    $attribute = \Eav\Attribute::findByCode('sku', 'car');
+	    $attribute->setEntity($cars->baseEntity());
+	    $attribute->addAttributeJoin($cars->getQuery(), 'left');
 
-	    $this->assertNotNull($products->getQuery()->joins);
+	    $this->assertNotNull($cars->getQuery()->joins);
     }
 
-    private function product()
+    private function car()
     {
-    	return Products::create([
+    	return Cars::create([
 		    'name' => 'Flamethrower',
 		    'sku'  => '1HJK92',
 		    'description' => 'Not a Flamethrower'

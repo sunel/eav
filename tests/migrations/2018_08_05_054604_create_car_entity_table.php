@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateProductEntityTable extends Migration
+class CreateCarEntityTable extends Migration
 {
     /**
      * Run the migrations.
@@ -19,7 +19,7 @@ class CreateProductEntityTable extends Migration
     public function up()
     {
     				
-		Schema::create('product_bigInteger', function (Blueprint $table) {
+		Schema::create('car_bigInteger', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -28,7 +28,7 @@ class CreateProductEntityTable extends Migration
             $table->bigInteger('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -36,7 +36,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_binary', function (Blueprint $table) {
+		Schema::create('car_binary', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -45,7 +45,7 @@ class CreateProductEntityTable extends Migration
             $table->binary('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -53,7 +53,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_boolean', function (Blueprint $table) {
+		Schema::create('car_boolean', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -62,7 +62,7 @@ class CreateProductEntityTable extends Migration
             $table->boolean('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -70,7 +70,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_char', function (Blueprint $table) {
+		Schema::create('car_char', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -79,7 +79,7 @@ class CreateProductEntityTable extends Migration
             $table->char('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -87,7 +87,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_date', function (Blueprint $table) {
+		Schema::create('car_date', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -96,7 +96,7 @@ class CreateProductEntityTable extends Migration
             $table->date('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -104,7 +104,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_dateTime', function (Blueprint $table) {
+		Schema::create('car_dateTime', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -113,7 +113,7 @@ class CreateProductEntityTable extends Migration
             $table->dateTime('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -121,7 +121,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_dateTimeTz', function (Blueprint $table) {
+		Schema::create('car_dateTimeTz', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -130,7 +130,7 @@ class CreateProductEntityTable extends Migration
             $table->dateTimeTz('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -138,7 +138,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_decimal', function (Blueprint $table) {
+		Schema::create('car_decimal', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -147,7 +147,7 @@ class CreateProductEntityTable extends Migration
             $table->decimal('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -155,7 +155,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_double', function (Blueprint $table) {
+		Schema::create('car_double', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -164,7 +164,7 @@ class CreateProductEntityTable extends Migration
             $table->double('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -172,7 +172,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_float', function (Blueprint $table) {
+		Schema::create('car_float', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -181,7 +181,7 @@ class CreateProductEntityTable extends Migration
             $table->float('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -189,7 +189,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_geometry', function (Blueprint $table) {
+		Schema::create('car_geometry', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -198,7 +198,7 @@ class CreateProductEntityTable extends Migration
             $table->geometry('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -206,7 +206,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_geometryCollection', function (Blueprint $table) {
+		Schema::create('car_geometryCollection', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -215,7 +215,7 @@ class CreateProductEntityTable extends Migration
             $table->geometryCollection('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -223,7 +223,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_integer', function (Blueprint $table) {
+		Schema::create('car_integer', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -232,7 +232,7 @@ class CreateProductEntityTable extends Migration
             $table->integer('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -240,7 +240,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_ipAddress', function (Blueprint $table) {
+		Schema::create('car_ipAddress', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -249,7 +249,7 @@ class CreateProductEntityTable extends Migration
             $table->ipAddress('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -257,7 +257,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_lineString', function (Blueprint $table) {
+		Schema::create('car_lineString', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -266,7 +266,7 @@ class CreateProductEntityTable extends Migration
             $table->lineString('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -274,7 +274,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_longText', function (Blueprint $table) {
+		Schema::create('car_longText', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -283,7 +283,7 @@ class CreateProductEntityTable extends Migration
             $table->longText('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -291,7 +291,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_macAddress', function (Blueprint $table) {
+		Schema::create('car_macAddress', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -300,7 +300,7 @@ class CreateProductEntityTable extends Migration
             $table->macAddress('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -308,7 +308,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_mediumInteger', function (Blueprint $table) {
+		Schema::create('car_mediumInteger', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -317,7 +317,7 @@ class CreateProductEntityTable extends Migration
             $table->mediumInteger('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -325,7 +325,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_mediumText', function (Blueprint $table) {
+		Schema::create('car_mediumText', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -334,7 +334,7 @@ class CreateProductEntityTable extends Migration
             $table->mediumText('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -342,7 +342,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_multiLineString', function (Blueprint $table) {
+		Schema::create('car_multiLineString', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -351,7 +351,7 @@ class CreateProductEntityTable extends Migration
             $table->multiLineString('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -359,7 +359,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_multiPoint', function (Blueprint $table) {
+		Schema::create('car_multiPoint', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -368,7 +368,7 @@ class CreateProductEntityTable extends Migration
             $table->multiPoint('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -376,7 +376,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_multiPolygon', function (Blueprint $table) {
+		Schema::create('car_multiPolygon', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -385,7 +385,7 @@ class CreateProductEntityTable extends Migration
             $table->multiPolygon('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -393,7 +393,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_point', function (Blueprint $table) {
+		Schema::create('car_point', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -402,7 +402,7 @@ class CreateProductEntityTable extends Migration
             $table->point('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -410,7 +410,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_polygon', function (Blueprint $table) {
+		Schema::create('car_polygon', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -419,7 +419,7 @@ class CreateProductEntityTable extends Migration
             $table->polygon('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -427,7 +427,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_smallInteger', function (Blueprint $table) {
+		Schema::create('car_smallInteger', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -436,7 +436,7 @@ class CreateProductEntityTable extends Migration
             $table->smallInteger('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -444,7 +444,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_string', function (Blueprint $table) {
+		Schema::create('car_string', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -453,7 +453,7 @@ class CreateProductEntityTable extends Migration
             $table->string('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -461,7 +461,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_text', function (Blueprint $table) {
+		Schema::create('car_text', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -470,7 +470,7 @@ class CreateProductEntityTable extends Migration
             $table->text('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -478,7 +478,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_time', function (Blueprint $table) {
+		Schema::create('car_time', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -487,7 +487,7 @@ class CreateProductEntityTable extends Migration
             $table->time('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -495,7 +495,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_timeTz', function (Blueprint $table) {
+		Schema::create('car_timeTz', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -504,7 +504,7 @@ class CreateProductEntityTable extends Migration
             $table->timeTz('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -512,7 +512,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_timestamp', function (Blueprint $table) {
+		Schema::create('car_timestamp', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -521,7 +521,7 @@ class CreateProductEntityTable extends Migration
             $table->timestamp('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -529,7 +529,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_timestampTz', function (Blueprint $table) {
+		Schema::create('car_timestampTz', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -538,7 +538,7 @@ class CreateProductEntityTable extends Migration
             $table->timestampTz('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -546,7 +546,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_tinyInteger', function (Blueprint $table) {
+		Schema::create('car_tinyInteger', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -555,7 +555,7 @@ class CreateProductEntityTable extends Migration
             $table->tinyInteger('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -563,7 +563,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_unsignedBigInteger', function (Blueprint $table) {
+		Schema::create('car_unsignedBigInteger', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -572,7 +572,7 @@ class CreateProductEntityTable extends Migration
             $table->unsignedBigInteger('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -580,7 +580,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_unsignedInteger', function (Blueprint $table) {
+		Schema::create('car_unsignedInteger', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -589,7 +589,7 @@ class CreateProductEntityTable extends Migration
             $table->unsignedInteger('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -597,7 +597,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_unsignedMediumInteger', function (Blueprint $table) {
+		Schema::create('car_unsignedMediumInteger', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -606,7 +606,7 @@ class CreateProductEntityTable extends Migration
             $table->unsignedMediumInteger('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -614,7 +614,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_unsignedSmallInteger', function (Blueprint $table) {
+		Schema::create('car_unsignedSmallInteger', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -623,7 +623,7 @@ class CreateProductEntityTable extends Migration
             $table->unsignedSmallInteger('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -631,7 +631,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_unsignedTinyInteger', function (Blueprint $table) {
+		Schema::create('car_unsignedTinyInteger', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -640,7 +640,7 @@ class CreateProductEntityTable extends Migration
             $table->unsignedTinyInteger('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -648,7 +648,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_uuid', function (Blueprint $table) {
+		Schema::create('car_uuid', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -657,7 +657,7 @@ class CreateProductEntityTable extends Migration
             $table->uuid('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -665,7 +665,7 @@ class CreateProductEntityTable extends Migration
 			$table->index('entity_id');        	  
         });
 	        			
-		Schema::create('product_year', function (Blueprint $table) {
+		Schema::create('car_year', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
             $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
@@ -674,7 +674,7 @@ class CreateProductEntityTable extends Migration
             $table->year('value')->default(NULL)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
-            	  ->references('id')->on('products')
+            	  ->references('id')->on('cars')
 				  ->onDelete('cascade');
             
             $table->unique(['entity_id','attribute_id']);
@@ -684,9 +684,9 @@ class CreateProductEntityTable extends Migration
 	        
         
         $entity = Entity::create([
-        	'entity_code' => 'product',
-        	'entity_class' => 'App\Product',
-        	'entity_table' => 'products',
+        	'entity_code' => 'car',
+        	'entity_class' => 'App\Cars',
+        	'entity_table' => 'cars',
         ]);
         
         
@@ -717,86 +717,86 @@ class CreateProductEntityTable extends Migration
         $this->removeTimeStampAttributes();
         
     				
-		Schema::drop('product_bigInteger');
+		Schema::drop('car_bigInteger');
 			
-		Schema::drop('product_binary');
+		Schema::drop('car_binary');
 			
-		Schema::drop('product_boolean');
+		Schema::drop('car_boolean');
 			
-		Schema::drop('product_char');
+		Schema::drop('car_char');
 			
-		Schema::drop('product_date');
+		Schema::drop('car_date');
 			
-		Schema::drop('product_dateTime');
+		Schema::drop('car_dateTime');
 			
-		Schema::drop('product_dateTimeTz');
+		Schema::drop('car_dateTimeTz');
 			
-		Schema::drop('product_decimal');
+		Schema::drop('car_decimal');
 			
-		Schema::drop('product_double');
+		Schema::drop('car_double');
 			
-		Schema::drop('product_float');
+		Schema::drop('car_float');
 			
-		Schema::drop('product_geometry');
+		Schema::drop('car_geometry');
 			
-		Schema::drop('product_geometryCollection');
+		Schema::drop('car_geometryCollection');
 			
-		Schema::drop('product_integer');
+		Schema::drop('car_integer');
 			
-		Schema::drop('product_ipAddress');			
+		Schema::drop('car_ipAddress');			
 			
-		Schema::drop('product_lineString');
+		Schema::drop('car_lineString');
 			
-		Schema::drop('product_longText');
+		Schema::drop('car_longText');
 			
-		Schema::drop('product_macAddress');
+		Schema::drop('car_macAddress');
 			
-		Schema::drop('product_mediumInteger');
+		Schema::drop('car_mediumInteger');
 			
-		Schema::drop('product_mediumText');
+		Schema::drop('car_mediumText');
 			
-		Schema::drop('product_multiLineString');
+		Schema::drop('car_multiLineString');
 			
-		Schema::drop('product_multiPoint');
+		Schema::drop('car_multiPoint');
 			
-		Schema::drop('product_multiPolygon');
+		Schema::drop('car_multiPolygon');
 			
-		Schema::drop('product_point');
+		Schema::drop('car_point');
 			
-		Schema::drop('product_polygon');
+		Schema::drop('car_polygon');
 			
-		Schema::drop('product_smallInteger');
+		Schema::drop('car_smallInteger');
 			
-		Schema::drop('product_string');
+		Schema::drop('car_string');
 			
-		Schema::drop('product_text');
+		Schema::drop('car_text');
 			
-		Schema::drop('product_time');
+		Schema::drop('car_time');
 			
-		Schema::drop('product_timeTz');
+		Schema::drop('car_timeTz');
 			
-		Schema::drop('product_timestamp');
+		Schema::drop('car_timestamp');
 			
-		Schema::drop('product_timestampTz');
+		Schema::drop('car_timestampTz');
 			
-		Schema::drop('product_tinyInteger');
+		Schema::drop('car_tinyInteger');
 			
-		Schema::drop('product_unsignedBigInteger');			
+		Schema::drop('car_unsignedBigInteger');			
 			
-		Schema::drop('product_unsignedInteger');
+		Schema::drop('car_unsignedInteger');
 			
-		Schema::drop('product_unsignedMediumInteger');
+		Schema::drop('car_unsignedMediumInteger');
 			
-		Schema::drop('product_unsignedSmallInteger');
+		Schema::drop('car_unsignedSmallInteger');
 			
-		Schema::drop('product_unsignedTinyInteger');
+		Schema::drop('car_unsignedTinyInteger');
 			
-		Schema::drop('product_uuid');
+		Schema::drop('car_uuid');
 			
-		Schema::drop('product_year');
+		Schema::drop('car_year');
         
         
-        $entity = Entity::where('entity_code', '=', 'product');               
+        $entity = Entity::where('entity_code', '=', 'car');               
         $attributeSet = AttributeSet::where('attribute_set_name', '=', 'Default')
         				->where('entity_id', '=', $entity->first()->entity_id);
         $attributeGroup = AttributeGroup::where('attribute_set_id', '=', $attributeSet->first()->attribute_set_id)
@@ -814,7 +814,7 @@ class CreateProductEntityTable extends Migration
     {
         Attribute::add([
             'attribute_code' => 'created_at',
-            'entity_code' => 'product',
+            'entity_code' => 'car',
             'backend_class' => NULL,
             'backend_type' => 'static',
             'backend_table' =>  NULL,
@@ -829,14 +829,14 @@ class CreateProductEntityTable extends Migration
 
         EntityAttribute::map([
             'attribute_code' => 'created_at',
-            'entity_code' => 'product',
+            'entity_code' => 'car',
             'attribute_set' => 'Default',
             'attribute_group' => 'General'
         ]);
 
         Attribute::add([
             'attribute_code' => 'updated_at',
-            'entity_code' => 'product',
+            'entity_code' => 'car',
             'backend_class' => NULL,
             'backend_type' => 'static',
             'backend_table' =>  NULL,
@@ -851,7 +851,7 @@ class CreateProductEntityTable extends Migration
 
         EntityAttribute::map([
             'attribute_code' => 'updated_at',
-            'entity_code' => 'product',
+            'entity_code' => 'car',
             'attribute_set' => 'Default',
             'attribute_group' => 'General'
         ]);
@@ -863,22 +863,22 @@ class CreateProductEntityTable extends Migration
     {
         EntityAttribute::unmap([
             'attribute_code' => 'created_at',
-            'entity_code' => 'product',
+            'entity_code' => 'car',
         ]);
 
         Attribute::remove([
             'attribute_code' => 'created_at',
-            'entity_code' => 'product',
+            'entity_code' => 'car',
         ]);
 
         EntityAttribute::unmap([
             'attribute_code' => 'updated_at',
-            'entity_code' => 'product',
+            'entity_code' => 'car',
         ]);
 
         Attribute::remove([
             'attribute_code' => 'updated_at',
-            'entity_code' => 'product',
+            'entity_code' => 'car',
         ]);
     }
 }

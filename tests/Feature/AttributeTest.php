@@ -203,14 +203,14 @@ class AttributeTest extends TestCase
     {
     	$sku = $this->addSku([
     		'attribute_code' => 'upc',
-    		'entity_code' => 'product',
+    		'entity_code' => 'car',
     	]);
 
 		$value = 'HGKHDGEYTT'. rand();
 
 		$eloquent = new class() extends \Eav\Model {
-            const ENTITY  = 'product';
-             protected $table = 'products';
+            const ENTITY  = 'car';
+             protected $table = 'cars';
         };
 
         $eloquent->save();
@@ -230,14 +230,14 @@ class AttributeTest extends TestCase
     {
     	$sku = $this->addSku([
     		'attribute_code' => 'upc',
-    		'entity_code' => 'product',
+    		'entity_code' => 'car',
     	]);
 
 		$value = 'HGKHDGEYTT'. rand();
 
 		$eloquent = new class() extends \Eav\Model {
-            const ENTITY  = 'product';
-             protected $table = 'products';
+            const ENTITY  = 'car';
+             protected $table = 'cars';
         };
 
         $eloquent->save();
@@ -268,14 +268,14 @@ class AttributeTest extends TestCase
     {
     	$sku = $this->addSku([
     		'attribute_code' => 'upc',
-    		'entity_code' => 'product',
+    		'entity_code' => 'car',
     	]);
 
 		$value = 'HGKHDGEYTT'. rand();
 
 		$eloquent = new class() extends \Eav\Model {
-            const ENTITY  = 'product';
-             protected $table = 'products';
+            const ENTITY  = 'car';
+             protected $table = 'cars';
         };
 
         $eloquent->save();

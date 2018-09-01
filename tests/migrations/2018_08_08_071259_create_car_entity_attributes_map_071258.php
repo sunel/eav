@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateProductEntityAttributesMap071258 extends Migration
+class CreateCarEntityAttributesMap071258 extends Migration
 {
     /**
      * Run the migrations.
@@ -18,28 +18,35 @@ class CreateProductEntityAttributesMap071258 extends Migration
         			
 			EntityAttribute::map([
 				'attribute_code' => 'sku',
-				'entity_code' => 'product',
+				'entity_code' => 'car',
 				'attribute_set' => 'Default',
 				'attribute_group' => 'General'
 			]);
 			
 			EntityAttribute::map([
 				'attribute_code' => 'name',
-				'entity_code' => 'product',
+				'entity_code' => 'car',
+				'attribute_set' => 'Default',
+				'attribute_group' => 'General'
+			]);
+
+			EntityAttribute::map([
+				'attribute_code' => 'age',
+				'entity_code' => 'car',
 				'attribute_set' => 'Default',
 				'attribute_group' => 'General'
 			]);
 			
 			EntityAttribute::map([
 				'attribute_code' => 'search',
-				'entity_code' => 'product',
+				'entity_code' => 'car',
 				'attribute_set' => 'Default',
 				'attribute_group' => 'General'
 			]);
 			
 			EntityAttribute::map([
 				'attribute_code' => 'description',
-				'entity_code' => 'product',
+				'entity_code' => 'car',
 				'attribute_set' => 'Default',
 				'attribute_group' => 'General'
 			]);
@@ -56,22 +63,27 @@ class CreateProductEntityAttributesMap071258 extends Migration
         			
 			EntityAttribute::unmap([
 				'attribute_code' => 'sku',
-				'entity_code' => 'product',
+				'entity_code' => 'car',
 			]);
 			
 			EntityAttribute::unmap([
 				'attribute_code' => 'name',
-				'entity_code' => 'product',
+				'entity_code' => 'car',
+			]);
+
+			EntityAttribute::unmap([
+				'attribute_code' => 'age',
+				'entity_code' => 'car',
 			]);
 			
 			EntityAttribute::unmap([
 				'attribute_code' => 'search',
-				'entity_code' => 'product',
+				'entity_code' => 'car',
 			]);
 			
 			EntityAttribute::unmap([
 				'attribute_code' => 'description',
-				'entity_code' => 'product',
+				'entity_code' => 'car',
 			]);
 
     }

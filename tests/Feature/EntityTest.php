@@ -104,7 +104,7 @@ class EntityTest extends TestCase
     /** @test */
     public function it_can_have_many_attributes()
     {   
-        $entity = Entity::findByCode('product');
+        $entity = Entity::findByCode('car');
 
         $this->assertTrue($entity->attributes->isNotEmpty());
     }
@@ -112,7 +112,7 @@ class EntityTest extends TestCase
     /** @test */
     public function it_can_have_many_attribute_set()
     {   
-        $entity = Entity::findByCode('product');
+        $entity = Entity::findByCode('car');
 
         $this->assertTrue($entity->attributeSet->isNotEmpty());
     }

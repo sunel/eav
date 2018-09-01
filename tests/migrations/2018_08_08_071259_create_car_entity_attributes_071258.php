@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateProductEntityAttributes071258 extends Migration
+class CreateCarEntityAttributes071258 extends Migration
 {
     /**
      * Run the migrations.
@@ -18,7 +18,7 @@ class CreateProductEntityAttributes071258 extends Migration
         			
 			Attribute::add([
 				'attribute_code' => 'sku',
-				'entity_code' => 'product',
+				'entity_code' => 'car',
 				'backend_class' => NULL,
 				'backend_type' => 'string',
 				'backend_table' =>  NULL,
@@ -33,7 +33,7 @@ class CreateProductEntityAttributes071258 extends Migration
 			
 			Attribute::add([
 				'attribute_code' => 'name',
-				'entity_code' => 'product',
+				'entity_code' => 'car',
 				'backend_class' => NULL,
 				'backend_type' => 'string',
 				'backend_table' =>  NULL,
@@ -45,10 +45,25 @@ class CreateProductEntityAttributes071258 extends Migration
 				'is_required' => 0,
 				'required_validate_class' =>  NULL	
 			]);
+
+			Attribute::add([
+				'attribute_code' => 'age',
+				'entity_code' => 'car',
+				'backend_class' => NULL,
+				'backend_type' => 'integer',
+				'backend_table' =>  NULL,
+				'frontend_class' =>  NULL,
+				'frontend_type' => 'text',
+				'frontend_label' => ucwords(str_replace('_',' ','age')),
+				'source_class' =>  NULL,
+				'default_value' => '',
+				'is_required' => 0,
+				'required_validate_class' =>  NULL	
+			]);
 			
 			Attribute::add([
 				'attribute_code' => 'search',
-				'entity_code' => 'product',
+				'entity_code' => 'car',
 				'backend_class' => NULL,
 				'backend_type' => 'boolean',
 				'backend_table' =>  NULL,
@@ -63,7 +78,7 @@ class CreateProductEntityAttributes071258 extends Migration
 			
 			Attribute::add([
 				'attribute_code' => 'description',
-				'entity_code' => 'product',
+				'entity_code' => 'car',
 				'backend_class' => NULL,
 				'backend_type' => 'text',
 				'backend_table' =>  NULL,
@@ -88,22 +103,27 @@ class CreateProductEntityAttributes071258 extends Migration
         			
 			Attribute::remove([
 				'attribute_code' => 'sku',
-				'entity_code' => 'product',
+				'entity_code' => 'car',
 			]);
 			
 			Attribute::remove([
 				'attribute_code' => 'name',
-				'entity_code' => 'product',
+				'entity_code' => 'car',
+			]);
+
+			Attribute::remove([
+				'attribute_code' => 'age',
+				'entity_code' => 'car',
 			]);
 			
 			Attribute::remove([
 				'attribute_code' => 'search',
-				'entity_code' => 'product',
+				'entity_code' => 'car',
 			]);
 			
 			Attribute::remove([
 				'attribute_code' => 'description',
-				'entity_code' => 'product',
+				'entity_code' => 'car',
 			]);
 
     }

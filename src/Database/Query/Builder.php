@@ -242,6 +242,10 @@ class Builder extends QueryBuilder
         $loadedAttributes = null;
         $columns = $this->columns;
 
+        if(is_null($columns)) {
+            return $this;
+        }
+
         $orgColumns = collect((array) $columns)->mapToGroups(function ($item, $key) {
             if (is_a($item, Expression::class)) {
                 return ['expression' => $item];
@@ -313,7 +317,6 @@ class Builder extends QueryBuilder
     }
 
     /**
-     * TODO
      *
      * Reads the column that is added to the select clause and process it
      * based on the given sudo code eg : attr.*, * for flat table.
@@ -323,16 +326,44 @@ class Builder extends QueryBuilder
     protected function fixFlatColumns()
     {
         $columns = $this->columns;
-        
-        if ($columns == ['attr.*'] || $columns == 'attr.*') {
-            $columns = ["{$this->from}.*"];
-        } else {
-            if ($columns != ['*']) {
-                $columns = array_merge(
-                    \Config::get('eav.entity.'.$this->baseEntity()->entity_code.'.columns', []),
-                    $columns
-                );
+
+        $orgColumns = collect((array) $columns)->mapToGroups(function ($item, $key) {
+            if (is_a($item, Expression::class)) {
+                return ['expression' => $item];
+            } else {
+                return ['columns' => $item];
             }
+        });
+
+        $columns = [];
+
+        $removeCol = [
+            'attr.*', '*', $this->baseEntity()->getEntityKey()
+        ];
+
+        $allAttr = $orgColumns->get('columns')->contains('attr.*');
+        $allMain = $orgColumns->get('columns')->contains('*');        
+
+        // ->select(['attr.*']) or ->select(['*'])
+        if($allAttr || $allMain) {
+            $columns[] = "{$this->from}.*";
+        } 
+        // ->select(['id']) or ->select(['id', 'color'])
+        else if ($orgColumns->get('columns')->contains($this->baseEntity()->getEntityKey())) {
+            $columns[] =  "{$this->from}.{$this->baseEntity()->getEntityKey()}";
+        }
+
+        $columns = $orgColumns
+            ->get('columns')
+            ->merge($columns)
+            ->filter(function ($value, $key) use ($removeCol) {
+                return !(in_array($value, $removeCol));
+            })->unique()->toArray();
+
+        // Merge the expression back to the query
+        
+        if ($expression = $orgColumns->get('expression')) {
+            $columns = $expression->merge($columns)->all();
         }
          
         $this->columns = $columns;

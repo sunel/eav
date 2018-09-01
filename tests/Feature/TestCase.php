@@ -7,6 +7,10 @@ use Tests\TestCase as Testbench;
 use Illuminate\Database\Eloquent\Factory as ModelFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
+class Cars extends \Eav\Model {
+    const ENTITY  = 'car';
+}
+
 abstract class TestCase extends Testbench
 {
     use RefreshDatabase;
@@ -16,11 +20,17 @@ abstract class TestCase extends Testbench
      */
     protected function setUp(): void
     {
+        if (! $this->app) {
+            $this->refreshApplication();
+        }
+
+        $this->app->afterResolving('migrator', function ($migrator) {
+            $migrator->path(realpath(__DIR__ . '/../migrations'));
+        });
+
         parent::setUp();
 
         app()->make(ModelFactory::class)->load(__DIR__.'/../factories');
-
-        $this->artisan('migrate', ['--path' => __DIR__ . '/../migrations/']);
     }
 
     protected function addSku($override = null)

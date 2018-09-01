@@ -33,7 +33,7 @@ class ProcessAttributes
             ->filter(function ($attribute) use ($filterAttr) {
                 return isset($filterAttr[$attribute->getAttributeCode()]);
             });  
-
+            
         foreach ((array) $query->attributeOrderBy as $bindings) {
             foreach ($bindings as $binding) {
                 $attribute = $usedAttributes->get($binding['column']);
