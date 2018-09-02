@@ -729,8 +729,12 @@ class Builder extends QueryBuilder
      * @param  string   $boolean
      * @return \Illuminate\Database\Query\Builder|static
      */
-    public function whereDateAttribute($column, $operator, $value, $boolean = 'and')
+    public function whereDateAttribute($column, $operator, $value = null, $boolean = 'and')
     {
+        list($value, $operator) = $this->prepareValueAndOperator(
+            $value, $operator, func_num_args() == 2
+        );
+
         if ($this->canUseFlat()) {
             return $this->whereDate($column, $operator, $value, $boolean);
         }
@@ -787,8 +791,12 @@ class Builder extends QueryBuilder
      * @param  string   $boolean
      * @return \Illuminate\Database\Query\Builder|static
      */
-    public function whereDayAttribute($column, $operator, $value, $boolean = 'and')
+    public function whereDayAttribute($column, $operator, $value = null, $boolean = 'and')
     {
+        list($value, $operator) = $this->prepareValueAndOperator(
+            $value, $operator, func_num_args() == 2
+        );
+
         if ($this->canUseFlat()) {
             return $this->whereDay($column, $operator, $value, $boolean);
         }
@@ -805,8 +813,12 @@ class Builder extends QueryBuilder
      * @param  string   $boolean
      * @return \Illuminate\Database\Query\Builder|static
      */
-    public function whereMonthAttribute($column, $operator, $value, $boolean = 'and')
+    public function whereMonthAttribute($column, $operator, $value = null, $boolean = 'and')
     {
+        list($value, $operator) = $this->prepareValueAndOperator(
+            $value, $operator, func_num_args() == 2
+        );
+
         if ($this->canUseFlat()) {
             return $this->whereMonth($column, $operator, $value, $boolean);
         }
@@ -823,8 +835,12 @@ class Builder extends QueryBuilder
      * @param  string   $boolean
      * @return \Illuminate\Database\Query\Builder|static
      */
-    public function whereYearAttribute($column, $operator, $value, $boolean = 'and')
+    public function whereYearAttribute($column, $operator, $value = null, $boolean = 'and')
     {
+        list($value, $operator) = $this->prepareValueAndOperator(
+            $value, $operator, func_num_args() == 2
+        );
+
         if ($this->canUseFlat()) {
             return $this->whereYear($column, $operator, $value, $boolean);
         }
