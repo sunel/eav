@@ -4,9 +4,6 @@ namespace Eav\TestCase\Feature;
 
 use Eav\Entity;
 use Eav\Attribute;
-use Eav\AttributeSet;
-use Eav\AttributeGroup;
-use Eav\EntityAttribute;
 
 class QueryBuilderTest extends TestCase
 {
@@ -61,7 +58,7 @@ class QueryBuilderTest extends TestCase
 
 		$p->update(['search' => 1]);
 
-		$db = cars::select(['attr.*'])->find($eloquent->getKey());
+		$db = Cars::select(['attr.*'])->find($eloquent->getKey());
 
 		$this->assertNotNull($db->search);
     }

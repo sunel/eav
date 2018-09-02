@@ -72,6 +72,7 @@ class CreateCarEntityAttributes071258 extends Migration
 				'frontend_label' => ucwords(str_replace('_',' ','search')),
 				'source_class' =>  \Eav\Attribute\Source\Boolean::class,
 				'default_value' => 0,
+				'is_filterable' => 1,
 				'is_required' => 0,
 				'required_validate_class' =>  NULL	
 			]);
@@ -102,6 +103,7 @@ class CreateCarEntityAttributes071258 extends Migration
 				'frontend_label' => ucwords(str_replace('_',' ','purchased_at')),
 				'source_class' =>  NULL,
 				'default_value' => '',
+				'is_filterable' => 1,
 				'is_required' => 0,
 				'required_validate_class' =>  NULL	
 			]);

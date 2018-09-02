@@ -2,12 +2,6 @@
 
 namespace Eav\TestCase\Feature;
 
-use Eav\Entity;
-use Eav\Attribute;
-use Eav\AttributeSet;
-use Eav\AttributeGroup;
-use Eav\EntityAttribute;
-
 class WhereQueryTest extends TestCase
 {
 	/** @test */
