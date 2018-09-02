@@ -90,6 +90,21 @@ class CreateCarEntityAttributes071258 extends Migration
 				'is_required' => 0,
 				'required_validate_class' =>  NULL	
 			]);
+
+			Attribute::add([
+				'attribute_code' => 'purchased_at',
+				'entity_code' => 'car',
+				'backend_class' => NULL,
+				'backend_type' => 'timestamp',
+				'backend_table' =>  NULL,
+				'frontend_class' =>  NULL,
+				'frontend_type' => 'text',
+				'frontend_label' => ucwords(str_replace('_',' ','purchased_at')),
+				'source_class' =>  NULL,
+				'default_value' => '',
+				'is_required' => 0,
+				'required_validate_class' =>  NULL	
+			]);
         
     }
 

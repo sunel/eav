@@ -9,6 +9,15 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 class Cars extends \Eav\Model {
     const ENTITY  = 'car';
+
+    /**
+     * The attributes that should be mutated to dates.
+     *
+     * @var array
+     */
+    protected $dates = [
+        'purchased_at'
+    ];
 }
 
 abstract class TestCase extends Testbench

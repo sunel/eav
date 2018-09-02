@@ -176,13 +176,169 @@ class WhereQueryTest extends TestCase
         $this->assertEquals($product->first()->sku, 'PDO1HJK92');
     }
 
+    /** @test */
+    public function it_can_add_or_where_null_statement()
+    {
+        $eloquent = $this->product();
+        $eloquent2 = $this->product_2();
+
+        $product = Cars::whereAttribute('sku', 'UNKNOWN')
+        			->orWhereNullAttribute('description')
+        			->get(['*', 'description', 'sku']);	
+
+        $this->assertTrue($product->isNotEmpty());
+        $this->assertEquals($product->count(), 1);
+        $this->assertEquals($product->first()->sku, 'PDO1HJK92');
+    }
+
+    /** @test */
+    public function it_can_add_where_not_null_statement()
+    {
+        $eloquent = $this->product();
+        $eloquent2 = $this->product_2();
+
+        $product = Cars::whereNotNullAttribute('description')
+        			->get(['*', 'description', 'sku']);	
+
+        $this->assertTrue($product->isNotEmpty());
+        $this->assertEquals($product->count(), 1);
+        $this->assertEquals($product->first()->sku, 'PDOBEEAM112');
+    }
+
+    /** @test */
+    public function it_can_add_or_where_not_null_statement()
+    {
+        $eloquent = $this->product();
+        $eloquent2 = $this->product_2();
+
+        $product = Cars::whereAttribute('sku', 'UNKNOWN')
+        			->orWhereNotNullAttribute('description')
+        			->get(['*', 'description', 'sku']);	
+
+        $this->assertTrue($product->isNotEmpty());
+        $this->assertEquals($product->count(), 1);
+        $this->assertEquals($product->first()->sku, 'PDOBEEAM112');
+    }
+
+    /** @test */
+    public function it_can_add_where_date_statement()
+    {
+        $eloquent = $this->product();
+        $eloquent2 = $this->product_2();
+
+        $product = Cars::whereDateAttribute('purchased_at', '2018-09-02')
+        			->get(['*', 'sku']);	
+
+        $this->assertTrue($product->isNotEmpty());
+        $this->assertEquals($product->count(), 1);
+        $this->assertEquals($product->first()->sku, 'PDO1HJK92');
+    }
+
+    /** @test */
+    public function it_can_add_or_where_date_statement()
+    {
+        $eloquent = $this->product();
+        $eloquent2 = $this->product_2();
+
+        $product = Cars::whereDateAttribute('purchased_at', '2018-09-01')
+        			->orWhereDateAttribute('purchased_at', '=' , '2018-09-02')
+        			->get(['*', 'sku']);	
+
+        $this->assertTrue($product->isNotEmpty());
+        $this->assertEquals($product->count(), 1);
+        $this->assertEquals($product->first()->sku, 'PDO1HJK92');
+    }
+
+    /** @test */
+    public function it_can_add_where_time_statement()
+    {
+        $eloquent = $this->product();
+        $eloquent2 = $this->product_2();
+
+        $product = Cars::whereTimeAttribute('purchased_at', '=', '15:02:01')
+        			->get(['*', 'sku']);
+
+        $this->assertTrue($product->isNotEmpty());
+        $this->assertEquals($product->count(), 1);
+        $this->assertEquals($product->first()->sku, 'PDO1HJK92');
+    }
+
+    /** @test */
+    public function it_can_add_or_where_time_statement()
+    {
+        $eloquent = $this->product();
+        $eloquent2 = $this->product_2();
+
+        $product = Cars::whereTimeAttribute('purchased_at', '=', '15:04:01')
+        			->orwhereTimeAttribute('purchased_at', '=', '15:03:01')
+        			->get(['*', 'sku']);
+
+        $this->assertTrue($product->isNotEmpty());
+        $this->assertEquals($product->count(), 1);
+        $this->assertEquals($product->first()->sku, 'PDOBEEAM112');
+    }
+
+    /** @test */
+    public function it_can_add_where_day_statement()
+    {
+        $eloquent = $this->product();
+        $eloquent2 = $this->product_2();
+
+        $product = Cars::whereDayAttribute('purchased_at', '02')
+        			->get(['*', 'sku']);
+
+        $this->assertTrue($product->isNotEmpty());
+        $this->assertEquals($product->count(), 1);
+        $this->assertEquals($product->first()->sku, 'PDO1HJK92');
+    }
+
+    /** @test */
+    public function it_can_add_where_month_statement()
+    {
+        $eloquent = $this->product();
+        $eloquent2 = $this->product_2();
+
+        $product = Cars::whereMonthAttribute('purchased_at', '09')
+        			->get(['*', 'sku']);
+
+        $this->assertTrue($product->isNotEmpty());
+        $this->assertEquals($product->count(), 1);
+        $this->assertEquals($product->first()->sku, 'PDO1HJK92');
+    }
+
+    /** @test */
+    public function it_can_add_where_year_statement()
+    {
+        $eloquent = $this->product();
+        $eloquent2 = $this->product_2();
+
+        $product = Cars::whereYearAttribute('purchased_at', '2018')
+        			->get(['*', 'sku']);
+
+        $this->assertTrue($product->isNotEmpty());
+        $this->assertEquals($product->count(), 2);
+    }
+
+   	/** @test */
+    public function it_can_add_order_by_statement()
+    {
+        $eloquent = $this->product();
+        $eloquent2 = $this->product_2();
+
+        $product = Cars::orderByAttribute('purchased_at', 'asc')
+        			->get(['*', 'sku']);
+
+        $this->assertEquals($product->first()->sku, 'PDOBEEAM112');
+    }
+
     private function product()
     {
     	return Cars::create([
 		    'name' => 'Flamethrower',
 		    'sku'  => 'PDO1HJK92',
 		    'age' => rand(50,100),
-		    'search' => 1
+		    'search' => 1,
+		    'purchased_at' => new \DateTime('2018-09-02T15:02:01.012345Z')
 		]);
     }
 
@@ -193,7 +349,8 @@ class WhereQueryTest extends TestCase
 		    'sku'  => 'PDOBEEAM112',
 		    'description' => 'Definitely Not a Flamethrower',
 		    'age' => 14,
-		    'search' => 0
+		    'search' => 0,
+		    'purchased_at' => new \DateTime('2018-08-21T15:03:01.012345Z')
 		]);
     }
 }
