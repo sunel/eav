@@ -45,6 +45,10 @@ class ProcessAttributes
             }
         }
 
+       if(!count($query->attributeWheresRef)) {
+            return;
+       }
+
         foreach ((array) $query->attributeWheres['binding'] as $type => $bindings) {
             switch ($type) {
                 case 'Nested':
