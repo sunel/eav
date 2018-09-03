@@ -8,21 +8,21 @@ use Eav\Attribute;
 class QueryBuilderTest extends TestCase
 {
 
-	/** @test */
+    /** @test */
     public function it_must_entity_assigned()
     {
-    	$this->expectException(\Exception::class);
+        $this->expectException(\Exception::class);
 
-    	$eloquent = new class() extends \Eav\Model {
+        $eloquent = new class() extends \Eav\Model {
         };
     }
 
-	/** @test */
+    /** @test */
     public function it_can_create_entity()
     {
         $eloquent = $this->car();
 
-		$this->assertNotNull($eloquent->getKey());
+        $this->assertNotNull($eloquent->getKey());
     }
 
     /** @test */
@@ -30,15 +30,15 @@ class QueryBuilderTest extends TestCase
     {
         $eloquent = $this->car();
 
-		$this->assertNotNull($eloquent->getKey());
+        $this->assertNotNull($eloquent->getKey());
 
-		$eloquent->name = 'Not a Flamethrower';
+        $eloquent->name = 'Not a Flamethrower';
 
-		$eloquent->save();
+        $eloquent->save();
 
-		$db = Cars::select(['name'])->find($eloquent->getKey());
+        $db = Cars::select(['name'])->find($eloquent->getKey());
 
-		$this->assertEquals($db->name, 'Not a Flamethrower');
+        $this->assertEquals($db->name, 'Not a Flamethrower');
     }
 
     /** @test */
@@ -46,21 +46,21 @@ class QueryBuilderTest extends TestCase
     {
         $eloquent = $this->car();
 
-		Cars::create([
-		    'name' => 'Flamethrower',
-		    'sku'  => '1HJK92_2',
-		    'description' => 'Not a Flamethrower'
-		]);
+        Cars::create([
+            'name' => 'Flamethrower',
+            'sku'  => '1HJK92_2',
+            'description' => 'Not a Flamethrower'
+        ]);
 
-		$this->assertNull($eloquent->search);
+        $this->assertNull($eloquent->search);
 
-		$p = Cars::whereNullAttribute('search');
+        $p = Cars::whereNullAttribute('search');
 
-		$p->update(['search' => 1]);
+        $p->update(['search' => 1]);
 
-		$db = Cars::select(['attr.*'])->find($eloquent->getKey());
+        $db = Cars::select(['attr.*'])->find($eloquent->getKey());
 
-		$this->assertNotNull($db->search);
+        $this->assertNotNull($db->search);
     }
 
     /** @test */
@@ -142,7 +142,7 @@ class QueryBuilderTest extends TestCase
         $eloquent = $this->car();
 
         $cars = Cars::whereAttribute('sku', '1HJK92')
-			->get(['name']);
+            ->get(['name']);
 
         $p = $cars->first();
 
@@ -158,8 +158,8 @@ class QueryBuilderTest extends TestCase
         $eloquent = $this->car();
 
         $cars = Cars::whereAttribute('sku', '1HJK92')
-			->select(['attr.*'])
-			->get();
+            ->select(['attr.*'])
+            ->get();
 
         $p = $cars->first();
 
@@ -171,21 +171,21 @@ class QueryBuilderTest extends TestCase
     /** @test */
     public function it_can_join_an_attribute()
     {
-    	$cars = Cars::select('*');
+        $cars = Cars::select('*');
 
-	    $attribute = \Eav\Attribute::findByCode('sku', 'car');
-	    $attribute->setEntity($cars->baseEntity());
-	    $attribute->addAttributeJoin($cars->getQuery(), 'left');
+        $attribute = \Eav\Attribute::findByCode('sku', 'car');
+        $attribute->setEntity($cars->baseEntity());
+        $attribute->addAttributeJoin($cars->getQuery(), 'left');
 
-	    $this->assertNotNull($cars->getQuery()->joins);
+        $this->assertNotNull($cars->getQuery()->joins);
     }
 
     private function car()
     {
-    	return Cars::create([
-		    'name' => 'Flamethrower',
-		    'sku'  => '1HJK92',
-		    'description' => 'Not a Flamethrower'
-		]);
+        return Cars::create([
+            'name' => 'Flamethrower',
+            'sku'  => '1HJK92',
+            'description' => 'Not a Flamethrower'
+        ]);
     }
 }

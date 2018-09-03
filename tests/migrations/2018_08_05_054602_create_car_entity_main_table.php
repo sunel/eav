@@ -13,15 +13,13 @@ class CreateCarEntityMainTable extends Migration
      */
     public function up()
     {
-    	Schema::create('cars', function (Blueprint $table) {
+        Schema::create('cars', function (Blueprint $table) {
             $table->increments('id');
-			$table->integer('entity_id')->unsigned();
-			$table->integer('attribute_set_id')->unsigned();
-			
-			$table->timestamps();
-				  
+            $table->integer('entity_id')->unsigned();
+            $table->integer('attribute_set_id')->unsigned();
+            
+            $table->timestamps();
         });
-                
     }
 
     /**
@@ -31,6 +29,6 @@ class CreateCarEntityMainTable extends Migration
      */
     public function down()
     {
-    	Schema::drop('cars');       
+        Schema::drop('cars');
     }
 }

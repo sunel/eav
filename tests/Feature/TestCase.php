@@ -7,7 +7,8 @@ use Tests\TestCase as Testbench;
 use Illuminate\Database\Eloquent\Factory as ModelFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-class Cars extends \Eav\Model {
+class Cars extends \Eav\Model
+{
     const ENTITY  = 'car';
 
     /**
@@ -47,19 +48,19 @@ abstract class TestCase extends Testbench
         $data = [
             'attribute_code' => 'sku',
             'entity_code' => 'custom',
-            'backend_class' => NULL,
+            'backend_class' => null,
             'backend_type' => 'string',
-            'backend_table' =>  NULL,
-            'frontend_class' =>  NULL,
+            'backend_table' =>  null,
+            'frontend_class' =>  null,
             'frontend_type' => 'text',
-            'frontend_label' => ucwords(str_replace('_',' ','sku')),
-            'source_class' =>  NULL,
+            'frontend_label' => ucwords(str_replace('_', ' ', 'sku')),
+            'source_class' =>  null,
             'default_value' => '',
             'is_required' => 0,
-            'required_validate_class' =>  NULL  
+            'required_validate_class' =>  null
         ];
 
-        if($override) {
+        if ($override) {
             $data = array_merge($data, $override);
         }
 

@@ -7,17 +7,17 @@ use Eav\AttributeSet;
 
 class EntityTest extends TestCase
 {
-	/**
-	 * @var Eav\Entity
-	 */
-	protected $entity;
+    /**
+     * @var Eav\Entity
+     */
+    protected $entity;
 
-	/**
-	 * @var Eav\Entity
-	 */
-	protected $entity_flat;
+    /**
+     * @var Eav\Entity
+     */
+    protected $entity_flat;
 
-	/**
+    /**
      * Setup the test environment.
      */
     protected function setUp(): void
@@ -25,42 +25,42 @@ class EntityTest extends TestCase
         parent::setUp();
 
         $this->entity = factory(Entity::class)->create([
-        	'entity_code' => 'custom'
+            'entity_code' => 'custom'
         ]);
 
         $this->entity_flat = factory(Entity::class)->states('flat')->create([
-    		'entity_code' => 'custom_1'
-    	]);
+            'entity_code' => 'custom_1'
+        ]);
     }
 
 
     /** @test */
     public function it_can_be_found_by_code()
-    {        	
+    {
         $entityDB = Entity::findByCode($this->entity->entity_code);
         $this->assertEquals($this->entity->entity_id, $entityDB->entity_id);
-        $this->assertEquals($this->entity->entity_code, $entityDB->entity_code);       
+        $this->assertEquals($this->entity->entity_code, $entityDB->entity_code);
     }
 
     /** @test */
     public function it_can_be_found_by_id()
-    {   	
+    {
         $entityDB = Entity::findById($this->entity->entity_id);
         $this->assertEquals($this->entity->entity_code, $entityDB->entity_code);
-        $this->assertEquals($this->entity->entity_id, $entityDB->entity_id);    
+        $this->assertEquals($this->entity->entity_id, $entityDB->entity_id);
     }
 
     /** @test */
     public function it_can_detect_flat_table()
-    {        	        
-        $this->assertEquals($this->entity->canUseFlat(), 0);	        
-        $this->assertEquals($this->entity_flat->canUseFlat(), 1);   
+    {
+        $this->assertEquals($this->entity->canUseFlat(), 0);
+        $this->assertEquals($this->entity_flat->canUseFlat(), 1);
     }
 
     /** @test */
     public function it_can_detect_flat_table_name()
-    {       	      	
-    	$eloquent = new class() extends \Eav\Model {
+    {
+        $eloquent = new class() extends \Eav\Model {
             const ENTITY  = 'custom';
             protected $table = 'custom_table';
         };
@@ -71,13 +71,13 @@ class EntityTest extends TestCase
         };
 
         $this->assertEquals($eloquent->getTable(), 'custom_table');
-        $this->assertEquals($eloquent_1->getTable(), 'custom_table_flat');   
+        $this->assertEquals($eloquent_1->getTable(), 'custom_table_flat');
     }
 
     /** @test */
     public function it_can_detect_key_name()
-    {       	      	
-    	$eloquent = new class() extends \Eav\Model {
+    {
+        $eloquent = new class() extends \Eav\Model {
             const ENTITY  = 'custom';
             protected $primaryKey = 'custom_id';
         };
@@ -85,25 +85,25 @@ class EntityTest extends TestCase
         $entity = $eloquent->baseEntity();
 
         $this->assertEquals($entity->getEntityKey(), 'custom_id');
-        $this->assertEquals($eloquent->getKeyName(), $entity->getEntityKey());   
+        $this->assertEquals($eloquent->getKeyName(), $entity->getEntityKey());
     }
 
     /** @test */
     public function it_can_detect_entity_table_name()
-    {        	
-    	$eloquent = new class() extends \Eav\Model {
+    {
+        $eloquent = new class() extends \Eav\Model {
             const ENTITY  = 'custom';
             protected $table = 'custom_table';
         };
 
         $entity = $eloquent->baseEntity();
 
-        $this->assertEquals($entity->getEntityCustomTable(), $eloquent->getTable()); 
+        $this->assertEquals($entity->getEntityCustomTable(), $eloquent->getTable());
     }
 
     /** @test */
     public function it_can_have_many_attributes()
-    {   
+    {
         $entity = Entity::findByCode('car');
 
         $this->assertTrue($entity->attributes->isNotEmpty());
@@ -111,7 +111,7 @@ class EntityTest extends TestCase
 
     /** @test */
     public function it_can_have_many_attribute_set()
-    {   
+    {
         $entity = Entity::findByCode('car');
 
         $this->assertTrue($entity->attributeSet->isNotEmpty());
@@ -119,12 +119,12 @@ class EntityTest extends TestCase
 
     /** @test */
     public function it_must_have_default_attribute_set()
-    {   
+    {
         $set = factory(AttributeSet::class)->create([
             'entity_id' => $this->entity->entity_id,
         ]);
 
-        $this->entity->default_attribute_set_id = $set->attribute_set_id;        
+        $this->entity->default_attribute_set_id = $set->attribute_set_id;
         $this->entity->save();
 
         $this->assertEquals($this->entity->entity_id, $set->entity_id);

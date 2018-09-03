@@ -9,12 +9,12 @@ use Eav\AttributeOption;
 
 class AttributeTest extends TestCase
 {
-	/**
-	 * @var Eav\Entity
-	 */
-	protected $entity;
+    /**
+     * @var Eav\Entity
+     */
+    protected $entity;
 
-	/**
+    /**
      * Setup the test environment.
      */
     protected function setUp(): void
@@ -22,316 +22,316 @@ class AttributeTest extends TestCase
         parent::setUp();
 
         $this->entity = factory(Entity::class)->create([
-        	'entity_code' => 'custom'
+            'entity_code' => 'custom'
         ]);
     }
 
     /** @test */
     public function it_can_be_added()
-    {        	
+    {
         $sku = $this->addSku();
 
-		$this->assertTrue($sku->getKey() != null); 
+        $this->assertTrue($sku->getKey() != null);
     }
 
 
     /** @test */
     public function it_can_be_found_by_code()
-    {    
-    	$sku = $this->addSku();
+    {
+        $sku = $this->addSku();
         $skuDB = Attribute::findByCode('sku', 'custom');
 
         $this->assertEquals($sku->getKey(), $skuDB->getKey());
         $this->assertEquals($sku->getAttributeId(), $skuDB->getAttributeId());
         $this->assertEquals($sku->getAttributeCode(), $skuDB->getAttributeCode());
-        $this->assertEquals($sku->getEntity()->entity_code, $skuDB->getEntity()->entity_code);       
+        $this->assertEquals($sku->getEntity()->entity_code, $skuDB->getEntity()->entity_code);
     }
 
 
     /** @test */
     public function it_can_be_removed()
-    {        	
+    {
         $sku = $this->addSku();
 
-		Attribute::remove([
-			'attribute_code' => 'sku',
-			'entity_code' => 'custom',
-		]);
+        Attribute::remove([
+            'attribute_code' => 'sku',
+            'entity_code' => 'custom',
+        ]);
 
-		$this->expectException(\Illuminate\Database\Eloquent\ModelNotFoundException::class);
+        $this->expectException(\Illuminate\Database\Eloquent\ModelNotFoundException::class);
 
-		Attribute::findByCode('sku', 'custom');
+        Attribute::findByCode('sku', 'custom');
     }
 
     /** @test */
     public function it_cannot_have_dupicate()
     {
-    	$this->expectException(\Illuminate\Database\QueryException::class);
+        $this->expectException(\Illuminate\Database\QueryException::class);
 
-    	$sku = $this->addSku();
+        $sku = $this->addSku();
 
-    	$sku2 = $this->addSku();
+        $sku2 = $this->addSku();
     }
 
     /** @test */
     public function it_can_have_options()
     {
-    	$sku = $this->addSku();
+        $sku = $this->addSku();
 
-    	$optionsData = [
-		    's' => 'Small',
-		    'm' => 'Medium',
-		    'l' => 'Large',
-		    'xl' => 'Xtra Large',
-		];
+        $optionsData = [
+            's' => 'Small',
+            'm' => 'Medium',
+            'l' => 'Large',
+            'xl' => 'Xtra Large',
+        ];
 
-    	AttributeOption::add($sku, $optionsData);
+        AttributeOption::add($sku, $optionsData);
 
-    	$this->assertEquals($sku->options(), $optionsData);
+        $this->assertEquals($sku->options(), $optionsData);
     }
 
     /** @test */
     public function it_can_have_options_through_source()
     {
-    	$sku = $this->addWithSource();
+        $sku = $this->addWithSource();
 
-    	$optionsData = [
-	       '1' => 'Yes',
-	       '0'  => 'No'
-	     ];
+        $optionsData = [
+           '1' => 'Yes',
+           '0'  => 'No'
+         ];
 
-    	$this->assertEquals($sku->options(), $optionsData);
+        $this->assertEquals($sku->options(), $optionsData);
     }
 
     /** @test */
     public function it_can_have_options_through_migration()
     {
-    	$sku = $this->addWithOption();
+        $sku = $this->addWithOption();
 
-    	$optionsData = [
-	       '1' => 'Yes',
-	       '0'  => 'No'
-	     ];
+        $optionsData = [
+           '1' => 'Yes',
+           '0'  => 'No'
+         ];
 
-    	$this->assertEquals($sku->options(), $optionsData);
+        $this->assertEquals($sku->options(), $optionsData);
     }
 
     /** @test */
     public function only_select_can_have_source()
     {
-    	$sku = $this->addSku();
+        $sku = $this->addSku();
 
-    	$search = $this->addWithSource();
+        $search = $this->addWithSource();
 
-    	$this->assertFalse($sku->usesSource()); 
-    	$this->assertTrue($search->usesSource()); 
+        $this->assertFalse($sku->usesSource());
+        $this->assertTrue($search->usesSource());
     }
 
     /** @test */
     public function it_can_be_static()
     {
-    	$sku = $this->addSku();
+        $sku = $this->addSku();
 
-    	$sku1 = $this->addSku([
-    		'attribute_code' => 'sku1',
-    		'backend_type' => '',
-    	]);
+        $sku1 = $this->addSku([
+            'attribute_code' => 'sku1',
+            'backend_type' => '',
+        ]);
 
-    	$sku2 = $this->addSku([
-    		'attribute_code' => 'sku2',
-    		'backend_type' => 'static',
-    	]);
+        $sku2 = $this->addSku([
+            'attribute_code' => 'sku2',
+            'backend_type' => 'static',
+        ]);
 
-    	$this->assertFalse($sku->isStatic());
-    	$this->assertTrue($sku1->isStatic());
-    	$this->assertTrue($sku2->isStatic()); 
+        $this->assertFalse($sku->isStatic());
+        $this->assertTrue($sku1->isStatic());
+        $this->assertTrue($sku2->isStatic());
     }
 
     /** @test */
     public function it_can_get_id_by_code()
     {
-    	$sku = $this->addSku();
+        $sku = $this->addSku();
 
-    	$attribute = new Attribute();
+        $attribute = new Attribute();
 
-    	$this->assertEquals(
-    		$attribute->getIdByCode('sku', $this->entity->getKey()),
-    		$sku->getKey()
-    	);
+        $this->assertEquals(
+            $attribute->getIdByCode('sku', $this->entity->getKey()),
+            $sku->getKey()
+        );
     }
 
     /** @test */
     public function it_must_have_a_table()
     {
-    	$sku = $this->addSku();
+        $sku = $this->addSku();
 
-    	$this->assertEquals(
-    		$this->entity->getEntityTableName().'_string',
-    		$sku->getBackendTable()
-    	);
+        $this->assertEquals(
+            $this->entity->getEntityTableName().'_string',
+            $sku->getBackendTable()
+        );
     }
 
     /** @test */
     public function it_can_have_default_value()
     {
-    	$sku = $this->addSku();
+        $sku = $this->addSku();
 
-    	$upc = $this->addSku([
-    		'attribute_code' => 'upc',
-    		'default_value' => '0',
-    	]);
+        $upc = $this->addSku([
+            'attribute_code' => 'upc',
+            'default_value' => '0',
+        ]);
 
-    	$this->assertEquals($sku->getDefaultValue(), '');
+        $this->assertEquals($sku->getDefaultValue(), '');
 
-    	$this->assertEquals($upc->getDefaultValue(), '0');
+        $this->assertEquals($upc->getDefaultValue(), '0');
     }
 
 
     /** @test */
     public function it_can_get_supported_values()
     {
-    	$sku = $this->addSku();
+        $sku = $this->addSku();
 
-    	$this->assertEquals($sku->getAttributeCode(), 'sku');
-    	$this->assertEquals($sku->getBackendType(), 'string');
-    	$this->assertEquals($sku->getFrontendInput(), 'text');
-    	$this->assertEquals($sku->getFrontendLabel(), 'Sku');
+        $this->assertEquals($sku->getAttributeCode(), 'sku');
+        $this->assertEquals($sku->getBackendType(), 'string');
+        $this->assertEquals($sku->getFrontendInput(), 'text');
+        $this->assertEquals($sku->getFrontendLabel(), 'Sku');
     }
 
     /** @test */
     public function it_can_insert_data()
     {
-    	$sku = $this->addSku([
-    		'attribute_code' => 'upc',
-    		'entity_code' => 'car',
-    	]);
+        $sku = $this->addSku([
+            'attribute_code' => 'upc',
+            'entity_code' => 'car',
+        ]);
 
-		$value = 'HGKHDGEYTT'. rand();
+        $value = 'HGKHDGEYTT'. rand();
 
-		$eloquent = new class() extends \Eav\Model {
+        $eloquent = new class() extends \Eav\Model {
             const ENTITY  = 'car';
-             protected $table = 'cars';
+            protected $table = 'cars';
         };
 
         $eloquent->save();
 
         $sku->insertAttribute($value, $eloquent->getKey());
 
-		$this->assertDatabaseHas($sku->getBackendTable(), [
-			'entity_type_id' => $sku->getEntity()->getKey(),
+        $this->assertDatabaseHas($sku->getBackendTable(), [
+            'entity_type_id' => $sku->getEntity()->getKey(),
             'attribute_id' => $sku->getKey(),
             'entity_id' => $eloquent->getKey(),
             'value' => $value
-		]);
+        ]);
     }
 
     /** @test */
     public function it_can_update_data()
     {
-    	$sku = $this->addSku([
-    		'attribute_code' => 'upc',
-    		'entity_code' => 'car',
-    	]);
+        $sku = $this->addSku([
+            'attribute_code' => 'upc',
+            'entity_code' => 'car',
+        ]);
 
-		$value = 'HGKHDGEYTT'. rand();
+        $value = 'HGKHDGEYTT'. rand();
 
-		$eloquent = new class() extends \Eav\Model {
+        $eloquent = new class() extends \Eav\Model {
             const ENTITY  = 'car';
-             protected $table = 'cars';
+            protected $table = 'cars';
         };
 
         $eloquent->save();
 
         $sku->insertAttribute($value, $eloquent->getKey());
 
-		$this->assertDatabaseHas($sku->getBackendTable(), [
-			'entity_type_id' => $sku->getEntity()->getKey(),
+        $this->assertDatabaseHas($sku->getBackendTable(), [
+            'entity_type_id' => $sku->getEntity()->getKey(),
             'attribute_id' => $sku->getKey(),
             'entity_id' => $eloquent->getKey(),
             'value' => $value
-		]);
+        ]);
 
-		$value = 'HGKHDGEYTT'. rand();
+        $value = 'HGKHDGEYTT'. rand();
 
-		$sku->updateAttribute($value, $eloquent->getKey());
+        $sku->updateAttribute($value, $eloquent->getKey());
 
-		$this->assertDatabaseHas($sku->getBackendTable(), [
-			'entity_type_id' => $sku->getEntity()->getKey(),
+        $this->assertDatabaseHas($sku->getBackendTable(), [
+            'entity_type_id' => $sku->getEntity()->getKey(),
             'attribute_id' => $sku->getKey(),
             'entity_id' => $eloquent->getKey(),
             'value' => $value
-		]);
+        ]);
     }
 
     /** @test */
     public function it_can_fetch_data()
     {
-    	$sku = $this->addSku([
-    		'attribute_code' => 'upc',
-    		'entity_code' => 'car',
-    	]);
+        $sku = $this->addSku([
+            'attribute_code' => 'upc',
+            'entity_code' => 'car',
+        ]);
 
-		$value = 'HGKHDGEYTT'. rand();
+        $value = 'HGKHDGEYTT'. rand();
 
-		$eloquent = new class() extends \Eav\Model {
+        $eloquent = new class() extends \Eav\Model {
             const ENTITY  = 'car';
-             protected $table = 'cars';
+            protected $table = 'cars';
         };
 
         $eloquent->save();
 
         $sku->insertAttribute($value, $eloquent->getKey());
 
-		$this->assertDatabaseHas($sku->getBackendTable(), [
-			'entity_type_id' => $sku->getEntity()->getKey(),
+        $this->assertDatabaseHas($sku->getBackendTable(), [
+            'entity_type_id' => $sku->getEntity()->getKey(),
             'attribute_id' => $sku->getKey(),
             'entity_id' => $eloquent->getKey(),
             'value' => $value
-		]);
+        ]);
 
-		$valueDB = $sku->fetchAttributeValue($eloquent->getKey());
+        $valueDB = $sku->fetchAttributeValue($eloquent->getKey());
 
-		$this->assertEquals($value, $valueDB);
+        $this->assertEquals($value, $valueDB);
     }
 
     private function addWithSource()
     {
-    	return Attribute::add([
-			'attribute_code' => 'search',
-			'entity_code' => 'custom',
-			'backend_class' => NULL,
-			'backend_type' => 'boolean',
-			'backend_table' =>  NULL,
-			'frontend_class' =>  NULL,
-			'frontend_type' => 'select',
-			'frontend_label' => ucwords(str_replace('_',' ','search')),
-			'source_class' =>  \Eav\Attribute\Source\Boolean::class,
-			'default_value' => 0,
-			'is_required' => 0,
-			'required_validate_class' =>  NULL	
-		]);
+        return Attribute::add([
+            'attribute_code' => 'search',
+            'entity_code' => 'custom',
+            'backend_class' => null,
+            'backend_type' => 'boolean',
+            'backend_table' =>  null,
+            'frontend_class' =>  null,
+            'frontend_type' => 'select',
+            'frontend_label' => ucwords(str_replace('_', ' ', 'search')),
+            'source_class' =>  \Eav\Attribute\Source\Boolean::class,
+            'default_value' => 0,
+            'is_required' => 0,
+            'required_validate_class' =>  null
+        ]);
     }
 
     private function addWithOption()
     {
-    	return Attribute::add([
-			'attribute_code' => 'search',
-			'entity_code' => 'custom',
-			'backend_class' => NULL,
-			'backend_type' => 'boolean',
-			'backend_table' =>  NULL,
-			'frontend_class' =>  NULL,
-			'frontend_type' => 'select',
-			'frontend_label' => ucwords(str_replace('_',' ','search')),
-			'source_class' => null,
-		    'options' => [
-		       '1' => 'Yes',
-		       '0'  => 'No'
-		     ],
-			'default_value' => 0,
-			'is_required' => 0,
-			'required_validate_class' =>  NULL	
-		]);
+        return Attribute::add([
+            'attribute_code' => 'search',
+            'entity_code' => 'custom',
+            'backend_class' => null,
+            'backend_type' => 'boolean',
+            'backend_table' =>  null,
+            'frontend_class' =>  null,
+            'frontend_type' => 'select',
+            'frontend_label' => ucwords(str_replace('_', ' ', 'search')),
+            'source_class' => null,
+            'options' => [
+               '1' => 'Yes',
+               '0'  => 'No'
+             ],
+            'default_value' => 0,
+            'is_required' => 0,
+            'required_validate_class' =>  null
+        ]);
     }
 
     protected function tearDown()

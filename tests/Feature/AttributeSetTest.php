@@ -10,11 +10,11 @@ use Eav\EntityAttribute;
 
 class AttributeSetTest extends TestCase
 {
-	/** @test */
+    /** @test */
     public function it_must_be_associated_with_entity()
-    {        	
+    {
         $entity = factory(Entity::class)->create([
-        	'entity_code' => 'custom'
+            'entity_code' => 'custom'
         ]);
 
         factory(AttributeSet::class, 5)->create([
@@ -26,9 +26,9 @@ class AttributeSetTest extends TestCase
 
     /** @test */
     public function it_can_have_multiple_group()
-    {        	
+    {
         $entity = factory(Entity::class)->create([
-        	'entity_code' => 'custom'
+            'entity_code' => 'custom'
         ]);
 
         $set = factory(AttributeSet::class)->create([
@@ -45,9 +45,9 @@ class AttributeSetTest extends TestCase
 
     /** @test */
     public function it_must_retrive_associated_attributes()
-    {        	
+    {
         $entity = factory(Entity::class)->create([
-        	'entity_code' => 'custom'
+            'entity_code' => 'custom'
         ]);
 
         $set = factory(AttributeSet::class)->create([
@@ -61,11 +61,11 @@ class AttributeSetTest extends TestCase
         $sku = $this->addSku();
 
         EntityAttribute::map([
-			'attribute_code' => $sku->getCode(),
-			'entity_code' => $entity->getCode(),
-			'attribute_set' => $set->name(),
-			'attribute_group' => $group->name()
-		]);
+            'attribute_code' => $sku->getCode(),
+            'entity_code' => $entity->getCode(),
+            'attribute_set' => $set->name(),
+            'attribute_group' => $group->name()
+        ]);
 
         $this->assertEquals($set->attributes->count(), 1);
     }

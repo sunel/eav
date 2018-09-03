@@ -15,7 +15,7 @@ class CreateCarDesignTable extends Migration
     {
         Schema::create('car_design', function (Blueprint $table) {
             $table->integer('car_id')->unsigned();
-            $table->integer('design_id')->unsigned();        
+            $table->integer('design_id')->unsigned();
 
             $table->foreign('car_id')
                   ->references('id')->on('cars')

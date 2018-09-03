@@ -4,7 +4,7 @@ namespace Eav\TestCase\Feature;
 
 class WhereQueryTest extends TestCase
 {
-	/** @test */
+    /** @test */
     public function it_can_add_where_statement()
     {
         $eloquent = $this->product();
@@ -15,7 +15,7 @@ class WhereQueryTest extends TestCase
 
         $this->assertTrue($noProduct->isEmpty());
 
-		$this->assertEquals($eloquent->getKey(), $product->first()->getKey());
+        $this->assertEquals($eloquent->getKey(), $product->first()->getKey());
     }
 
     /** @test */
@@ -25,13 +25,13 @@ class WhereQueryTest extends TestCase
         $eloquent2 = $this->product_2();
 
         $product = Cars::whereAttribute('sku', 'SSSSSS')
-        			->orWhereAttribute('sku', 'PDO1HJK92')->get();
+                    ->orWhereAttribute('sku', 'PDO1HJK92')->get();
 
         $this->assertTrue($product->isNotEmpty());
         $this->assertEquals($product->count(), 1);
 
         $product = Cars::whereAttribute('sku', 'SSSSSS')
-        			->orWhereAttribute('sku', 'like', 'PDO%')->get();
+                    ->orWhereAttribute('sku', 'like', 'PDO%')->get();
 
         $this->assertEquals($product->count(), 2);
     }
@@ -56,8 +56,8 @@ class WhereQueryTest extends TestCase
         $eloquent2 = $this->product_2();
 
         $product = Cars::whereBetweenAttribute('age', [18, 100])
-        			->orWhereBetweenAttribute('age', [10, 17])
-        			->get();		
+                    ->orWhereBetweenAttribute('age', [10, 17])
+                    ->get();
 
         $this->assertTrue($product->isNotEmpty());
         $this->assertEquals($product->count(), 2);
@@ -84,8 +84,8 @@ class WhereQueryTest extends TestCase
         $eloquent2 = $this->product_2();
 
         $product = Cars::whereNotBetweenAttribute('age', [18, 100])
-        			->orwhereNotBetweenAttribute('age', [10, 13])
-        			->get();		
+                    ->orwhereNotBetweenAttribute('age', [10, 13])
+                    ->get();
 
         $this->assertTrue($product->isNotEmpty());
         $this->assertEquals($product->count(), 2);
@@ -98,15 +98,15 @@ class WhereQueryTest extends TestCase
         $eloquent2 = $this->product_2();
 
         $product = Cars::whereInAttribute('age', [10, 11, 14])
-        			->get();	
+                    ->get();
 
-		$product2 = Cars::whereInAttribute('age', [10, 11, 15])
-        			->get();        				
+        $product2 = Cars::whereInAttribute('age', [10, 11, 15])
+                    ->get();
 
         $this->assertTrue($product->isNotEmpty());
         $this->assertEquals($product->count(), 1);
 
-        $this->assertTrue($product2->isEmpty());        
+        $this->assertTrue($product2->isEmpty());
     }
 
     /** @test */
@@ -116,11 +116,11 @@ class WhereQueryTest extends TestCase
         $eloquent2 = $this->product_2();
 
         $product = Cars::whereInAttribute('age', [10, 11, 15])
-        			->orWhereInAttribute('age', [14, 18])
-        			->get();	
-       				
+                    ->orWhereInAttribute('age', [14, 18])
+                    ->get();
+                       
         $this->assertTrue($product->isNotEmpty());
-        $this->assertEquals($product->count(), 1);      
+        $this->assertEquals($product->count(), 1);
     }
 
     /** @test */
@@ -130,16 +130,16 @@ class WhereQueryTest extends TestCase
         $eloquent2 = $this->product_2();
 
         $product = Cars::whereNotInAttribute('age', [10, 11, 14])
-        			->get();	
+                    ->get();
 
-		$product2 = Cars::whereNotInAttribute('age', [10, 11, 15])
-        			->get();        				
+        $product2 = Cars::whereNotInAttribute('age', [10, 11, 15])
+                    ->get();
 
         $this->assertTrue($product->isNotEmpty());
         $this->assertEquals($product->count(), 1);
 
         $this->assertTrue($product2->isNotEmpty());
-        $this->assertEquals($product2->count(), 2);     
+        $this->assertEquals($product2->count(), 2);
     }
 
     /** @test */
@@ -149,11 +149,11 @@ class WhereQueryTest extends TestCase
         $eloquent2 = $this->product_2();
 
         $product = Cars::whereNotInAttribute('sku', ['PDOBEEAM112', 'RAMDOM'])
-        			->orWhereNotInAttribute('age', [14, 18])
-        			->get(['sku']);
-       				
+                    ->orWhereNotInAttribute('age', [14, 18])
+                    ->get(['sku']);
+                       
         $this->assertTrue($product->isNotEmpty());
-        $this->assertEquals($product->first()->sku, 'PDO1HJK92');  
+        $this->assertEquals($product->first()->sku, 'PDO1HJK92');
     }
 
     /** @test */
@@ -163,7 +163,7 @@ class WhereQueryTest extends TestCase
         $eloquent2 = $this->product_2();
 
         $product = Cars::whereNullAttribute('description')
-        			->get(['*', 'description', 'sku']);	
+                    ->get(['*', 'description', 'sku']);
 
         $this->assertTrue($product->isNotEmpty());
         $this->assertEquals($product->count(), 1);
@@ -177,8 +177,8 @@ class WhereQueryTest extends TestCase
         $eloquent2 = $this->product_2();
 
         $product = Cars::whereAttribute('sku', 'UNKNOWN')
-        			->orWhereNullAttribute('description')
-        			->get(['*', 'description', 'sku']);	
+                    ->orWhereNullAttribute('description')
+                    ->get(['*', 'description', 'sku']);
 
         $this->assertTrue($product->isNotEmpty());
         $this->assertEquals($product->count(), 1);
@@ -192,7 +192,7 @@ class WhereQueryTest extends TestCase
         $eloquent2 = $this->product_2();
 
         $product = Cars::whereNotNullAttribute('description')
-        			->get(['*', 'description', 'sku']);	
+                    ->get(['*', 'description', 'sku']);
 
         $this->assertTrue($product->isNotEmpty());
         $this->assertEquals($product->count(), 1);
@@ -206,8 +206,8 @@ class WhereQueryTest extends TestCase
         $eloquent2 = $this->product_2();
 
         $product = Cars::whereAttribute('sku', 'UNKNOWN')
-        			->orWhereNotNullAttribute('description')
-        			->get(['*', 'description', 'sku']);	
+                    ->orWhereNotNullAttribute('description')
+                    ->get(['*', 'description', 'sku']);
 
         $this->assertTrue($product->isNotEmpty());
         $this->assertEquals($product->count(), 1);
@@ -221,7 +221,7 @@ class WhereQueryTest extends TestCase
         $eloquent2 = $this->product_2();
 
         $product = Cars::whereDateAttribute('purchased_at', '2018-09-02')
-        			->get(['*', 'sku']);	
+                    ->get(['*', 'sku']);
 
         $this->assertTrue($product->isNotEmpty());
         $this->assertEquals($product->count(), 1);
@@ -235,8 +235,8 @@ class WhereQueryTest extends TestCase
         $eloquent2 = $this->product_2();
 
         $product = Cars::whereDateAttribute('purchased_at', '2018-09-01')
-        			->orWhereDateAttribute('purchased_at', '=' , '2018-09-02')
-        			->get(['*', 'sku']);	
+                    ->orWhereDateAttribute('purchased_at', '=', '2018-09-02')
+                    ->get(['*', 'sku']);
 
         $this->assertTrue($product->isNotEmpty());
         $this->assertEquals($product->count(), 1);
@@ -250,7 +250,7 @@ class WhereQueryTest extends TestCase
         $eloquent2 = $this->product_2();
 
         $product = Cars::whereTimeAttribute('purchased_at', '=', '15:02:01')
-        			->get(['*', 'sku']);
+                    ->get(['*', 'sku']);
 
         $this->assertTrue($product->isNotEmpty());
         $this->assertEquals($product->count(), 1);
@@ -264,8 +264,8 @@ class WhereQueryTest extends TestCase
         $eloquent2 = $this->product_2();
 
         $product = Cars::whereTimeAttribute('purchased_at', '=', '15:04:01')
-        			->orwhereTimeAttribute('purchased_at', '=', '15:03:01')
-        			->get(['*', 'sku']);
+                    ->orwhereTimeAttribute('purchased_at', '=', '15:03:01')
+                    ->get(['*', 'sku']);
 
         $this->assertTrue($product->isNotEmpty());
         $this->assertEquals($product->count(), 1);
@@ -279,7 +279,7 @@ class WhereQueryTest extends TestCase
         $eloquent2 = $this->product_2();
 
         $product = Cars::whereDayAttribute('purchased_at', '02')
-        			->get(['*', 'sku']);
+                    ->get(['*', 'sku']);
 
         $this->assertTrue($product->isNotEmpty());
         $this->assertEquals($product->count(), 1);
@@ -293,7 +293,7 @@ class WhereQueryTest extends TestCase
         $eloquent2 = $this->product_2();
 
         $product = Cars::whereMonthAttribute('purchased_at', '09')
-        			->get(['*', 'sku']);
+                    ->get(['*', 'sku']);
 
         $this->assertTrue($product->isNotEmpty());
         $this->assertEquals($product->count(), 1);
@@ -307,44 +307,44 @@ class WhereQueryTest extends TestCase
         $eloquent2 = $this->product_2();
 
         $product = Cars::whereYearAttribute('purchased_at', '2018')
-        			->get(['*', 'sku']);
+                    ->get(['*', 'sku']);
 
         $this->assertTrue($product->isNotEmpty());
         $this->assertEquals($product->count(), 2);
     }
 
-   	/** @test */
+    /** @test */
     public function it_can_add_order_by_statement()
     {
         $eloquent = $this->product();
         $eloquent2 = $this->product_2();
 
         $product = Cars::orderByAttribute('purchased_at', 'asc')
-        			->get(['*', 'sku']);
+                    ->get(['*', 'sku']);
 
         $this->assertEquals($product->first()->sku, 'PDOBEEAM112');
     }
 
     private function product()
     {
-    	return Cars::create([
-		    'name' => 'Flamethrower',
-		    'sku'  => 'PDO1HJK92',
-		    'age' => rand(50,100),
-		    'search' => 1,
-		    'purchased_at' => new \DateTime('2018-09-02T15:02:01.012345Z')
-		]);
+        return Cars::create([
+            'name' => 'Flamethrower',
+            'sku'  => 'PDO1HJK92',
+            'age' => rand(50, 100),
+            'search' => 1,
+            'purchased_at' => new \DateTime('2018-09-02T15:02:01.012345Z')
+        ]);
     }
 
     private function product_2()
     {
-    	return Cars::create([
-		    'name' => 'Space Beem',
-		    'sku'  => 'PDOBEEAM112',
-		    'description' => 'Definitely Not a Flamethrower',
-		    'age' => 14,
-		    'search' => 0,
-		    'purchased_at' => new \DateTime('2018-08-21T15:03:01.012345Z')
-		]);
+        return Cars::create([
+            'name' => 'Space Beem',
+            'sku'  => 'PDOBEEAM112',
+            'description' => 'Definitely Not a Flamethrower',
+            'age' => 14,
+            'search' => 0,
+            'purchased_at' => new \DateTime('2018-08-21T15:03:01.012345Z')
+        ]);
     }
 }

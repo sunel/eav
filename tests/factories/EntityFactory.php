@@ -15,17 +15,17 @@ use Eav\Entity;
 */
 
 $factory->define(Entity::class, function (Generator $faker) {
-	$code = $faker->unique()->userName;
+    $code = $faker->unique()->userName;
     return [
         'entity_code' => $code,
-    	'entity_class' => 'App\\'.ucfirst($code),
-    	'entity_table' => $code.'s',
+        'entity_class' => 'App\\'.ucfirst($code),
+        'entity_table' => $code.'s',
     ];
 });
 
 
 $factory->state(Entity::class, 'flat', function ($faker) {
     return [
-    	'is_flat_enabled' => 1
+        'is_flat_enabled' => 1
     ];
 });

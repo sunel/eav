@@ -10,9 +10,9 @@ use Eav\EntityAttribute;
 
 class AttributeGroupTest extends TestCase
 {
-     /** @test */
+    /** @test */
     public function it_must_retrive_associated_attributes()
-    {           
+    {
         $entity = factory(Entity::class)->create([
             'entity_code' => 'custom'
         ]);
