@@ -25,7 +25,7 @@ class AttributeSet extends Model
 
     /**
      * Proxy to get the attribute set name.
-     * 
+     *
      * @return string
      */
     public function name()

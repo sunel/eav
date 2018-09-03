@@ -25,13 +25,13 @@ class AttributeGroup extends Model
 
     /**
      * Proxy to get the attribute group name.
-     * 
+     *
      * @return string
      */
     public function name()
     {
         return $this->getAttribute('attribute_group_name');
-    }    
+    }
 
     /**
      * Define a has-many-through relationship for attributes.

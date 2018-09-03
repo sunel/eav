@@ -67,7 +67,7 @@ class Entity extends Model
 
     /**
      * Use this method only if nessary.
-     * 
+     *
      * @return void
      */
     public static function clearStaticCache()
@@ -146,7 +146,7 @@ class Entity extends Model
      * @return string
      */
     public function getEntityTableName()
-    {   
+    {
         $tableName = $this->getAttribute('entity_code');
 
         $tablePrefix = $this->getConnection()->getTablePrefix();

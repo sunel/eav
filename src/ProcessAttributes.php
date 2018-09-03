@@ -32,7 +32,7 @@ class ProcessAttributes
         $usedAttributes = $loadedAttributes
             ->filter(function ($attribute) use ($filterAttr) {
                 return isset($filterAttr[$attribute->getAttributeCode()]);
-            });  
+            });
             
         foreach ((array) $query->attributeOrderBy as $bindings) {
             foreach ($bindings as $binding) {
@@ -45,9 +45,9 @@ class ProcessAttributes
             }
         }
 
-       if(!count($query->attributeWheresRef)) {
+        if (!count($query->attributeWheresRef)) {
             return;
-       }
+        }
 
         foreach ((array) $query->attributeWheres['binding'] as $type => $bindings) {
             switch ($type) {

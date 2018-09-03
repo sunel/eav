@@ -16,20 +16,20 @@ trait Attribute
         $attributes = collect($attributes)->unique();
         $code = $this->baseEntity()->getCode();
 
-        if($attributes->isEmpty()) {
+        if ($attributes->isEmpty()) {
             $this->saveAttribute(
                 $this->fetchAttributes([], $static, $required)
             );
         } else {
             $newAttribute = $attributes->diff(array_get(static::$attributesCollectionKeys, $code, []));
-            if($newAttribute->isNotEmpty()) {
+            if ($newAttribute->isNotEmpty()) {
                 $this->saveAttribute(
                     $this->fetchAttributes($newAttribute->all(), $static, $required)
                 );
             }
-        }         
+        }
 
-        if($attributes->isEmpty()) {
+        if ($attributes->isEmpty()) {
             return static::$attributesCollection[$code];
         }
         return static::$attributesCollection[$code]->only($attributes->all())->patch();
@@ -38,7 +38,7 @@ trait Attribute
     protected function saveAttribute(Collection $loadedAttributes)
     {
         $code = $this->baseEntity()->getCode();
-        if(!isset(static::$attributesCollection[$code])) {
+        if (!isset(static::$attributesCollection[$code])) {
             static::$attributesCollection[$code] = $loadedAttributes;
         } else {
             static::$attributesCollection[$code] = static::$attributesCollection[$code]->merge($loadedAttributes);
@@ -63,7 +63,7 @@ trait Attribute
                     $query->orWhere('is_required', 1);
                 }
             });
-        $cacheKey = md5(implode('|', $attributes)."|{$this->baseEntity()->getCode()}|{$query->toSql()}");    
+        $cacheKey = md5(implode('|', $attributes)."|{$this->baseEntity()->getCode()}|{$query->toSql()}");
         return Cache::remember($cacheKey, 10, function () use ($query) {
             return $query->get()->patch();
         });

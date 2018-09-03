@@ -40,7 +40,7 @@ class ActivateFlatEntityCommand extends Command
         try {
             $entity = Entity::findByCode($entityCode);
 
-            if($this->option('enable') == 'true') {
+            if ($this->option('enable') == 'true') {
                 $entity->is_flat_enabled = true;
                 $entity->save();
                 $this->info("Enabling flat table for `{$entityCode}`.");
@@ -48,7 +48,7 @@ class ActivateFlatEntityCommand extends Command
                 $entity->is_flat_enabled = false;
                 $entity->save();
                 $this->info("Disabling flat table for `{$entityCode}`.");
-            }                    
+            }
         } catch (ModelNotFoundException $e) {
             $this->error("`{$entityCode}` entity doesn't exists.");
         }

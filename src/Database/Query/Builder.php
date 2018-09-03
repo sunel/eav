@@ -221,7 +221,7 @@ class Builder extends QueryBuilder
             return;
         }
         
-        $loadedAttributes = $this->loadAttributes($this->attributeColumns);        
+        $loadedAttributes = $this->loadAttributes($this->attributeColumns);
         ProcessAttributes::process($this, $loadedAttributes, $this->baseEntity(), $noJoin);
         
         $this->isProcessed = true;
@@ -242,7 +242,7 @@ class Builder extends QueryBuilder
         $loadedAttributes = null;
         $columns = $this->columns;
 
-        if(is_null($columns)) {
+        if (is_null($columns)) {
             return $this;
         }
 
@@ -260,27 +260,27 @@ class Builder extends QueryBuilder
         ];
 
         $allAttr = $orgColumns->get('columns')->contains('attr.*');
-        $allMain = $orgColumns->get('columns')->contains('*');        
+        $allMain = $orgColumns->get('columns')->contains('*');
 
         // ->select(['attr.*']) or ->select(['*'])
-        if($allAttr || $allMain) {
+        if ($allAttr || $allMain) {
             $columns[] = "{$this->from}.*";
-        } 
+        }
         // ->select(['id']) or ->select(['id', 'color'])
-        else if ($orgColumns->get('columns')->contains($this->baseEntity()->getEntityKey())) {
+        elseif ($orgColumns->get('columns')->contains($this->baseEntity()->getEntityKey())) {
             $columns[] =  "{$this->from}.{$this->baseEntity()->getEntityKey()}";
-        }       
+        }
 
         // We check if the select has only `*`, if so then we have nothing
         // to do.
-        if($allMain && $orgColumns->get('columns')->count() == 1) {
+        if ($allMain && $orgColumns->get('columns')->count() == 1) {
             $this->columns = $columns;
             return $this;
         }
 
         if ($allAttr) {
-            $fetchAttr = [];            
-        } else {            
+            $fetchAttr = [];
+        } else {
             $fetchAttr = $orgColumns->get('columns')->filter(function ($value, $key) use ($removeCol) {
                 return !(in_array($value, $removeCol));
             })->all();
@@ -288,14 +288,14 @@ class Builder extends QueryBuilder
 
         $loadedAttributes = $this->loadAttributes($fetchAttr)
             ->each(function ($attribute, $key) use (&$columns, &$removeCol) {
-                if($attribute->isStatic()) {
-                    $columns[] = "{$this->from}.{$attribute->getSelectColumn()}";    
+                if ($attribute->isStatic()) {
+                    $columns[] = "{$this->from}.{$attribute->getSelectColumn()}";
                 } else {
                     $attribute->setEntity($this->baseEntity())
                             ->addAttributeJoin($this, 'left');
                     $columns[] = $attribute->getSelectColumn();
                 }
-                $removeCol[] = $attribute->getAttributeCode();            
+                $removeCol[] = $attribute->getAttributeCode();
             });
         // We might have join select clause in the original column
             
@@ -342,14 +342,14 @@ class Builder extends QueryBuilder
         ];
 
         $allAttr = $orgColumns->get('columns')->contains('attr.*');
-        $allMain = $orgColumns->get('columns')->contains('*');        
+        $allMain = $orgColumns->get('columns')->contains('*');
 
         // ->select(['attr.*']) or ->select(['*'])
-        if($allAttr || $allMain) {
+        if ($allAttr || $allMain) {
             $columns[] = "{$this->from}.*";
-        } 
+        }
         // ->select(['id']) or ->select(['id', 'color'])
-        else if ($orgColumns->get('columns')->contains($this->baseEntity()->getEntityKey())) {
+        elseif ($orgColumns->get('columns')->contains($this->baseEntity()->getEntityKey())) {
             $columns[] =  "{$this->from}.{$this->baseEntity()->getEntityKey()}";
         }
 
@@ -732,7 +732,9 @@ class Builder extends QueryBuilder
     public function whereDateAttribute($column, $operator, $value = null, $boolean = 'and')
     {
         list($value, $operator) = $this->prepareValueAndOperator(
-            $value, $operator, func_num_args() == 2
+            $value,
+            $operator,
+            func_num_args() == 2
         );
 
         if ($this->canUseFlat()) {
@@ -794,7 +796,9 @@ class Builder extends QueryBuilder
     public function whereDayAttribute($column, $operator, $value = null, $boolean = 'and')
     {
         list($value, $operator) = $this->prepareValueAndOperator(
-            $value, $operator, func_num_args() == 2
+            $value,
+            $operator,
+            func_num_args() == 2
         );
 
         if ($this->canUseFlat()) {
@@ -816,7 +820,9 @@ class Builder extends QueryBuilder
     public function whereMonthAttribute($column, $operator, $value = null, $boolean = 'and')
     {
         list($value, $operator) = $this->prepareValueAndOperator(
-            $value, $operator, func_num_args() == 2
+            $value,
+            $operator,
+            func_num_args() == 2
         );
 
         if ($this->canUseFlat()) {
@@ -838,7 +844,9 @@ class Builder extends QueryBuilder
     public function whereYearAttribute($column, $operator, $value = null, $boolean = 'and')
     {
         list($value, $operator) = $this->prepareValueAndOperator(
-            $value, $operator, func_num_args() == 2
+            $value,
+            $operator,
+            func_num_args() == 2
         );
 
         if ($this->canUseFlat()) {
