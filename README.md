@@ -18,4 +18,4 @@ Entity–attribute–value model (EAV) is a data model to encode, in a space-eff
 
 ## Limitation of EAV
 
-* In EAV model the entity data is more fragmented and so selecting an entire entity record requires multiple table joins. [Piss Check this ](https://sunel.github.io/eav/master/ideology/flat-table.html)
+* In EAV model the entity data is more fragmented and so selecting an entire entity record requires multiple table joins. [Please Check this ](https://sunel.github.io/eav/master/ideology/flat-table.html)
