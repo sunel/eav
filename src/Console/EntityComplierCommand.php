@@ -18,7 +18,8 @@ class EntityComplierCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'eav:compile:entity {entity : The name of the entity.}';
+    protected $signature = 'eav:compile:entity {entity : The name of the entity.}
+        {--path= : The location where the compiled migration file should be created.}';
 
     /**
      * The console command description.

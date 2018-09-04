@@ -61,6 +61,8 @@ class Complier
         $this->console->info("\t Creating flat table for `{$this->entity->entity_table}`.");
 
         $path = $this->getPath($this->entity->entity_table.'_flat');
+
+        $this->console->info("\t in {$path}");
         
         $this->makeDirectory($path);
         
@@ -187,7 +189,11 @@ class Complier
      */
     protected function getPath($name)
     {
-        return base_path() . '/database/migrations/eav/' . $name . '.php';
+        if (! is_null($targetPath = $this->console->option('path'))) {
+            return $this->console->getLaravel()->basePath().'/'.rtrim(trim($targetPath), '/').'/'. $name . '.php';
+        }
+
+        return $this->console->getLaravel()->databasePath().'/migrations/eav/' . $name . '.php';
     }
    
     /**
