@@ -261,6 +261,7 @@ class Builder extends QueryBuilder
 
         $allAttr = $orgColumns->get('columns')->contains('attr.*');
         $allMain = $orgColumns->get('columns')->contains('*');
+        $hasId =  $orgColumns->get('columns')->contains($this->baseEntity()->getEntityKey());
 
         // ->select(['attr.*']) or ->select(['*'])
         if ($allAttr || $allMain) {
@@ -269,11 +270,11 @@ class Builder extends QueryBuilder
         // ->select(['id']) or ->select(['id', 'color'])
         elseif ($orgColumns->get('columns')->contains($this->baseEntity()->getEntityKey())) {
             $columns[] =  "{$this->from}.{$this->baseEntity()->getEntityKey()}";
-        }
+        }       
 
-        // We check if the select has only `*`, if so then we have nothing
+        // We check if the select has only `*` or 'id', if so then we have nothing
         // to do.
-        if ($allMain && $orgColumns->get('columns')->count() == 1) {
+        if (($allMain || $hasId) && $orgColumns->get('columns')->count() == 1) {
             $this->columns = $columns;
             return $this;
         }
@@ -297,8 +298,8 @@ class Builder extends QueryBuilder
                 }
                 $removeCol[] = $attribute->getAttributeCode();
             });
-        // We might have join select clause in the original column
-            
+
+        // We might have join select clause in the original column            
         $columns = $orgColumns
             ->get('columns')
             ->merge($columns)
@@ -306,8 +307,7 @@ class Builder extends QueryBuilder
                 return !(in_array($value, $removeCol));
             })->unique()->toArray();
 
-        // Merge the expression back to the query
-        
+        // Merge the expression back to the query        
         if ($expression = $orgColumns->get('expression')) {
             $columns = $expression->merge($columns)->all();
         }
