@@ -6,6 +6,7 @@ use Eav\Entity;
 use Illuminate\Support\Str;
 use Eav\Migrations\SchemaParser;
 use Eav\Migrations\SyntaxBuilder;
+use Illuminate\Support\Collection;
 use Illuminate\Filesystem\Filesystem;
 use Symfony\Component\Console\Command\Command;
 
@@ -109,8 +110,8 @@ class Complier
     }
 
     protected function buildSchema()
-    {
-        $table = $this->entity->describe()->map(function ($attribute) {
+    {        
+        $table = $this->describe($this->entity->entity_table)->map(function ($attribute) {
             if ($attribute['COLUMN_KEY'] == 'PRI') {
                 $schema = "{$attribute['COLUMN_NAME']}:{$this->getColumn($attribute['DATA_TYPE'])}:unsigned";
             } else {
@@ -141,16 +142,22 @@ class Complier
             }
             
             return $schema;
-        });
-        
-        
-        $attributes = $this->collectAttributes()->where('backend_type', '!=', 'static')->get()->map(function ($attribute) {
+        });        
+
+        $attributes = $this->collectAttributes()->get()->map(function ($attribute) {
+
+            $table = $this->describe($attribute->getBackendTable(), function ($query) {
+                return $query->where('COLUMN_NAME', 'value');
+            })->first();
+
             $schema = "{$attribute->getAttributeCode()}";
             
-            if ($attribute->getBackendType() == 'decimal') {
-                $schema .= ":{$this->getColumn($attribute->getBackendType())}(12 , 4)";
+            if ($attribute->getBackendType() == 'char' || $attribute->getBackendType() == 'string') {
+                $schema .= ":{$attribute->getBackendType()}({$table['CHARACTER_MAXIMUM_LENGTH']})";
+            } else if (in_array($attribute->getBackendType(), ['decimal', 'double', 'float', 'unsignedDecimal'])) {
+                $schema .= ":{$attribute->getBackendType()}({$table['NUMERIC_PRECISION']}, {$table['NUMERIC_SCALE']})";
             } else {
-                $schema .= ":{$this->getColumn($attribute->getBackendType())}";
+                $schema .= ":{$attribute->getBackendType()}";
             }
             
             $schema .= ":nullable";
@@ -167,6 +174,34 @@ class Complier
         $schema = (new SchemaParser)->parse($table->implode(',').','.$attributes->implode(','));
         
         return (new SyntaxBuilder)->create($schema);
+    }
+
+    /**
+     * Describe the table structure, this is used while creating flat table.
+     *
+     * @return Illuminate\Support\Collection
+     */
+    public function describe($table, $clouser = null)
+    {      
+        if(is_null($clouser)) {
+             $clouser = function ($query) {
+                return $query;
+             };
+        }
+
+        $connection = \DB::connection();
+        
+        $database = $connection->getDatabaseName();
+
+        $table = $connection->getTablePrefix().$table;
+        
+        $result = \DB::table('information_schema.columns')
+                ->where('table_schema', $database)
+                ->where('table_name', $table)
+                ->where($clouser)
+                ->get();
+                
+        return new Collection(json_decode(json_encode($result), true));
     }
 
     /**
@@ -271,6 +306,7 @@ class Complier
 
     protected function collectAttributes()
     {
-        return $this->entity->attributes();
+        return $this->entity->attributes()
+            ->whereNotIn('backend_type', ['static', '']);
     }
 }

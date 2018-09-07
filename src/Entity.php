@@ -2,7 +2,6 @@
 
 namespace Eav;
 
-use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 
@@ -223,28 +222,5 @@ class Entity extends Model
     public function defaultAttributeSet()
     {
         return $this->hasOne(AttributeSet::class, 'attribute_set_id', 'default_attribute_set_id');
-    }
-    
-    /**
-     * Describe the table structure, this is used while creating flat table.
-     *
-     * @return Illuminate\Support\Collection
-     */
-    public function describe()
-    {
-        $table = $this->getAttribute('entity_table');
-        
-        $connection = \DB::connection();
-        
-        $database = $connection->getDatabaseName();
-
-        $table = $connection->getTablePrefix().$table;
-        
-        $result = \DB::table('information_schema.columns')
-                ->where('table_schema', $database)
-                ->where('table_name', $table)
-                ->get();
-                
-        return new Collection(json_decode(json_encode($result), true));
     }
 }
