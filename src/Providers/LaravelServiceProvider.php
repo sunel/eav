@@ -4,7 +4,8 @@ namespace Eav\Providers;
 
 use Validator;
 use Eav\Console\ModelMakeCommand;
-use Eav\Console\EntityComplierCommand;
+use Eav\Console\FlatEntityComplierCommand;
+use Eav\Console\FlatEntityUpdaterCommand;
 use Eav\Console\ActivateFlatEntityCommand;
 use Illuminate\Support\ServiceProvider;
 use Eav\Migrations\EntityMigrationCreator;
@@ -74,7 +75,7 @@ class LaravelServiceProvider extends ServiceProvider
     {
         $commands = [
             'MakeEntityMigration', 'MakeEnityModel', 'MakeAttributeMigration',
-            'MakeEntityAttributeMap', 'EntityComplier', 'ActivateFlatEntity'
+            'MakeEntityAttributeMap', 'FlatEntityComplier', 'FlatEntityUpdater',
         ];
 
         // We'll simply spin through the list of commands that are migration related
@@ -92,7 +93,8 @@ class LaravelServiceProvider extends ServiceProvider
             'command.attribute.migrate.make',
             'command.entity.model.make',
             'command.entity.attribute.map.make',
-            'command.entity.complier',
+            'command.entity.flat.complier',
+            'command.entity.flat.updater',
             'command.entity.flat.activate'
         );
     }
@@ -114,10 +116,25 @@ class LaravelServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    protected function registerEntityComplierCommand()
+    protected function registerFlatEntityComplierCommand()
     {
-        $this->app->singleton('command.entity.complier', function ($app) {
-            return new EntityComplierCommand($app['files'], $app['composer']);
+        $this->app->singleton('command.entity.flat.complier', function ($app) {
+            return new FlatEntityComplierCommand($app['files'], $app['composer']);
+        });
+    }
+
+    /**
+     * Register the command.
+     *
+     * @return void
+     */
+    protected function registerFlatEntityUpdaterCommand()
+    {
+        $this->app->singleton('command.entity.flat.updater', function ($app) {
+            return new FlatEntityUpdaterCommand();
+        });
+    }
+
         });
     }
 

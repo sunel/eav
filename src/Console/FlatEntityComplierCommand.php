@@ -10,7 +10,7 @@ use Eav\Flat\Entity\Complier as EntityComplier;
 use Symfony\Component\Console\Input\InputOption;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
-class EntityComplierCommand extends Command
+class FlatEntityComplierCommand extends Command
 {
 
     /**

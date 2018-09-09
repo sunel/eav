@@ -32,33 +32,6 @@ class Complier
 
     public function compile()
     {
-        $this->createTable();
-        $this->insertValues();
-    }
-    
-    protected function insertValues()
-    {
-        $entity = app($this->entity->entity_class);
-
-        $flatEntity = app($this->entity->entity_class);
-    
-        $flatEntity->baseEntity();
-
-        $this->console->info("\t Updating `{$this->entity->entity_table}` flat table.");
-
-        $flatEntity->setUseFlat(false);
-        
-        $entity->select('attr.*')->chunk(100, function ($chunk) use ($flatEntity) {
-            $flatEntity->setUseFlat(true);
-            $flatEntity->insert($chunk->toArray());
-            $flatEntity->setUseFlat(false);
-        });
-
-        $this->console->info("\t Updated `{$this->entity->entity_table}` flat table.");
-    }
-
-    protected function createTable()
-    {
         $this->console->info("\t Creating flat table for `{$this->entity->entity_table}`.");
 
         $path = $this->getPath($this->entity->entity_table.'_flat');
@@ -110,7 +83,7 @@ class Complier
     }
 
     protected function buildSchema()
-    {        
+    {
         $table = $this->describe($this->entity->entity_table)->map(function ($attribute) {
             if ($attribute['COLUMN_KEY'] == 'PRI') {
                 $schema = "{$attribute['COLUMN_NAME']}:{$this->getColumn($attribute['DATA_TYPE'])}:unsigned";
@@ -142,31 +115,40 @@ class Complier
             }
             
             return $schema;
-        });        
+        });
 
-        $attributes = $this->collectAttributes()->get()->map(function ($attribute) {
+        $attributes = Collection::make([]);
 
-            $table = $this->describe($attribute->getBackendTable(), function ($query) {
-                return $query->where('COLUMN_NAME', 'value');
-            })->first();
+        $tableCache = Collection::make([]);
 
-            $schema = "{$attribute->getAttributeCode()}";
-            
-            if ($attribute->getBackendType() == 'char' || $attribute->getBackendType() == 'string') {
-                $schema .= ":{$attribute->getBackendType()}({$table['CHARACTER_MAXIMUM_LENGTH']})";
-            } else if (in_array($attribute->getBackendType(), ['decimal', 'double', 'float', 'unsignedDecimal'])) {
-                $schema .= ":{$attribute->getBackendType()}({$table['NUMERIC_PRECISION']}, {$table['NUMERIC_SCALE']})";
-            } else {
-                $schema .= ":{$attribute->getBackendType()}";
-            }
-            
-            $schema .= ":nullable";
-            
-            if ($defaultValue = $attribute->getDefaultValue()) {
-                $schema .= ":default('$defaultValue')";
-            }
-            
-            return $schema;
+        $this->collectAttributes()->chunk(500, function ($chunk, $page) use ($attributes, $tableCache) {
+            $chunk->map(function ($attribute) use ($attributes, $tableCache) {
+                $table = $tableCache->get($attribute->getBackendTable(), function () use ($attribute, $tableCache) {
+                    $key = $attribute->getBackendTable();
+                    return $tableCache->put($key, $this->describe($key, function ($query) {
+                        return $query->where('COLUMN_NAME', 'value');
+                    })->first())->get($key);
+                });
+
+                $schema = "{$attribute->getAttributeCode()}";
+                
+                if ($attribute->getBackendType() == 'char' || $attribute->getBackendType() == 'string') {
+                    $schema .= ":{$attribute->getBackendType()}({$table['CHARACTER_MAXIMUM_LENGTH']})";
+                } elseif (in_array($attribute->getBackendType(), ['decimal', 'double', 'float', 'unsignedDecimal'])) {
+                    $schema .= ":{$attribute->getBackendType()}({$table['NUMERIC_PRECISION']}, {$table['NUMERIC_SCALE']})";
+                } else {
+                    $schema .= ":{$attribute->getBackendType()}";
+                }
+                
+                $schema .= ":nullable";
+                
+                if ($defaultValue = $attribute->getDefaultValue()) {
+                    $schema .= ":default('$defaultValue')";
+                }
+                
+                $attributes->push($schema);
+            });
+            return false;
         });
         
         $this->console->info("\t Found {$attributes->count()} attributes.");
@@ -182,11 +164,11 @@ class Complier
      * @return Illuminate\Support\Collection
      */
     public function describe($table, $clouser = null)
-    {      
-        if(is_null($clouser)) {
-             $clouser = function ($query) {
+    {
+        if (is_null($clouser)) {
+            $clouser = function ($query) {
                 return $query;
-             };
+            };
         }
 
         $connection = \DB::connection();
