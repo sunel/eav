@@ -44,6 +44,16 @@ abstract class Model extends Eloquent
 
         parent::__construct($attributes);
     }
+
+    /**
+     * Get the current attribute set using one-to-one relationship for attribute.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function currentAttributeSet()
+    {
+        return $this->hasOne(AttributeSet::class, 'attribute_set_id');
+    }
     
     /**
      * Get the Entity related to the model.
