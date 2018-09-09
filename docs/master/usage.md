@@ -16,10 +16,10 @@ The migration contains schema for creating different data type like `varchar`, `
 To create a [Attribute](ideology/attribute.html)
 
 ```bash
-$ php artisan eav:make:attribute sku,name,search,description product 
+$ php artisan eav:make:attribute product --attributes sku:string,name:string,search:boolean,description:text 
 ```
 
-Here ```name,sku,upc,description,search``` are the attributes that needs to be added to  ```product``` entity.
+Here ```sku:string,name:string,search:boolean,description:text``` are the attributes that needs to be added to  ```product``` entity.
 
 This is will create the migration that is needed to create the attibute and map it to the entity. 
 

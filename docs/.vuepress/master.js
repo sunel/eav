@@ -35,6 +35,7 @@ module.exports = [
     title: 'Advance',
     collapsable: false,
     children: [
+      'export-import',
       'snippet',
       'custom-table',
       'er',

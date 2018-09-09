@@ -4,21 +4,29 @@ Flat tables on the other hand means, storing all data in a single table instead 
 
 So all attributes of an EAV entity become column name of a single table and all attribute data relating to an entity is stored in a single table.
 
-Flat table can be created by
+**To create Flat table.**
 
 ```bash
 $ php artisan eav:compile:entity [entity_code]
 ```
+This will collect all attribute, build and run the scheme.
 
-This will collect all attribute, build the scheme and then insert values into it.
 
-To Activate the Flat table for the entity
+**To updated the table with value.**
+
+```bash
+$ php artisan eav:compile:updater [entity_code] -C 100
+```
+By default it will insert 100 records in a single insert. You can increase the value using `-C` option.
+
+
+**To Activate the Flat table for the entity**
 
 ```bash
 $ php artisan eav:flat:entity [entity_code] -E true
 ```
 
-To Deactivate the Flat table for the entity
+**To Deactivate the Flat table for the entity**
 
 ```bash
 $ php artisan eav:flat:entity [entity_code] -E false

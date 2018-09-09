@@ -15,11 +15,39 @@ public function attributes()
 
 To create a migration, use the `eav:make:attribute`
 
+You can create using one of the below options.
+
+### --attributes
+
 ```bash
-$ php artisan eav:make:attribute [n,number,of,attibutes] [entity_code] 
+$ php artisan eav:make:attribute [entity_code]  --attributes [attr1:type,attr:type,...]
 ```
 
-This will create the attibutes and also map it to the given entity. Once the code is genrated you need to update `backend_type`, `frontend_type` for the attributes. If you check the migration file it will have code that is similar to the code given below.
+If you have few attribute, you can use `--attributes` option where you can mention attribute with their type as comma separated values. Once created remember to update migration if necessary like `backend_type`, `frontend_type` for the attributes.
+
+eg :- 
+
+```bash
+$ php artisan eav:make:attribute product -A name:string,search:boolean,description:text 
+```
+
+### --source
+
+If you have too many attibutes you can use a CSV file. <a :href="$withBase('/assets/attribute.csv')">Here</a> is a sample file with the header that can be used.
+
+```bash
+$ php artisan eav:make:attribute [entity_code]  --source [path/to/the/attribute.csv]
+```
+It will fill all the details from the file and if needed you can update the migration.
+
+eg :-
+
+```bash
+$ php artisan eav:make:attribute product -S storage/attribute.csv
+```
+
+
+Both the options will also map it to the given entity. If you check the migration file it will have code that is similar to the code given below.
 
 ```php
 Eav\Attribute::add([
@@ -35,6 +63,7 @@ Eav\Attribute::add([
     'default_value' => 0,
     'is_required' => 0,
     'is_filterable' => 0,
+    'is_searchable' => 0,
     'required_validate_class' =>  null
 ]);
 
