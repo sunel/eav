@@ -3,6 +3,7 @@
 namespace Eav\Migrations;
 
 use Closure;
+use League\Csv\Reader;
 use Illuminate\Support\Str;
 use Illuminate\Filesystem\Filesystem;
 
@@ -27,18 +28,155 @@ class AttributeMigrationCreator
     }
 
     /**
-     * Create a new migration at the given path.
+     * Populate migration from string.
      *
      * @param  string  $attributes
+     * @param  string  $entity
+     * @param  string  $stub
+     * @return [string, array]
+     */
+    public function createFromString($attributes, $entity, $path)
+    {
+        $attStub = $attStubR =  '';
+        
+        $attRemoveStubDefault = $this->getAttributeRemoveStub();
+
+        $attributesProcessed = [];
+        
+        foreach (explode(',', $attributes) as $attribute) {
+            $info = explode(':', $attribute);
+
+            if (strlen($info[0]) > 50) {
+                throw new \Exception("$info[0] : attribute_code is too long must be within 50");
+            }
+
+            $attStub .= $this->replaceAttrUpStub($this->generateDefaultsForString($info));
+            $attStubR .= str_replace('ATTRIBUTECODE', $info[0], $attRemoveStubDefault);
+            $attributesProcessed[] = $info[0];
+        }
+
+        $path = $this->create(
+            $this->populateMigration($attStub, $attStubR, $entity, $this->getStub()),
+            $entity,
+            $path
+        );
+
+        return [$path, $attributesProcessed];
+    }
+
+    /**
+     * Populate migration from source path.
+     *
+     * @param  string  $source
+     * @param  string  $entity
+     * @param  string  $stub
+     * @return [string, array]
+     */
+    public function createFromSource($source, $entity, $path)
+    {
+        $reader = Reader::createFromPath($source, 'r');
+        $reader->setHeaderOffset(0);
+        $records = $reader->getRecords();
+
+        $attStub = $attStubR =  '';
+        
+        $attRemoveStubDefault = $this->getAttributeRemoveStub();
+
+        $attributesProcessed = [];
+
+        foreach ($records as $offset => $record) {
+            if (strlen($record['attribute_code']) > 50) {
+                throw new \Exception("{$record['attribute_code']} : attribute_code is too long must be within 50");
+            }
+
+            $attStub .= $this->replaceAttrUpStub($record);
+            $attStubR .= str_replace('ATTRIBUTECODE', $record['attribute_code'], $attRemoveStubDefault);
+            $attributesProcessed[] = $record['attribute_code'];
+        }
+
+        $path = $this->create(
+            $this->populateMigration($attStub, $attStubR, $entity, $this->getStub()),
+            $entity,
+            $path
+        );
+
+        return [$path, $attributesProcessed];
+    }
+
+
+    protected function replaceAttrUpStub($data)
+    {
+        $attAddStubDefault = $this->getAttributeAddStub();
+
+        return str_replace([
+            'ATTRIBUTECODE',
+            'BACKENDCLASS',
+            'BACKENDTYPE',
+            'BACKENDTABLE',
+            'FRONTENDCLASS',
+            'FRONTENDTYPE',
+            'FRONTENDLABEL',
+            'SOURECCLASS',
+            'DEFAULTVALUE',
+            'ISREQUIRED',
+            'ISFILTERABLE',
+            'ISSEARCHABLE',
+            'VALIDATIONCLASS'
+        ], $data, $attAddStubDefault);
+    }
+
+    protected function generateDefaultsForString($intial)
+    {
+        return [
+            'attribute_code' => $intial[0],
+            'backend_class' => null,
+            'backend_type' => isset($intial[1])?$intial[1]:'string',
+            'backend_table' =>  null,
+            'frontend_class' =>  null,
+            'frontend_type' => 'text',
+            'frontend_label' => ucwords(str_replace('_', ' ', $intial[0])),
+            'source_class' =>  null,
+            'default_value' => '',
+            'is_required' => 0,
+            'is_filterable' => 0,
+            'is_searchable' => 0,
+            'required_validate_class' =>  null
+        ];
+    }
+
+    /**
+     * Populate the place-holders in the migration stub.
+     *
+     * @param  string  $up
+     * @param  string  $down
+     * @param  string  $entity
+     * @param  string  $stub
+     * @return string
+     */
+    protected function populateMigration($up, $down, $entity, $stub)
+    {
+        $stub = str_replace('DummyClass', $this->getClassName("create_{$entity}_entity_attributes_".date('His')), $stub);
+        
+        $stub = str_replace(['ADDATTRIBUTE', 'REMOVEATTRIBUTE'], [$up, $down], $stub);
+
+        $stub = str_replace('ENTITYCODE', $entity, $stub);
+
+        return $stub;
+    }
+
+    /**
+     * Create a new migration at the given path.
+     *
+     * @param  string  $stub
      * @param  string  $entity
      * @param  string  $path
      * @return string
      */
-    public function create($attributes, $entity, $path)
+    protected function create($stub, $entity, $path)
     {
         $path = $this->getPath("create_{$entity}_entity_attributes_".date('His'), $path);
 
-        $this->files->put($path, $this->populateStub($attributes, $entity, $this->getStub()));
+        $this->files->put($path, $stub);
 
         return $path;
     }

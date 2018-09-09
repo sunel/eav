@@ -2,6 +2,7 @@
 
 namespace Eav\Console\Migrations;
 
+use League\Csv\Exception as CsvException;
 use Illuminate\Console\Command;
 use Illuminate\Support\Composer;
 use Eav\Migrations\AttributeMigrationCreator;
@@ -13,8 +14,9 @@ class AttributeMigrateMakeCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'eav:make:attribute {attributes : List of attributes.}
-		{entity : The name of the entity.}
+    protected $signature = 'eav:make:attribute {entity : The name of the entity.}
+		{--A|attributes= : List of attributes.}
+        {--S|source= : Location of the attributes to be created [CSV].}
         {--path= : The location where the migration file should be created.}';
 
     /**
@@ -60,30 +62,34 @@ class AttributeMigrateMakeCommand extends Command
      */
     public function handle()
     {
-        $attributes = $this->input->getArgument('attributes');
-        
-        $entity = $this->input->getArgument('entity');
+        $entity = $this->argument('entity');
 
-        $this->writeMigration($attributes, $entity);
-        
-        $this->call('eav:map:attribute', ['attributes' => $attributes, 'entity' => $entity]);
-    }
+        $attributes = $this->option('attributes');
 
-    /**
-     * Write the migration file to disk.
-     *
-     * @param  string  $attributes
-     * @param  string  $table
-     * @param  bool    $create
-     * @return string
-     */
-    protected function writeMigration($attributes, $entity)
-    {
+        $source = $this->option('source');
+
         $path = $this->getMigrationPath();
 
-        $file = pathinfo($this->creator->create($attributes, $entity, $path), PATHINFO_FILENAME);
+        if (is_null($attributes) && is_null($source)) {
+            $this->error('Either --attributes or --source must be given');
+            exit(1);
+        }
 
-        $this->line("<info>Created Migration:</info> $file");
+        try {
+            if (!is_null($attributes)) {
+                list($file, $attributes) = $this->creator->createFromString($attributes, $entity, $path);
+            } else {
+                list($file, $attributes) = $this->creator->createFromSource($source, $entity, $path);
+            }
+        } catch (CsvException | \Exception $e) {
+            $this->error($e->getMessage());
+            exit(1);
+        }
+
+        $file = pathinfo($file, PATHINFO_FILENAME);
+        $this->info("Created Migration: $file");
+        
+        $this->call('eav:map:attribute', ['attributes' => implode(',', $attributes), 'entity' => $entity]);
     }
 
     /**
