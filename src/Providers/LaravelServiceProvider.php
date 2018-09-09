@@ -6,6 +6,7 @@ use Validator;
 use Eav\Console\ModelMakeCommand;
 use Eav\Console\FlatEntityComplierCommand;
 use Eav\Console\FlatEntityUpdaterCommand;
+use Eav\Console\EntityExporterCommand;
 use Eav\Console\ActivateFlatEntityCommand;
 use Illuminate\Support\ServiceProvider;
 use Eav\Migrations\EntityMigrationCreator;
@@ -76,6 +77,7 @@ class LaravelServiceProvider extends ServiceProvider
         $commands = [
             'MakeEntityMigration', 'MakeEnityModel', 'MakeAttributeMigration',
             'MakeEntityAttributeMap', 'FlatEntityComplier', 'FlatEntityUpdater',
+            'ActivateFlatEntity', 'EntityExporter'
         ];
 
         // We'll simply spin through the list of commands that are migration related
@@ -95,6 +97,7 @@ class LaravelServiceProvider extends ServiceProvider
             'command.entity.attribute.map.make',
             'command.entity.flat.complier',
             'command.entity.flat.updater',
+            'command.entity.flat.expoter',
             'command.entity.flat.activate'
         );
     }
@@ -135,6 +138,15 @@ class LaravelServiceProvider extends ServiceProvider
         });
     }
 
+    /**
+     * Register the command.
+     *
+     * @return void
+     */
+    protected function registerEntityExporterCommand()
+    {
+        $this->app->singleton('command.entity.flat.expoter', function ($app) {
+            return new EntityExporterCommand($app['files']);
         });
     }
 
