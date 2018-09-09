@@ -4,10 +4,6 @@ namespace Eav\Console;
 
 use Eav\Entity;
 use Illuminate\Console\Command;
-use Illuminate\Support\Composer;
-use Illuminate\Filesystem\Filesystem;
-use Eav\Flat\Entity\Complier as EntityComplier;
-use Symfony\Component\Console\Input\InputOption;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ActivateFlatEntityCommand extends Command

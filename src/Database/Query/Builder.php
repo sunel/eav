@@ -299,7 +299,7 @@ class Builder extends QueryBuilder
                 $removeCol[] = $attribute->getAttributeCode();
             });
 
-        // We might have join select clause in the original column            
+        // We might have join select clause in the original column
         $columns = $orgColumns
             ->get('columns')
             ->merge($columns)
@@ -307,7 +307,7 @@ class Builder extends QueryBuilder
                 return !(in_array($value, $removeCol));
             })->unique()->toArray();
 
-        // Merge the expression back to the query        
+        // Merge the expression back to the query
         if ($expression = $orgColumns->get('expression')) {
             $columns = $expression->merge($columns)->all();
         }
@@ -379,13 +379,12 @@ class Builder extends QueryBuilder
     {
         if ($this->canUseFlat()) {
             $this->fixFlatColumns();
-            
-            return parent::toSql();
+        } else {
+            $this->fixColumns()
+                ->processAttributes();
         }
 
-        $this->fixColumns()->processAttributes();
-
-        return $this->grammar->compileSelect($this);
+        return parent::toSql();
     }
 
     /**
