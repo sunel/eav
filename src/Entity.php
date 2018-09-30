@@ -76,6 +76,14 @@ class Entity extends Model
     }
 
     /**
+     * @alias getCode()
+     */
+    public function code()
+    {
+        return $this->getCode();
+    }
+
+    /**
      * Get the entity code.
      *
      * @return string
@@ -83,6 +91,14 @@ class Entity extends Model
     public function getCode()
     {
         return $this->getAttribute('entity_code');
+    }
+
+    /**
+     * @alias getEntityKey()
+     */
+    public function entityKey()
+    {
+        return $this->getEntityKey();
     }
 
     /**
@@ -105,6 +121,14 @@ class Entity extends Model
     {
         $this->entityKey = $key;
         return $this;
+    }
+
+    /**
+     * @alias getEntityCustomTable()
+     */
+    public function entityCustomTable()
+    {
+        return $this->getEntityCustomTable();
     }
 
     /**
@@ -137,6 +161,14 @@ class Entity extends Model
     public function canUseFlat()
     {
         return $this->getAttribute('is_flat_enabled');
+    }
+
+    /**
+     * @alias getEntityTableName()
+     */
+    public function entityTableName()
+    {
+        return $this->getEntityTableName();
     }
     
     /**

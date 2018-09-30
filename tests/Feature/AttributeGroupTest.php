@@ -28,8 +28,8 @@ class AttributeGroupTest extends TestCase
         $sku = $this->addSku();
 
         EntityAttribute::map([
-            'attribute_code' => $sku->getCode(),
-            'entity_code' => $entity->getCode(),
+            'attribute_code' => $sku->code(),
+            'entity_code' => $entity->code(),
             'attribute_set' => $set->name(),
             'attribute_group' => $group->name()
         ]);

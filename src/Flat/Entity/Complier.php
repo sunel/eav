@@ -123,21 +123,23 @@ class Complier
 
         $this->collectAttributes()->chunk(500, function ($chunk, $page) use ($attributes, $tableCache) {
             $chunk->map(function ($attribute) use ($attributes, $tableCache) {
-                $table = $tableCache->get($attribute->getBackendTable(), function () use ($attribute, $tableCache) {
-                    $key = $attribute->getBackendTable();
+                $table = $tableCache->get($attribute->backendTable(), function () use ($attribute, $tableCache) {
+                    $key = $attribute->backendTable();
                     return $tableCache->put($key, $this->describe($key, function ($query) {
                         return $query->where('COLUMN_NAME', 'value');
                     })->first())->get($key);
                 });
 
                 $schema = "{$attribute->getAttributeCode()}";
+
+                $backendTable = $attribute->getBackendType();
                 
-                if ($attribute->getBackendType() == 'char' || $attribute->getBackendType() == 'string') {
-                    $schema .= ":{$attribute->getBackendType()}({$table['CHARACTER_MAXIMUM_LENGTH']})";
-                } elseif (in_array($attribute->getBackendType(), ['decimal', 'double', 'float', 'unsignedDecimal'])) {
-                    $schema .= ":{$attribute->getBackendType()}({$table['NUMERIC_PRECISION']}, {$table['NUMERIC_SCALE']})";
+                if ($backendTable == 'char' || $backendTable == 'string') {
+                    $schema .= ":{$backendTable}({$table['CHARACTER_MAXIMUM_LENGTH']})";
+                } elseif (in_array($backendTable, ['decimal', 'double', 'float', 'unsignedDecimal'])) {
+                    $schema .= ":{$backendTable}({$table['NUMERIC_PRECISION']}, {$table['NUMERIC_SCALE']})";
                 } else {
-                    $schema .= ":{$attribute->getBackendType()}";
+                    $schema .= ":{$backendTable}";
                 }
                 
                 $schema .= ":nullable";

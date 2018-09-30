@@ -31,7 +31,7 @@ class ProcessAttributes
 
         $usedAttributes = $loadedAttributes
             ->filter(function ($attribute) use ($filterAttr) {
-                return isset($filterAttr[$attribute->getAttributeCode()]);
+                return isset($filterAttr[$attribute->code()]);
             });
             
         foreach ((array) $query->attributeOrderBy as $bindings) {

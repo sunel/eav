@@ -84,8 +84,8 @@ class EntityTest extends TestCase
 
         $entity = $eloquent->baseEntity();
 
-        $this->assertEquals($entity->getEntityKey(), 'custom_id');
-        $this->assertEquals($eloquent->getKeyName(), $entity->getEntityKey());
+        $this->assertEquals($entity->entityKey(), 'custom_id');
+        $this->assertEquals($eloquent->getKeyName(), $entity->entityKey());
     }
 
     /** @test */
@@ -98,7 +98,7 @@ class EntityTest extends TestCase
 
         $entity = $eloquent->baseEntity();
 
-        $this->assertEquals($entity->getEntityCustomTable(), $eloquent->getTable());
+        $this->assertEquals($entity->entityCustomTable(), $eloquent->getTable());
     }
 
     /** @test */

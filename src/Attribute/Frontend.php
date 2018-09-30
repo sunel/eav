@@ -31,7 +31,7 @@ class Frontend implements FrontendContract
      *
      * @return Eav\Attribute
      */
-    public function getAttribute()
+    public function attribute()
     {
         return $this->attribute;
     }
@@ -41,9 +41,9 @@ class Frontend implements FrontendContract
      *
      * @return string
      */
-    public function getInputType()
+    public function inputType()
     {
-        return $this->getAttribute()->getFrontendInput();
+        return $this->attribute()->frontendInput();
     }
     
     /**
@@ -51,38 +51,41 @@ class Frontend implements FrontendContract
      *
      * @return string
      */
-    public function getLabel()
+    public function label()
     {
-        $label = $this->getAttribute()->getFrontendLabel();
+        $label = $this->attribute()->frontendLabel();
         if (($label === null) || $label == '') {
-            $label = $this->getAttribute()->getAttributeCode();
+            $label = $this->attribute()->code();
         }
 
         return $label;
     }
     
     /**
-     * Get select options in case it's select box and options source is defined
+     * Get select options in case it's select and options source is defined
      *
      * @return array
      */
-    public function getSelectOptions()
+    public function selectOptions()
     {
-        return $this->getAttribute()->getSource()->getAllOptions();
+        return $this->attribute()->options();
     }
 
     /**
      * Retreive option by option id
      *
      * @param int $optionId
+     * @param mixed $default
      * @return mixed|boolean
      */
-    public function getOption($optionId)
+    public function option($optionId, $default = false)
     {
-        $source = $this->getAttribute()->getSource();
-        if ($source) {
-            return $source->getOptionText($optionId);
+        $options = $this->attribute()->options();
+        foreach ($options as $option) {
+            if ($option['value'] == $optionId) {
+                return $option['label'];
+            }
         }
-        return false;
+        return $default;
     }
 }

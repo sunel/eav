@@ -14,7 +14,7 @@ trait Attribute
     public function loadAttributes($attributes = [], $static = false, $required = false)
     {
         $attributes = collect($attributes)->unique();
-        $code = $this->baseEntity()->getCode();
+        $code = $this->baseEntity()->code();
 
         if ($attributes->isEmpty()) {
             $this->saveAttribute(
@@ -37,7 +37,7 @@ trait Attribute
 
     protected function saveAttribute(Collection $loadedAttributes)
     {
-        $code = $this->baseEntity()->getCode();
+        $code = $this->baseEntity()->code();
         if (!isset(static::$attributesCollection[$code])) {
             static::$attributesCollection[$code] = $loadedAttributes;
         } else {

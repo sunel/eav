@@ -45,7 +45,7 @@ abstract class Backend implements BackendContract
      *
      * @return Eav\Attribute
      */
-    public function getAttribute()
+    public function attribute()
     {
         return $this->attribute;
     }
@@ -55,9 +55,9 @@ abstract class Backend implements BackendContract
      *
      * @return string
      */
-    public function getType()
+    public function type()
     {
-        return $this->getAttribute()->getBackendType();
+        return $this->attribute()->backendType();
     }
     
     /**
@@ -65,16 +65,17 @@ abstract class Backend implements BackendContract
     *
     * @return string
     */
-    public function getTable()
+    public function tableName()
     {
         if (empty($this->table)) {
-            if ($this->getAttribute()->isStatic()) {
-                $this->table = $this->getAttribute()->getEntityType()->getEntityTableName();
-            } elseif ($this->getAttribute()->getBackendTable()) {
-                $this->table = $this->getAttribute()->getBackendTable();
+            $attribute = $this->attribute();
+            if ($attribute->isStatic()) {
+                $this->table = $attribute->entityType()->entityTableName();
+            } elseif ($attribute->backendTable()) {
+                $this->table = $this->attribute()->backendTable();
             } else {
-                $entity = $this->getAttribute()->getEntity();
-                $tableName = sprintf('%s_%s', $entity->getEntityTableName(), $this->getType());
+                $entity = $attribute->entity();
+                $tableName = sprintf('%s_%s', $entity->entityTableName(), $this->type());
                 $this->table = $tableName;
             }
         }
@@ -87,14 +88,10 @@ abstract class Backend implements BackendContract
      *
      * @return mixed
      */
-    public function getDefaultValue()
+    public function defaultValue()
     {
         if ($this->defaultValue === null) {
-            if ($this->getAttribute()->getDefaultValue()) {
-                $this->defaultValue = $this->getAttribute()->getDefaultValue();
-            } else {
-                $this->defaultValue = "";
-            }
+            $this->defaultValue = $this->attribute()->defaultValue()?:"";
         }
 
         return $this->defaultValue;

@@ -42,9 +42,9 @@ class AttributeTest extends TestCase
         $skuDB = Attribute::findByCode('sku', 'custom');
 
         $this->assertEquals($sku->getKey(), $skuDB->getKey());
-        $this->assertEquals($sku->getAttributeId(), $skuDB->getAttributeId());
-        $this->assertEquals($sku->getAttributeCode(), $skuDB->getAttributeCode());
-        $this->assertEquals($sku->getEntity()->entity_code, $skuDB->getEntity()->entity_code);
+        $this->assertEquals($sku->attributeId(), $skuDB->attributeId());
+        $this->assertEquals($sku->code(), $skuDB->code());
+        $this->assertEquals($sku->entity()->entity_code, $skuDB->entity()->entity_code);
     }
 
 
@@ -166,8 +166,8 @@ class AttributeTest extends TestCase
         $sku = $this->addSku();
 
         $this->assertEquals(
-            $this->entity->getEntityTableName().'_string',
-            $sku->getBackendTable()
+            $this->entity->entityTableName().'_string',
+            $sku->backendTable()
         );
     }
 
@@ -181,9 +181,9 @@ class AttributeTest extends TestCase
             'default_value' => '0',
         ]);
 
-        $this->assertEquals($sku->getDefaultValue(), '');
+        $this->assertEquals($sku->defaultValue(), '');
 
-        $this->assertEquals($upc->getDefaultValue(), '0');
+        $this->assertEquals($upc->defaultValue(), '0');
     }
 
 
@@ -192,10 +192,10 @@ class AttributeTest extends TestCase
     {
         $sku = $this->addSku();
 
-        $this->assertEquals($sku->getAttributeCode(), 'sku');
-        $this->assertEquals($sku->getBackendType(), 'string');
-        $this->assertEquals($sku->getFrontendInput(), 'text');
-        $this->assertEquals($sku->getFrontendLabel(), 'Sku');
+        $this->assertEquals($sku->code(), 'sku');
+        $this->assertEquals($sku->backendType(), 'string');
+        $this->assertEquals($sku->frontendInput(), 'text');
+        $this->assertEquals($sku->frontendLabel(), 'Sku');
     }
 
     /** @test */
@@ -217,8 +217,8 @@ class AttributeTest extends TestCase
 
         $sku->insertAttribute($value, $eloquent->getKey());
 
-        $this->assertDatabaseHas($sku->getBackendTable(), [
-            'entity_type_id' => $sku->getEntity()->getKey(),
+        $this->assertDatabaseHas($sku->backendTable(), [
+            'entity_type_id' => $sku->entity()->getKey(),
             'attribute_id' => $sku->getKey(),
             'entity_id' => $eloquent->getKey(),
             'value' => $value
@@ -244,8 +244,8 @@ class AttributeTest extends TestCase
 
         $sku->insertAttribute($value, $eloquent->getKey());
 
-        $this->assertDatabaseHas($sku->getBackendTable(), [
-            'entity_type_id' => $sku->getEntity()->getKey(),
+        $this->assertDatabaseHas($sku->backendTable(), [
+            'entity_type_id' => $sku->entity()->getKey(),
             'attribute_id' => $sku->getKey(),
             'entity_id' => $eloquent->getKey(),
             'value' => $value
@@ -255,8 +255,8 @@ class AttributeTest extends TestCase
 
         $sku->updateAttribute($value, $eloquent->getKey());
 
-        $this->assertDatabaseHas($sku->getBackendTable(), [
-            'entity_type_id' => $sku->getEntity()->getKey(),
+        $this->assertDatabaseHas($sku->backendTable(), [
+            'entity_type_id' => $sku->entity()->getKey(),
             'attribute_id' => $sku->getKey(),
             'entity_id' => $eloquent->getKey(),
             'value' => $value
@@ -282,8 +282,8 @@ class AttributeTest extends TestCase
 
         $sku->insertAttribute($value, $eloquent->getKey());
 
-        $this->assertDatabaseHas($sku->getBackendTable(), [
-            'entity_type_id' => $sku->getEntity()->getKey(),
+        $this->assertDatabaseHas($sku->backendTable(), [
+            'entity_type_id' => $sku->entity()->getKey(),
             'attribute_id' => $sku->getKey(),
             'entity_id' => $eloquent->getKey(),
             'value' => $value

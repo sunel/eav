@@ -85,6 +85,14 @@ class Attribute extends Model
     {
         return $this->getAttributeCode();
     }
+
+    /**
+     * @alias getAttributeCode()
+     */
+    public function code()
+    {
+        return $this->getAttributeCode();
+    }
     
     /**
      * Get attribute code
@@ -94,6 +102,14 @@ class Attribute extends Model
     public function getAttributeCode()
     {
         return $this->getAttribute('attribute_code');
+    }
+
+    /**
+     * @alias getAttributeId()
+     */
+    public function attributeId()
+    {
+        return $this->getAttributeId();
     }
 
     /**
@@ -119,6 +135,14 @@ class Attribute extends Model
     }
 
     /**
+     * @alias getEntity()
+     */
+    public function entity()
+    {
+        return $this->getEntity();
+    }
+
+    /**
      * Retrieve entity instance
      *
      * @return Eav\Entity
@@ -126,9 +150,17 @@ class Attribute extends Model
     public function getEntity()
     {
         if (!$this->entity) {
-            $this->entity = $this->getEntityType();
+            $this->entity = $this->entityType();
         }
         return $this->entity;
+    }
+
+    /**
+     * @alias getEntityTypeId()
+     */
+    public function entityTypeId()
+    {
+        return $this->getEntityTypeId();
     }
     
     /**
@@ -140,6 +172,14 @@ class Attribute extends Model
     {
         return $this->getAttribute('entity_id');
     }
+
+    /**
+     * @alias getEntityType()
+     */
+    public function entityType()
+    {
+        return $this->getEntityType();
+    }
     
     /**
      * Retreive entity type
@@ -148,9 +188,17 @@ class Attribute extends Model
      */
     public function getEntityType()
     {
-        return Entity::findById($this->getEntityTypeId());
+        return Entity::findById($this->entityTypeId());
     }
     
+    /**
+     * @alias getBackendType()
+     */
+    public function backendType()
+    {
+        return $this->getBackendType();
+    }
+
     /**
      * Retreive backend type
      *
@@ -159,6 +207,14 @@ class Attribute extends Model
     public function getBackendType()
     {
         return $this->getAttribute('backend_type');
+    }
+
+    /**
+     * @alias getFrontendInput()
+     */
+    public function frontendInput()
+    {
+        return $this->getFrontendInput();
     }
     
     /**
@@ -170,6 +226,14 @@ class Attribute extends Model
     {
         return $this->getAttribute('frontend_type');
     }
+
+    /**
+     * @alias getFrontendLabel()
+     */
+    public function frontendLabel()
+    {
+        return $this->getFrontendLabel();
+    }
     
     /**
      * Retreive frontend label
@@ -179,6 +243,14 @@ class Attribute extends Model
     public function getFrontendLabel()
     {
         return $this->getAttribute('frontend_label');
+    }
+
+    /**
+     * @alias getDefaultValue()
+     */
+    public function defaultValue()
+    {
+        return $this->getDefaultValue();
     }
     
     /**
@@ -285,6 +357,14 @@ class Attribute extends Model
     {
         return $this->getAttribute('backend_type') == self::TYPE_STATIC || $this->getAttribute('backend_type') == '';
     }
+
+    /**
+     * @alias getBackend()
+     */
+    public function backend()
+    {
+        return $this->getBackend();
+    }
     
     /**
      * Retrieve backend instance
@@ -307,6 +387,14 @@ class Attribute extends Model
         }
 
         return $this->backend;
+    }
+
+    /**
+     * @alias getFrontend()
+     */
+    public function frontend()
+    {
+        return $this->getFrontend();
     }
 
     /**
@@ -364,6 +452,14 @@ class Attribute extends Model
         return ($this->getAttribute('frontend_type') === 'select' || $this->getAttribute('frontend_type') === 'multiselect')
             && !empty($this->getAttribute('source_class'));
     }
+
+    /**
+     * @alias getBackendTable()
+     */
+    public function backendTable()
+    {
+        return $this->getBackendTable();
+    }
     
     /**
      * Get attribute backend table name
@@ -375,7 +471,7 @@ class Attribute extends Model
         if ($this->dataTable === null) {
             $backendTable = trim($this->getAttribute('backend_table'));
             if (empty($backendTable)) {
-                $backendTable  = $this->getEntity()->getEntityTableName().'_'.strtolower($this->getAttribute('backend_type'));
+                $backendTable  = $this->entity()->entityTableName().'_'.strtolower($this->getAttribute('backend_type'));
             }
             $this->dataTable = $backendTable;
         }
@@ -455,7 +551,7 @@ class Attribute extends Model
         ];
         
         return $this->newBaseQueryBuilder()
-            ->from($this->getBackendTable())
+            ->from($this->backendTable())
             ->insert($insertData);
     }
 
@@ -469,13 +565,13 @@ class Attribute extends Model
     public function updateAttribute($value, $entityId)
     {
         $attributes = [
-            'entity_type_id' => $this->getEntity()->getKey(),
+            'entity_type_id' => $this->entity()->getKey(),
             'attribute_id' => $this->getKey(),
             'entity_id' => $entityId,
         ];
 
         return $this->newBaseQueryBuilder()
-            ->from($this->getBackendTable())
+            ->from($this->backendTable())
             ->updateOrInsert($attributes, ['value' => $value]);
     }
 
@@ -490,13 +586,13 @@ class Attribute extends Model
     public function fetchAttributeValue($entityId)
     {
         $attributes = [
-            'entity_type_id' => $this->getEntity()->getKey(),
+            'entity_type_id' => $this->entity()->getKey(),
             'attribute_id' => $this->getKey(),
             'entity_id' => $entityId,
         ];
 
         return $this->newBaseQueryBuilder()
-            ->from($this->getBackendTable())
+            ->from($this->backendTable())
             ->where($attributes)
             ->value('value');
     }
