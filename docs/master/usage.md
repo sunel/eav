@@ -10,7 +10,7 @@ Here ```product``` is the entity code and ```\\App\\Products``` is the model rel
 
 This will create the ```Products``` Model file and the migration for the entity [ER](#er-diagram-for-entity)
 
-The migration contains schema for creating different data type like `varchar`, `text`, `int`, `decimal`, `datetime`. We will aslo have schema to create default [attribute set](#attribute-set) `Default` and [attribute group](#attribute-group) `General`.
+The migration contains schema for creating different data type like `varchar`, `text`, `int`, `decimal`, `datetime`. We will also have schema to create default [attribute set](#attribute-set) `Default` and [attribute group](#attribute-group) `General`.
 
 
 To create a [Attribute](ideology/attribute.html)
@@ -39,4 +39,4 @@ After editing run the migration.
 $ php artisan migrate
 ```
 
-Thats it, you eav based model is ready now you can start doing CRUD oporations.
+Thats it, your EAV based model is ready now and you can start doing CRUD oporations.
