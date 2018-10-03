@@ -1,11 +1,11 @@
 # Model
 [[toc]]
 
-## Intorduction
+## Introduction
 
 A eloquent model with additional sweet to support EAV.
 
-We makes it easy for developers to interact with a attributes by defining simple models without writing relationships or long SQL queries.
+We make it easy for developers to interact with attributes by defining simple models without writing relationships or long SQL queries.
 
 ## Defining Models
 
@@ -96,7 +96,7 @@ As the Attributes for the entity are unpredictable. we have made the model ungua
 protected static $unguarded = true;
 ```
 ::: warning
-It the responsiblity of the developer to take care of mass-assignment vulnerability.
+It is the responsiblity of the developer to take care of mass-assignment vulnerability.
 :::
 
 ### Mass Updates
