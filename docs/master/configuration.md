@@ -6,7 +6,7 @@ Publish the configuration file.
 php artisan vendor:publish --tag="eav.config"
 ```
 
-By Default these fields are enabled.
+By default, following fields are enabled.
 
 ```php
 'fieldTypes' => [
