@@ -52,7 +52,7 @@ But when [Flat Table](ideology/flat-table.html) is enabled the table name is pre
 
 ### Insert
 
-To create a new record in the database, create a new model instance, set attributes on the model, then save. It is the same as create a new record in eloquent. 
+To create a new record in the database, create a new model instance, set attributes on the model, then save. It is same as creating a new record in eloquent. 
 
 ```php
 use App\Products;
@@ -85,7 +85,7 @@ $product->save();
 
 ### Mass Assignment
 
-As the Attributes for the entity are unpredictable. we have made the model unguarded by default.
+As the Attributes for the entity are unpredictable, we have made the model unguarded by default.
 
 ```php
 /**
@@ -96,7 +96,7 @@ As the Attributes for the entity are unpredictable. we have made the model ungua
 protected static $unguarded = true;
 ```
 ::: warning
-It is the responsiblity of the developer to take care of mass-assignment vulnerability.
+It is responsiblity of the developer to take care of mass-assignment vulnerability.
 :::
 
 ### Mass Updates
