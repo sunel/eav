@@ -60,6 +60,13 @@ class Builder extends QueryBuilder
      * @var array
      */
     public $attributeColumns = [];
+
+    /**
+     * The holds the original select column.
+     *
+     * @var array
+     */
+    public $orginalColumns = [];
     
     /**
      * Holds Entity Instance.
@@ -131,14 +138,19 @@ class Builder extends QueryBuilder
         
         $loadedAttributes->validate($values);
 
-        $this->select($this->baseEntity()->getEntityKey(), ...$loadedAttributes->keys()->toArray());
+        $this->select($this->baseEntity()->getEntityKey());
+
+        $loadedAttributes->each(function ($attribute, $code) {
+            $attribute->setEntity($this->baseEntity())
+                ->addAttributeJoin($this, 'left');
+        });
 
         $entityIds = $this->pluck($this->baseEntity()->getEntityKey())->toArray();
 
-        $loadedAttributes->each(function ($attr, $code) use (&$values, $entityIds) {
-            if (!$attr->isStatic()) {
-                $attr->massUpdate($values[$attr->getAttributeCode()], $entityIds);
-                unset($values[$attr->getAttributeCode()]);
+        $loadedAttributes->each(function ($attribute, $code) use (&$values, $entityIds) {
+            if (!$attribute->isStatic()) {
+                $attribute->massUpdate($values[$attribute->getAttributeCode()], $entityIds);
+                unset($values[$attribute->getAttributeCode()]);
             }
         });
         
@@ -254,6 +266,8 @@ class Builder extends QueryBuilder
             }
         });
 
+        $this->orginalColumns = $orgColumns->get('columns')->all();
+
         $columns = [];
         $removeCol = [
             'attr.*', '*', $this->baseEntity()->getEntityKey()
@@ -292,12 +306,22 @@ class Builder extends QueryBuilder
                 if ($attribute->isStatic()) {
                     $columns[] = "{$this->from}.{$attribute->getSelectColumn()}";
                 } else {
-                    $attribute->setEntity($this->baseEntity())
-                            ->addAttributeJoin($this, 'left');
-                    $columns[] = $attribute->getSelectColumn();
+                    $attribute->setEntity($this->baseEntity());
+                    $attribute->addSubQuery($this);
+                    //$columns[] = $attribute->getSelectColumn();
                 }
                 $removeCol[] = $attribute->getAttributeCode();
             });
+
+        $newColumns = collect((array) $this->columns)->mapToGroups(function ($item, $key) {
+            if (is_a($item, Expression::class)) {
+                return ['expression' => $item];
+            } else {
+                return ['columns' => $item];
+            }
+        });
+
+        $newExpression = $newColumns->get('expression');        
 
         // We might have join select clause in the original column
         $columns = $orgColumns
@@ -307,8 +331,13 @@ class Builder extends QueryBuilder
                 return !(in_array($value, $removeCol));
             })->unique()->toArray();
 
+        if ($newExpression && $newExpression->isNotEmpty()) {
+            $columns = $newExpression->merge($columns)->all();
+        }
+
+        $expression = $orgColumns->get('expression');
         // Merge the expression back to the query
-        if ($expression = $orgColumns->get('expression')) {
+        if ($expression && $expression->isNotEmpty()) {            
             $columns = $expression->merge($columns)->all();
         }
 

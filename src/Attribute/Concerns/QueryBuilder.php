@@ -2,6 +2,8 @@
 
 namespace Eav\Attribute\Concerns;
 
+use DB;
+
 trait QueryBuilder
 {
     /**
@@ -23,6 +25,15 @@ trait QueryBuilder
         return $this->newBaseQueryBuilder()
             ->from($this->backendTable())
             ->getInsertSql($insertData);
+    }
+
+    public function addSubQuery($query)
+    {   
+        $subQuery = DB::table($this->backendTable())->select("value")
+            ->where('attribute_id', $this->attributeId())
+            ->whereColumn("{$query->from}.{$this->entity()->entityKey()}", "entity_id");
+
+        $query->selectSub($subQuery, $this->code());
     }
     
     /**
