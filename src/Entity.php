@@ -186,6 +186,14 @@ class Entity extends Model
         }
         return $tableName;
     }
+
+    /**
+     * @alias attributeSet()
+     */
+    public function sets()
+    {
+        return $this->attributeSet();
+    }
     
     /**
      * Define a one-to-many relationship for attribute set.

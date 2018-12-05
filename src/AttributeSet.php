@@ -44,6 +44,14 @@ class AttributeSet extends Model
     }
 
     /**
+     * @alias attributeGroup()
+     */
+    public function groups()
+    {
+        return $this->attributeGroup();
+    }
+
+    /**
      * Define a one-to-many relationship for attribute group.
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
