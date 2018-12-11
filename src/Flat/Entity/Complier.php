@@ -32,9 +32,9 @@ class Complier
 
     public function compile()
     {
-        $this->console->info("\t Creating flat table for `{$this->entity->entity_table}`.");
+        $this->console->info("\t Creating flat table for `{$this->entity->code()}`.");
 
-        $path = $this->getPath($this->entity->entity_table.'_flat');
+        $path = $this->getPath($this->entity->entityTableName().'_flat');
 
         $this->console->info("\t in {$path}");
         
@@ -44,7 +44,7 @@ class Complier
         
         $this->files->requireOnce($path);
         
-        $this->console->info("\t Migrating `{$this->entity->entity_table}` flat schema.");
+        $this->console->info("\t Migrating `{$this->entity->code()}` flat schema.");
 
         $this->runUp($path);
     }
@@ -84,7 +84,7 @@ class Complier
 
     protected function buildSchema()
     {
-        $table = $this->describe($this->entity->entity_table)->map(function ($attribute) {
+        $table = $this->describe($this->entity->entityTableName())->map(function ($attribute) {
             if ($attribute['COLUMN_KEY'] == 'PRI') {
                 $schema = "{$attribute['COLUMN_NAME']}:{$this->getColumn($attribute['DATA_TYPE'])}:unsigned";
             } else {
@@ -122,7 +122,7 @@ class Complier
         $tableCache = Collection::make([]);
 
         $this->collectAttributes()->chunk(500, function ($chunk, $page) use ($attributes, $tableCache) {
-            $chunk->map(function ($attribute) use ($attributes, $tableCache) {
+            $chunk->map(function ($attribute) use ($attributes, $tableCache) {                
                 $table = $tableCache->get($attribute->backendTable(), function () use ($attribute, $tableCache) {
                     $key = $attribute->backendTable();
                     return $tableCache->put($key, $this->describe($key, function ($query) {
@@ -130,7 +130,7 @@ class Complier
                     })->first())->get($key);
                 });
 
-                $schema = "{$attribute->getAttributeCode()}";
+                $schema = $attribute->getAttributeCode();
 
                 $backendTable = $attribute->getBackendType();
                 
@@ -236,7 +236,7 @@ class Complier
      */
     protected function replaceClassName(&$stub)
     {
-        $className = ucwords(camel_case($this->entity->entity_table.'_flat'));
+        $className = ucwords(camel_case($this->entity->entityTableName().'_flat'));
         $stub = str_replace('{{class}}', $className, $stub);
         return $this;
     }
@@ -248,7 +248,7 @@ class Complier
      */
     protected function replaceTableName(&$stub)
     {
-        $table = $this->entity->entity_table.'_flat';
+        $table = $this->entity->entityTableName().'_flat';
         $stub = str_replace('{{table}}', $table, $stub);
         return $this;
     }

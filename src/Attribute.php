@@ -471,7 +471,7 @@ class Attribute extends Model
         if ($this->dataTable === null) {
             $backendTable = trim($this->getAttribute('backend_table'));
             if (empty($backendTable)) {
-                $backendTable  = $this->entity()->entityTableName().'_'.strtolower($this->getAttribute('backend_type'));
+                $backendTable  = $this->entity()->code().'_'.strtolower($this->getAttribute('backend_type'));
             }
             $this->dataTable = $backendTable;
         }

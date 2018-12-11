@@ -166,7 +166,7 @@ class AttributeTest extends TestCase
         $sku = $this->addSku();
 
         $this->assertEquals(
-            $this->entity->entityTableName().'_string',
+            $this->entity->code().'_string',
             $sku->backendTable()
         );
     }

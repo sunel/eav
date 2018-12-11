@@ -124,24 +124,6 @@ class Entity extends Model
     }
 
     /**
-     * @alias getEntityCustomTable()
-     */
-    public function entityCustomTable()
-    {
-        return $this->getEntityCustomTable();
-    }
-
-    /**
-     * Get the table name for the Entity.
-     *
-     * @return string
-     */
-    public function getEntityCustomTable()
-    {
-        return $this->entityCustomTable;
-    }
-
-    /**
      * Set the table name for the Entity.
      *
      * @param  string|null  $key
@@ -178,13 +160,13 @@ class Entity extends Model
      */
     public function getEntityTableName()
     {
-        $tableName = $this->getAttribute('entity_code');
-
-        $tablePrefix = $this->getConnection()->getTablePrefix();
-        if ($tablePrefix != '') {
-            $tableName = "$tablePrefix.$tableName";
+        if(!is_null($this->entityCustomTable)) {
+            return $this->entityCustomTable;
         }
-        return $tableName;
+
+        return str_replace(
+            '\\', '', Str::snake(Str::plural(class_basename($this->entity_class)))
+        );
     }
 
     /**

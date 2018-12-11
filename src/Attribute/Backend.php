@@ -71,12 +71,8 @@ abstract class Backend implements BackendContract
             $attribute = $this->attribute();
             if ($attribute->isStatic()) {
                 $this->table = $attribute->entityType()->entityTableName();
-            } elseif ($attribute->backendTable()) {
-                $this->table = $this->attribute()->backendTable();
             } else {
-                $entity = $attribute->entity();
-                $tableName = sprintf('%s_%s', $entity->entityTableName(), $this->type());
-                $this->table = $tableName;
+                $this->table = $this->type();
             }
         }
 
