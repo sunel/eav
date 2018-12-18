@@ -442,7 +442,9 @@ class Builder extends QueryBuilder
         $this->attributeColumns = array_merge($this->attributeColumns, (array) $column);
         $this->attributeWheres['binding'][$values['type']][] = $values;
 
-        $this->attributeWheresRef[$column][] = $values;
+        foreach ((array) $column as $col) {
+            $this->attributeWheresRef[$col][] = $values;
+        }      
 
         return $this;
     }

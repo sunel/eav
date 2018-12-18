@@ -180,6 +180,24 @@ class QueryBuilderTest extends TestCase
         $this->assertNotNull($cars->getQuery()->joins);
     }
 
+
+    /** @test */
+    public function it_can_have_nested_query()
+    {
+        $eloquent = $this->car();
+        
+        $cars = Cars::select('*');
+
+        $cars = Cars::whereAttribute('sku', '=', '1HJK92')
+            ->whereAttribute(function ($query) {
+                $query->whereAttribute('description', '=', 'Something');
+                $query->orWhereAttribute('name', '=', 'Flamethrower');
+            })->select(['attr.*'])
+            ->get();
+
+        $this->assertTrue($cars->isNotEmpty());
+    }
+
     private function car()
     {
         return Cars::create([
