@@ -11,7 +11,7 @@ A set is created while mapping a attribute to a entity. If a set already exists 
 The Attributes Sets are attached to the entity through relation.
 
 ```php
-public function attributeSet()
+public function sets()
 {
     return $this->hasMany(AttributeSet::class, 'entity_id');
 }

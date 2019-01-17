@@ -10,7 +10,7 @@ The attributes are organized into groups.
 The Attributes Group are attached to the Set through relation.
 
 ```php
-public function attributeGroup()
+public function groups()
 {
     return $this->hasMany(AttributeGroup::class, 'attribute_set_id');
 }

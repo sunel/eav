@@ -104,3 +104,9 @@ $entity = \Eav\Entity::findByCode('code');
 
 $attributes = $entity->attributes;
 ```
+
+To retrive single attribute 
+
+```php
+$sizeAttribute =  Eav\Attribute::findByCode('size', 'product')
+```
