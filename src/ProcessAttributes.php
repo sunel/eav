@@ -11,8 +11,8 @@ class ProcessAttributes
      * Adds the requested attribute to the query.
      *
      * Until now we have not added the attribute to the query.
-     * He have the list of query and bindinds, now we will
-     * inner join the attribute and add the querying
+     * Here we have the list of query and bindings, now we will
+     * inner or left join the attribute and add the querying
      * conditions.
      *
      * @param  Builder    $query
@@ -59,8 +59,8 @@ class ProcessAttributes
                         $query->addNestedWhereQuery($binding['query'], $binding['boolean']);
                     }
 
-                    $loadedAttributes->each(function ($attribute, $key) use ($baseEntity, $query, $orginalColumns) {
-                        $joinType = isset($orginalColumns[$attribute->code()])?'left':'inner';
+                    $loadedAttributes->each(function ($attribute, $key) use ($binding, $baseEntity, $query, $orginalColumns) {
+                        $joinType = isset($orginalColumns[$attribute->code()]) || ($binding['boolean'] == 'or')?'left':'inner';
                         $attribute->setEntity($baseEntity);
                         $attribute->addAttributeJoin($query, $joinType);
                     });
@@ -73,7 +73,7 @@ class ProcessAttributes
                         if ($attribute) {
                             $attribute->setEntity($baseEntity);
                             if (!$noJoin) {
-                                $joinType = isset($orginalColumns[$attribute->code()])?'left':'inner';
+                                $joinType = isset($orginalColumns[$attribute->code()]) || ($binding['boolean'] == 'or')?'left':'inner';
                                 $attribute->addAttributeJoin($query, $joinType);
                             }
                             $attribute->addAttributeWhere(
