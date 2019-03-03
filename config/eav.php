@@ -7,10 +7,6 @@ return [
     | Column Types
     |--------------------------------------------------------------------------
     |
-    | This value is the name of your application. This value is used when the
-    | framework needs to place the application's name in a notification or
-    | any other location as required by the application or its packages.
-    |
     | Available Column Types :
     |
     |	'bigInteger', 'binary', 'boolean',
@@ -30,5 +26,35 @@ return [
     'fieldTypes' => [
         'boolean', 'date', 'dateTime', 'double',
         'integer', 'text', 'string',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Html Element Types
+    |--------------------------------------------------------------------------
+    |
+    | Available Element Types :
+    |
+    |   'text', 'select', 'number', 'textarea',
+    |   'integer', 'date', 'time', 'dateTime',
+    |   
+    */
+
+    'elementTypes' => [
+        'text', 'select', 'number', 'textarea',
+        'integer', 'date', 'time', 'dateTime',
+        'boolean'
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Select Sources
+    |--------------------------------------------------------------------------
+    |   
+    */
+
+    'selectSources' => [
+        'database',
+        \Eav\Attribute\Source\Boolean::class,
     ],
 ];
