@@ -34,19 +34,19 @@ class EntityAttribute extends Model
     {
         $instance = new static;
                 
-        $eavEntity = $instance->findEntity($data['entity_code']);
+        $entity = $instance->findEntity($data['entity_code']);
         
-        $eavAttribute = $instance->findAttribute($data['attribute_code'], $eavEntity);
+        $attribute = $instance->findAttribute($data['attribute_code'], $entity);
         
-        $eavAttributeSet = $instance->findOrCreateSet($data['attribute_set'], $eavEntity);
+        $set = $instance->findOrCreateSet($data['attribute_set'], $entity);
         
-        $eavAttributeGroup = $instance->findOrCreateGroup($data['attribute_group'], $eavAttributeSet);
+        $group = $instance->findOrCreateGroup($data['attribute_group'], $set);
         
         $instance->fill([
-            'entity_id' => $eavEntity->entity_id,
-            'attribute_set_id' => $eavAttributeSet->attribute_set_id,
-            'attribute_group_id' => $eavAttributeGroup->attribute_group_id,
-            'attribute_id' => $eavAttribute->attribute_id
+            'entity_id' => $entity->entity_id,
+            'attribute_set_id' => $set->attribute_set_id,
+            'attribute_group_id' => $group->attribute_group_id,
+            'attribute_id' => $attribute->attribute_id
         ])->save();
     }
     
@@ -61,13 +61,13 @@ class EntityAttribute extends Model
     {
         $instance = new static;
                 
-        $eavEntity = $instance->findEntity($data['entity_code']);
+        $entity = $instance->findEntity($data['entity_code']);
         
-        $eavAttribute = $instance->findAttribute($data['attribute_code'], $eavEntity);
+        $attribute = $instance->findAttribute($data['attribute_code'], $entity);
         
         $instance->where([
-            'entity_id' => $eavEntity->entity_id,
-            'attribute_id' => $eavAttribute->attribute_id
+            'entity_id' => $entity->entity_id,
+            'attribute_id' => $attribute->attribute_id
         ])->delete();
     }
        
@@ -100,10 +100,10 @@ class EntityAttribute extends Model
         ]);
     }
     
-    private function findOrCreateGroup($code, $attributeSet)
+    private function findOrCreateGroup($code, $set)
     {
         return AttributeGroup::firstOrCreate([
-            'attribute_set_id' => $attributeSet->attribute_set_id,
+            'attribute_set_id' => $set->attribute_set_id,
             'attribute_group_name' => $code,
         ]);
     }

@@ -274,7 +274,7 @@ class Attribute extends Model
         $instance = new static;
                 
         try {
-            $eavEntity = Entity::where('entity_code', '=', $data['entity_code'])->firstOrFail();
+            $eavEntity = Entity::findByCode($data['entity_code']);
         } catch (ModelNotFoundException $e) {
             throw new \Exception("Unable to load Entity : ".$data['entity_code']);
         }
@@ -313,7 +313,7 @@ class Attribute extends Model
         $instance = new static;
                 
         try {
-            $eavEntity = Entity::where('entity_code', '=', $data['entity_code'])->firstOrFail();
+            $eavEntity = Entity::findByCode($data['entity_code']);
         } catch (ModelNotFoundException $e) {
             throw new \Exception("Unable to load Entity : ".$data['entity_code']);
         }
