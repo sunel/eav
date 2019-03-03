@@ -2,6 +2,7 @@
 
 namespace Eav;
 
+use DB;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 
@@ -197,6 +198,25 @@ class Entity extends Model
         return $this->hasMany(Attribute::class, 'entity_id');
     }
     
+    /**
+     * Define a one-to-many relationship for attribute.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function unassignedAttributes($set = null)
+    {
+        return $this->hasMany(Attribute::class, 'entity_id')
+            ->whereNotExists(function ($query) use ($set) {
+                $query->select(DB::raw(1))
+                      ->from('entity_attributes')
+                      ->whereRaw('attributes.attribute_id = entity_attributes.attribute_id')
+                      ->whereRaw('attributes.entity_id = entity_attributes.entity_id');
+
+                    if(!is_null($set)) {
+                        $query->whereRaw("entity_attributes.attribute_set_id = {$set}");
+                    }
+            });
+    }
 
     /**
      * Find the entity by code.
