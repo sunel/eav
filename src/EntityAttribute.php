@@ -15,13 +15,22 @@ class EntityAttribute extends Model
      * @{inheriteDoc}
      */
     public $timestamps = false;
+
+    /**
+     * The model's default values for attributes.
+     *
+     * @var array
+     */
+    protected $attributes = [
+        'sequence' => 0,
+    ];
     
     /**
      * @{inheriteDoc}
      */
     protected $fillable = [
         'entity_id', 'attribute_set_id', 'attribute_group_id',
-        'attribute_id'
+        'attribute_id', 'sequence'
     ];
     
     /**

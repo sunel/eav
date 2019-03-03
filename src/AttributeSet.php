@@ -58,6 +58,7 @@ class AttributeSet extends Model
      */
     public function attributeGroup()
     {
-        return $this->hasMany(AttributeGroup::class, 'attribute_set_id');
+        return $this->hasMany(AttributeGroup::class, 'attribute_set_id')
+            ->orderBy('attribute_groups.sequence');;
     }
 }
