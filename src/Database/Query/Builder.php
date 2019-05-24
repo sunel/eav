@@ -277,12 +277,12 @@ class Builder extends QueryBuilder
         $allMain = $orgColumns->get('columns')->contains('*');
         $hasId =  $orgColumns->get('columns')->contains($this->baseEntity()->getEntityKey());
 
-        // ->select(['attr.*']) or ->select(['*'])
-        if ($allAttr || $allMain) {
+        // ->select(['*'])
+        if ($allMain) {
             $columns[] = "{$this->from}.*";
         }
-        // ->select(['id']) or ->select(['id', 'color'])
-        elseif ($orgColumns->get('columns')->contains($this->baseEntity()->getEntityKey())) {
+        // ->select(['attr.*']) or ->select(['id']) or ->select(['id', 'color'])
+        elseif ($allAttr || $orgColumns->get('columns')->contains($this->baseEntity()->getEntityKey())) {
             $columns[] =  "{$this->from}.{$this->baseEntity()->getEntityKey()}";
         }       
 
@@ -373,12 +373,12 @@ class Builder extends QueryBuilder
         $allAttr = $orgColumns->get('columns')->contains('attr.*');
         $allMain = $orgColumns->get('columns')->contains('*');
 
-        // ->select(['attr.*']) or ->select(['*'])
-        if ($allAttr || $allMain) {
+        // ->select(['*'])
+        if ($allMain) {
             $columns[] = "{$this->from}.*";
         }
-        // ->select(['id']) or ->select(['id', 'color'])
-        elseif ($orgColumns->get('columns')->contains($this->baseEntity()->getEntityKey())) {
+        // ->select(['attr.*']) or ->select(['id']) or ->select(['id', 'color'])
+        elseif ($allAttr || $orgColumns->get('columns')->contains($this->baseEntity()->getEntityKey())) {
             $columns[] =  "{$this->from}.{$this->baseEntity()->getEntityKey()}";
         }
 
