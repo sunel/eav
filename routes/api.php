@@ -50,6 +50,8 @@ Route::post('/entities/{code}/set', [ 'as' => 'set.create', 'uses' => 'Attribute
 
 Route::put('/entities/{code}/set/{id}', [ 'as' => 'set.update', 'uses' => 'AttributeSetController@update']);
 
+Route::put('/entities/{code}/set/{id}/regroup', [ 'as' => 'set.update_group', 'uses' => 'AttributeSetController@reGroup']);
+
 Route::delete('/entities/{code}/set/{id}', [ 'as' => 'set.delete', 'uses' => 'AttributeSetController@remove']);
 
 /*

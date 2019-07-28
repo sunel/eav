@@ -16,16 +16,7 @@ class AttributeController extends Controller
 {
     public function list(Request $request, $code)
     {
-        try {
-            $entity = Entity::findByCode($code);
-        } catch (ModelNotFoundException $e) {
-            return (new Error([
-                'code' => '101',
-                'title' => 'Invalid Code',
-                'detail' => 'Given Code does not exist.',
-            ]))->response()
-              ->setStatusCode(404);
-        }
+        $entity = $this->getEntity($code);
 
         if ((int) $request->input('filter.unassigned', 0) === 1) {
             $set = $request->input('filter.set', null);
@@ -48,6 +39,15 @@ class AttributeController extends Controller
         );
     }
 
+    public function get(Request $request, $code, $id)
+    {
+        $entity = $this->getEntity($code);
+
+        $attribute = $this->getAttribute($id, $code);
+
+        return new Attribute($attribute);
+    }
+
     public function create(Request $request, $code)
     {
         try {
@@ -58,16 +58,7 @@ class AttributeController extends Controller
                     ->setStatusCode(400);
         }
 
-        try {
-            $entity = Entity::findByCode($code);
-        } catch (ModelNotFoundException $e) {
-            return (new Error([
-                'code' => '101',
-                'title' => 'Invalid Code',
-                'detail' => 'Given Code does not exist.',
-            ]))->response()
-              ->setStatusCode(404);
-        }
+        $entity = $this->getEntity($code);
 
         try {
             $request->validate([
@@ -86,11 +77,16 @@ class AttributeController extends Controller
         $data = array_only($attributes, [
             'frontend_label', 'frontend_type',
             'is_required', 'is_filterable',
-            'is_searchable', 'backend_type'
+            'is_searchable', 'backend_type',
         ]);
 
         $data['attribute_code'] = $attributes['code'];
         $data['entity_code'] = $code;
+
+
+        if(isset($attributes['select_source']) && $attributes['select_source'] !== 'database') {
+            $data['source_class'] = $attributes['select_source'];
+        }
 
         $data['default_value'] = array_get($attributes, 'default_value', '');
         
@@ -98,58 +94,11 @@ class AttributeController extends Controller
         return new Attribute(AttributeModel::add($data));
     }
 
-    public function get(Request $request, $code, $id)
-    {
-        try {
-            $entity = Entity::findByCode($code);
-        } catch (ModelNotFoundException $e) {
-            return (new Error([
-                'code' => '101',
-                'title' => 'Invalid Entity Code',
-                'detail' => 'Given Entity Code does not exist.',
-            ]))->response()
-              ->setStatusCode(404);
-        }
-
-
-        try {
-            $attribute = AttributeModel::findByCode($id, $code);
-        } catch (ModelNotFoundException $e) {
-            return (new Error([
-                'code' => '101',
-                'title' => 'Invalid Attribute Code',
-                'detail' => 'Given Attribute Code does not exist.',
-            ]))->response()
-              ->setStatusCode(404);
-        }
-
-        return new Attribute($attribute);
-    }
-
     public function update(Request $request, $code, $id)
     {
-        try {
-            $entity = Entity::findByCode($code);
-        } catch (ModelNotFoundException $e) {
-            return (new Error([
-                'code' => '101',
-                'title' => 'Invalid Entity Code',
-                'detail' => 'Given Entity Code does not exist.',
-            ]))->response()
-              ->setStatusCode(404);
-        }
+        $entity = $this->getEntity($code);
 
-
-        try {
-            $attribute = AttributeModel::findByCode($id, $code);
-        } catch (ModelNotFoundException $e) {
-            return (new Error([
-                'code' => '101',
-                'title' => 'Invalid Attribute Code',
-                'detail' => 'Given Attribute Code does not exist.',
-            ]))->response()
-              ->setStatusCode(404);
-        }
+        $attribute = $this->getAttribute($id, $code);
 
         $attributes = $request->input('data.attributes');
 
@@ -168,28 +117,9 @@ class AttributeController extends Controller
 
     public function remove(Request $request, $code, $id)
     {
-        try {
-            $entity = Entity::findByCode($code);
-        } catch (ModelNotFoundException $e) {
-            return (new Error([
-                'code' => '101',
-                'title' => 'Invalid Entity Code',
-                'detail' => 'Given Entity Code does not exist.',
-            ]))->response()
-              ->setStatusCode(404);
-        }
+        $entity = $this->getEntity($code);
 
-
-        try {
-            $attribute = AttributeModel::findByCode($id, $code);
-        } catch (ModelNotFoundException $e) {
-            return (new Error([
-                'code' => '101',
-                'title' => 'Invalid Attribute Code',
-                'detail' => 'Given Attribute Code does not exist.',
-            ]))->response()
-              ->setStatusCode(404);
-        }
+        $attribute = $this->getAttribute($id, $code);
 
         $attribute->delete();
 

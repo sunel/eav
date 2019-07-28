@@ -7,6 +7,7 @@ use Eav\EntityAttribute;
 use Eav\Api\Http\Resources\AttributeSet;
 use Eav\Api\Http\Resources\AttributeSetCollection;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use ApiHelper\Http\Resources\Error;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -15,16 +16,7 @@ class AttributeSetController extends Controller
 {
     public function list(Request $request, $code)
     {
-        try {
-            $entity = Entity::findByCode($code);
-        } catch (ModelNotFoundException $e) {
-            return (new Error([
-                'code' => '101',
-                'title' => 'Invalid Code',
-                'detail' => 'Given Code does not exist.',
-            ]))->response()
-              ->setStatusCode(404);
-        }
+        $entity = $this->getEntity($code);
 
         $sets = $entity->sets()->with($this->getIncludes($request)->all());
 
@@ -41,16 +33,7 @@ class AttributeSetController extends Controller
 
     public function get(Request $request, $code, $id)
     {
-        try {
-            $entity = Entity::findByCode($code);
-        } catch (ModelNotFoundException $e) {
-            return (new Error([
-                'code' => '101',
-                'title' => 'Invalid Code',
-                'detail' => 'Given Code does not exist.',
-            ]))->response()
-              ->setStatusCode(404);
-        }
+        $entity = $this->getEntity($code);
 
         $set = $entity->sets()->with($this->getIncludes($request)->all())->where('attribute_set_id', $id)->first();
 
@@ -59,23 +42,14 @@ class AttributeSetController extends Controller
 
     public function create(Request $request, $code)
     {
+        $entity = $this->getEntity($code);
+
         try {
-            $this->validateData($request);
+            $this->validateData($request, $entity->entityKey());
         } catch (ValidationException $e) {
             return (new Error($e->validator))
                 ->response()
                     ->setStatusCode(400);
-        }
-
-        try {
-            $entity = Entity::findByCode($code);
-        } catch (ModelNotFoundException $e) {
-            return (new Error([
-                'code' => '101',
-                'title' => 'Invalid Code',
-                'detail' => 'Given Code does not exist.',
-            ]))->response()
-              ->setStatusCode(404);
         }
 
         $name = $request->input('data.attributes.name');
@@ -86,18 +60,9 @@ class AttributeSetController extends Controller
         return new AttributeSet($set);
     }
 
-    public function update(Request $request, $code, $id)
+    public function reGroup(Request $request, $code, $id)
     {
-        try {
-            $entity = Entity::findByCode($code);
-        } catch (ModelNotFoundException $e) {
-            return (new Error([
-                'code' => '101',
-                'title' => 'Invalid Code',
-                'detail' => 'Given Code does not exist.',
-            ]))->response()
-              ->setStatusCode(404);
-        }
+        $entity = $this->getEntity($code);
 
         $set = $entity->sets()->where('attribute_set_id', $id)->first();
 
@@ -115,6 +80,49 @@ class AttributeSetController extends Controller
         return response(null, 204);
     }
 
+    public function update(Request $request, $code, $id)
+    {
+        $entity = $this->getEntity($code);
+
+        try {
+            $this->validateData($request, $entity->entityKey());
+        } catch (ValidationException $e) {
+            return (new Error($e->validator))
+                ->response()
+                    ->setStatusCode(400);
+        }
+
+        $set = $entity->sets()->where('attribute_set_id', $id)->first();
+
+        $name = $request->input('data.attributes.name');
+
+        try {
+            $set->fill([
+                'attribute_set_name' => $name
+            ])->save();
+        } catch (\Exception $e) {
+            return (new Error([
+                'code' => '500',
+                'title' => 'The backend responded with an error',
+                'detail' => 'Service not responding.',
+            ]))->response()
+              ->setStatusCode(500);
+        }
+
+        return new AttributeSet($set);
+    }
+
+    public function remove(Request $request, $code, $id)
+    {
+        $entity = $this->getEntity($code);
+
+        $set = $entity->sets()->where('attribute_set_id', $id)->first();
+
+        $set->delete();
+
+        return response(null, 204);
+    }
+
 
     protected function updateGroup($entity, $set, $groups)
     {
@@ -123,7 +131,9 @@ class AttributeSetController extends Controller
 
             $group->fill($item['attributes'])->save();
 
-            $this->updateRelations($entity, $set, $group, $item['relationships']);
+            if(isset($item['relationships'])) {
+                $this->updateRelations($entity, $set, $group, $item['relationships']);
+            }
         }
     }
 
@@ -147,11 +157,16 @@ class AttributeSetController extends Controller
      * Validate the given request.
      *
      * @param \Illuminate\Http\Request $request
+     * @param int $entityId
      */
-    protected function validateData(Request $request)
+    protected function validateData(Request $request, $entityId)
     {
         $request->validate([
-            'data.attributes.name' => 'required|unique:attribute_sets,attribute_set_name',
+            'data.attributes.name' => [
+                'required',
+                Rule::unique('attribute_sets', 'attribute_set_name')->where(function ($query) use($entityId) {
+                    return $query->where('entity_id', $entityId);
+                })],
         ], [], [
             'data.attributes.name' => 'name',
         ]);

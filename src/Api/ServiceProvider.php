@@ -2,8 +2,6 @@
 
 namespace Eav\Api;
 
-use Eav\Api\Http\Middleware\Authenticate;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Routing\Router;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as IlluminateServiceProvider;
 
@@ -26,37 +24,6 @@ class ServiceProvider extends IlluminateServiceProvider
     public function boot()
     {
         parent::boot();
-
-        $this->authorization();
-    }
-    /**
-     * Configure the authorization services.
-     *
-     * @return void
-     */
-    protected function authorization()
-    {
-        $this->gate();
-
-        Registery::auth(function ($request) {
-            return app()->environment('local') ||
-                   Gate::check('viewEavDash', [$request->user()]);
-        });
-    }
-    /**
-     * Register the gate.
-     *
-     * This gate determines who can access in non-local environments.
-     *
-     * @return void
-     */
-    protected function gate()
-    {
-        Gate::define('viewEavDash', function ($user) {
-            return in_array($user->email, [
-                //
-            ]);
-        });
     }
 
     /**

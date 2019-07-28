@@ -28,17 +28,8 @@ class EntityController extends Controller
 
     public function get(Request $request, $code)
     {
-        try {
-            $entity = Entity::findByCode($code);
-            $entity->load($this->getIncludes($request)->all());
-        } catch (ModelNotFoundException $e) {
-            return (new Error([
-                'code' => '101',
-                'title' => 'Invalid Code',
-                'detail' => 'Given Code does not exist.',
-            ]))->response()
-              ->setStatusCode(404);
-        }
+        $entity = $this->getEntity($code);
+        $entity->load($this->getIncludes($request)->all());
 
         return new EntityResource($entity);
     }
