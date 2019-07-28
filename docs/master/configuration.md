@@ -6,7 +6,7 @@ Publish the configuration file.
 php artisan vendor:publish --tag="eav.config"
 ```
 
-By default, following fields are enabled.
+By default, following database fields are enabled.
 
 ```php
 'fieldTypes' => [
@@ -32,4 +32,41 @@ Currenlty we support the below types.
 'tinyInteger', 'unsignedBigInteger', 'unsignedInteger', 
 'unsignedMediumInteger','unsignedSmallInteger', 
 'unsignedTinyInteger', 'uuid', 'year',
+```
+
+## Element Types
+
+List of html element type
+
+```php
+'elementTypes' => [
+    'text', 'select', 'number', 'textarea',
+    'integer', 'date', 'time', 'dateTime',
+    'boolean'
+],
+```
+
+## Select Sources
+
+List of option that are used when 'select' is used as frontend type.
+
+```php
+'selectSources' => [
+    'database',
+    \Eav\Attribute\Source\Boolean::class,
+],
+```
+
+You can add additional type ref `\Eav\Attribute\Source\Boolean::class`
+
+## Api Middleware
+
+Add the middleware that needed to be used when using api. 
+
+```php
+'api' => [
+    'middleware' => [
+    	'web'
+    ]
+],
 ```

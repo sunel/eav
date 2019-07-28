@@ -13,6 +13,10 @@ module.exports = {
 
     nav: [
       {
+        text: 'Dashboard',
+        link: '/master/dashboard.html'
+      },
+      {
         text: 'Documentation',
         items: [
           { text: 'master', link: '/master/' }
