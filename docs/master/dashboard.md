@@ -19,11 +19,11 @@ EAV Dashboard provides a beautiful dashboard for your EAV package. Dashboard all
 <a name="installation"></a>
 ## Installation
 
-You may use Composer to install Horizon into your Laravel project:
+You may use Composer to install Dashboard into your Laravel project:
 ```bash
 composer require sunel/eav-dashboard
 ```
-After installing Horizon, publish its assets using the `eav-dash:publish` Artisan command:
+After installing Dashboard, publish its assets using the `eav-dash:publish` Artisan command:
 ```bash
 php artisan eav-dash:publish
 ```

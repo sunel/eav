@@ -2,6 +2,8 @@
 
 namespace Eav\Migrations;
 
+use Illuminate\Support\Str;
+
 class SchemaParser
 {
     /**
@@ -143,7 +145,7 @@ class SchemaParser
      */
     private function getTableNameFromForeignKey($key)
     {
-        return str_plural(str_replace('_id', '', $key));
+        return Str::plural(str_replace('_id', '', $key));
     }
 
     /**

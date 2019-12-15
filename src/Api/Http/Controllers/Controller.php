@@ -4,6 +4,7 @@ namespace Eav\Api\Http\Controllers;
 
 use Eav\Entity;
 use Eav\Attribute;
+use Illuminate\Support\Arr;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
@@ -23,7 +24,7 @@ class Controller extends BaseController
         $size = $size > 25 ? 25 : $size;
         return $model->paginate($size, ['*'], 'page.number')
             ->setPageName('page[number]')
-            ->appends(array_except(request()->input(), 'page.number'));
+            ->appends(Arr::except(request()->input(), 'page.number'));
     }
 
     public function getEntity($code)

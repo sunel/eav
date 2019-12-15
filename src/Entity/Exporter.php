@@ -145,7 +145,7 @@ class Exporter
 
         $this->selectAttr->each(function ($attribute, $code) use (&$row) {
             if (!is_null($row[$code])) {
-                $row[$code] = array_get($attribute->options(), $row[$code]);
+                $row[$code] = Arr::get($attribute->options(), $row[$code]);
             }
         });
         

@@ -7,6 +7,7 @@ use Eav\Attribute as AttributeModel;
 use Eav\Api\Http\Resources\Attribute;
 use Eav\Api\Http\Resources\AttributeCollection;
 use ApiHelper\Http\Resources\Error;
+use Illuminate\Support\Arr;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
@@ -74,7 +75,7 @@ class AttributeController extends Controller
 
         $attributes = $request->input('data.attributes');
 
-        $data = array_only($attributes, [
+        $data = Arr::only($attributes, [
             'frontend_label', 'frontend_type',
             'is_required', 'is_filterable',
             'is_searchable', 'backend_type',
@@ -88,7 +89,7 @@ class AttributeController extends Controller
             $data['source_class'] = $attributes['select_source'];
         }
 
-        $data['default_value'] = array_get($attributes, 'default_value', '');
+        $data['default_value'] = Arr::get($attributes, 'default_value', '');
         
 
         return new Attribute(AttributeModel::add($data));
@@ -102,13 +103,13 @@ class AttributeController extends Controller
 
         $attributes = $request->input('data.attributes');
 
-        $data = array_only($attributes, [
+        $data = Arr::only($attributes, [
             'frontend_label', 'frontend_type',
             'is_required', 'is_filterable',
             'is_searchable', 'backend_type'
         ]);
 
-        $data['default_value'] = array_get($attributes, 'default_value', '');
+        $data['default_value'] = Arr::get($attributes, 'default_value', '');
 
         $attribute->fill($data)->save();
         

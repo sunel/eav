@@ -3,6 +3,7 @@
 namespace Eav\Traits;
 
 use Cache;
+use Illuminate\Support\Arr;
 use Eav\Attribute\Collection;
 
 trait Attribute
@@ -21,7 +22,7 @@ trait Attribute
                 $this->fetchAttributes([], $static, $required)
             );
         } else {
-            $newAttribute = $attributes->diff(array_get(static::$attributesCollectionKeys, $code, []));
+            $newAttribute = $attributes->diff(Arr::get(static::$attributesCollectionKeys, $code, []));
             if ($newAttribute->isNotEmpty()) {
                 $this->saveAttribute(
                     $this->fetchAttributes($newAttribute->all(), $static, $required)
