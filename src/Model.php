@@ -188,19 +188,19 @@ abstract class Model extends Eloquent
             $this->updateTimestamps();
         }
         
-        // If the model has an incrementing key, we can use the "insertGetId" method on
-        // the query builder, which will give us back the final inserted ID for this
-        // table from the database. Not all tables have to be incrementing though.
-        $attributes = $this->attributes;
-        
-        $loadedAttributes = $this->loadAttributes(array_keys($attributes), true, true);
-        
-        $loadedAttributes->validate($attributes);
-        
-        return $this->getConnection()->transaction(function () use ($query, $options, $attributes, $loadedAttributes) {
+        return $this->getConnection()->transaction(function () use ($query, $options) {
             if ($this->fireModelEvent('creating') === false) {
                 return false;
             }
+
+            // If the model has an incrementing key, we can use the "insertGetId" method on
+            // the query builder, which will give us back the final inserted ID for this
+            // table from the database. Not all tables have to be incrementing though.
+            $attributes = $this->getAttributes();
+            
+            $loadedAttributes = $this->loadAttributes(array_keys($attributes), true, true);
+            
+            $loadedAttributes->validate($attributes);
             
             if (!$this->insertMainTable($query, $options, $attributes, $loadedAttributes)) {
                 return false;
@@ -233,8 +233,21 @@ abstract class Model extends Eloquent
         $mainTableAttribute = $this->getMainTableAttribute($loadedAttributes);
         
         $mainData = array_intersect_key($attributes, array_flip($mainTableAttribute));
-        
-        $this->insertAndSetId($query, $mainData);
+
+        if ($this->getIncrementing()) {
+            $this->insertAndSetId($query, $mainData);
+        }
+
+        // If the table isn't incrementing we'll simply insert these attributes as they
+        // are. These attribute arrays must contain an "id" column previously placed
+        // there by the developer as the manually determined key for these models.
+        else {
+            if (empty($mainData)) {
+                return true;
+            }
+
+            $query->insert($mainData);
+        }
         
         // We will go ahead and set the exists property to true, so that it is set when
         // the created event is fired, just in case the developer tries to update it
