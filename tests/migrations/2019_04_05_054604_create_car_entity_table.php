@@ -18,6 +18,93 @@ class CreateCarEntityTable extends Migration
      */
     public function up()
     {
+        Schema::create('car_string', function (Blueprint $table) {
+            $table->increments('value_id')->comment('Value ID');
+            $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
+            $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
+            $table->integer('entity_id')->unsigned()->default(0)->comment('Entity ID');
+            
+            $table->string('value')->default(null)->nullable()->comment('Value');
+            
+            $table->foreign('entity_id')
+                  ->references('id')->on('cars')
+                  ->onDelete('cascade');
+            
+            $table->unique(['entity_id','attribute_id']);
+            $table->index('attribute_id');
+            $table->index('entity_id');
+        });
+
+        Schema::create('car_integer', function (Blueprint $table) {
+            $table->increments('value_id')->comment('Value ID');
+            $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
+            $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
+            $table->integer('entity_id')->unsigned()->default(0)->comment('Entity ID');
+            
+            $table->integer('value')->default(null)->nullable()->comment('Value');
+            
+            $table->foreign('entity_id')
+                  ->references('id')->on('cars')
+                  ->onDelete('cascade');
+            
+            $table->unique(['entity_id','attribute_id']);
+            $table->index('attribute_id');
+            $table->index('entity_id');
+        });
+
+        Schema::create('car_boolean', function (Blueprint $table) {
+            $table->increments('value_id')->comment('Value ID');
+            $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
+            $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
+            $table->integer('entity_id')->unsigned()->default(0)->comment('Entity ID');
+            
+            $table->boolean('value')->default(null)->nullable()->comment('Value');
+            
+            $table->foreign('entity_id')
+                  ->references('id')->on('cars')
+                  ->onDelete('cascade');
+            
+            $table->unique(['entity_id','attribute_id']);
+            $table->index('attribute_id');
+            $table->index('entity_id');
+        });
+
+        Schema::create('car_text', function (Blueprint $table) {
+            $table->increments('value_id')->comment('Value ID');
+            $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
+            $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
+            $table->integer('entity_id')->unsigned()->default(0)->comment('Entity ID');
+            
+            $table->text('value')->default(null)->nullable()->comment('Value');
+            
+            $table->foreign('entity_id')
+                  ->references('id')->on('cars')
+                  ->onDelete('cascade');
+            
+            $table->unique(['entity_id','attribute_id']);
+            $table->index('attribute_id');
+            $table->index('entity_id');
+        });
+
+        Schema::create('car_timestamp', function (Blueprint $table) {
+            $table->increments('value_id')->comment('Value ID');
+            $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
+            $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
+            $table->integer('entity_id')->unsigned()->default(0)->comment('Entity ID');
+            
+            $table->timestamp('value')->default(null)->nullable()->comment('Value');
+            
+            $table->foreign('entity_id')
+                  ->references('id')->on('cars')
+                  ->onDelete('cascade');
+            
+            $table->unique(['entity_id','attribute_id']);
+            $table->index('attribute_id');
+            $table->index('entity_id');
+        });
+
+        // comment from here to run test faster
+
         Schema::create('car_bigInteger', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
@@ -51,23 +138,7 @@ class CreateCarEntityTable extends Migration
             $table->index('attribute_id');
             $table->index('entity_id');
         });
-                        
-        Schema::create('car_boolean', function (Blueprint $table) {
-            $table->increments('value_id')->comment('Value ID');
-            $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
-            $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
-            $table->integer('entity_id')->unsigned()->default(0)->comment('Entity ID');
-            
-            $table->boolean('value')->default(null)->nullable()->comment('Value');
-            
-            $table->foreign('entity_id')
-                  ->references('id')->on('cars')
-                  ->onDelete('cascade');
-            
-            $table->unique(['entity_id','attribute_id']);
-            $table->index('attribute_id');
-            $table->index('entity_id');
-        });
+        
                         
         Schema::create('car_char', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
@@ -212,23 +283,6 @@ class CreateCarEntityTable extends Migration
             $table->integer('entity_id')->unsigned()->default(0)->comment('Entity ID');
             
             $table->geometryCollection('value')->default(null)->nullable()->comment('Value');
-            
-            $table->foreign('entity_id')
-                  ->references('id')->on('cars')
-                  ->onDelete('cascade');
-            
-            $table->unique(['entity_id','attribute_id']);
-            $table->index('attribute_id');
-            $table->index('entity_id');
-        });
-                        
-        Schema::create('car_integer', function (Blueprint $table) {
-            $table->increments('value_id')->comment('Value ID');
-            $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
-            $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
-            $table->integer('entity_id')->unsigned()->default(0)->comment('Entity ID');
-            
-            $table->integer('value')->default(null)->nullable()->comment('Value');
             
             $table->foreign('entity_id')
                   ->references('id')->on('cars')
@@ -443,40 +497,6 @@ class CreateCarEntityTable extends Migration
             $table->index('entity_id');
         });
                         
-        Schema::create('car_string', function (Blueprint $table) {
-            $table->increments('value_id')->comment('Value ID');
-            $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
-            $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
-            $table->integer('entity_id')->unsigned()->default(0)->comment('Entity ID');
-            
-            $table->string('value')->default(null)->nullable()->comment('Value');
-            
-            $table->foreign('entity_id')
-                  ->references('id')->on('cars')
-                  ->onDelete('cascade');
-            
-            $table->unique(['entity_id','attribute_id']);
-            $table->index('attribute_id');
-            $table->index('entity_id');
-        });
-                        
-        Schema::create('car_text', function (Blueprint $table) {
-            $table->increments('value_id')->comment('Value ID');
-            $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
-            $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
-            $table->integer('entity_id')->unsigned()->default(0)->comment('Entity ID');
-            
-            $table->text('value')->default(null)->nullable()->comment('Value');
-            
-            $table->foreign('entity_id')
-                  ->references('id')->on('cars')
-                  ->onDelete('cascade');
-            
-            $table->unique(['entity_id','attribute_id']);
-            $table->index('attribute_id');
-            $table->index('entity_id');
-        });
-                        
         Schema::create('car_time', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
@@ -510,24 +530,7 @@ class CreateCarEntityTable extends Migration
             $table->index('attribute_id');
             $table->index('entity_id');
         });
-                        
-        Schema::create('car_timestamp', function (Blueprint $table) {
-            $table->increments('value_id')->comment('Value ID');
-            $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
-            $table->integer('attribute_id')->unsigned()->default(0)->comment('Attribute ID');
-            $table->integer('entity_id')->unsigned()->default(0)->comment('Entity ID');
-            
-            $table->timestamp('value')->default(null)->nullable()->comment('Value');
-            
-            $table->foreign('entity_id')
-                  ->references('id')->on('cars')
-                  ->onDelete('cascade');
-            
-            $table->unique(['entity_id','attribute_id']);
-            $table->index('attribute_id');
-            $table->index('entity_id');
-        });
-                        
+
         Schema::create('car_timestampTz', function (Blueprint $table) {
             $table->increments('value_id')->comment('Value ID');
             $table->smallInteger('entity_type_id')->unsigned()->default(0)->comment('Entity Type ID');
@@ -680,7 +683,8 @@ class CreateCarEntityTable extends Migration
             $table->index('attribute_id');
             $table->index('entity_id');
         });
-            
+
+        // comment till here     
         
         $entity = Entity::create([
             'entity_code' => 'car',
@@ -714,12 +718,21 @@ class CreateCarEntityTable extends Migration
     {
         $this->removeTimeStampAttributes();
         
-                    
+        Schema::drop('car_boolean');
+            
+        Schema::drop('car_integer');
+
+        Schema::drop('car_string');
+            
+        Schema::drop('car_text');
+            
+        Schema::drop('car_timestamp');
+        
+        // comment from here to run test faster
+
         Schema::drop('car_bigInteger');
             
         Schema::drop('car_binary');
-            
-        Schema::drop('car_boolean');
             
         Schema::drop('car_char');
             
@@ -738,8 +751,6 @@ class CreateCarEntityTable extends Migration
         Schema::drop('car_geometry');
             
         Schema::drop('car_geometryCollection');
-            
-        Schema::drop('car_integer');
             
         Schema::drop('car_ipAddress');
             
@@ -765,15 +776,9 @@ class CreateCarEntityTable extends Migration
             
         Schema::drop('car_smallInteger');
             
-        Schema::drop('car_string');
-            
-        Schema::drop('car_text');
-            
         Schema::drop('car_time');
             
         Schema::drop('car_timeTz');
-            
-        Schema::drop('car_timestamp');
             
         Schema::drop('car_timestampTz');
             
@@ -793,6 +798,7 @@ class CreateCarEntityTable extends Migration
             
         Schema::drop('car_year');
         
+        // Comment till here
         
         $entity = Entity::where('entity_code', '=', 'car');
         $attributeSet = AttributeSet::where('attribute_set_name', '=', 'Default')
