@@ -179,7 +179,7 @@ class Complier
 
         $table = $connection->getTablePrefix().$table;
         
-        $result = \DB::table('information_schema.columns')
+        $result = \DB::table(config('eav.information_schema_prefix', '').'information_schema.columns')
                 ->where('table_schema', $database)
                 ->where('table_name', $table)
                 ->where($clouser)

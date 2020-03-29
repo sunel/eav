@@ -57,4 +57,13 @@ return [
         'database',
         \Eav\Attribute\Source\Boolean::class,
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Table prefix for information_schema table
+    |--------------------------------------------------------------------------
+    |   
+    */
+   
+    'information_schema_prefix' => '',
 ];
