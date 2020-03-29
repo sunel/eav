@@ -150,7 +150,7 @@ class EntityMigrationCreator
 
         $stub = '';
         foreach ($fieldTypes as $type) {
-            $stub .= str_replace('FIELDTYPE', $type, $attributeStub);
+            $stub .= str_replace('FIELDTYPE',strtolower($type), $attributeStub);
         }
         
         return str_replace('DOWNMIGRATION', $stub, $mainStub);
