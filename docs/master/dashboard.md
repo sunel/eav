@@ -27,6 +27,18 @@ After installing Dashboard, publish its assets using the `eav-dash:publish` Arti
 ```bash
 php artisan eav-dash:publish
 ```
+
+::: warning
+**YOU NEED TO ADD THE API SERVICE PROVIDER**
+
+```php
+'providers' => [
+    ...
+    Eav\Api\ServiceProvider::class,
+]
+```
+:::
+
 <a name="upgrading"></a>
 #### Upgrading Dashboard
 

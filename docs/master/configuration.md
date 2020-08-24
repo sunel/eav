@@ -59,6 +59,7 @@ List of option that are used when 'select' is used as frontend type.
 
 You can add additional type ref `\Eav\Attribute\Source\Boolean::class`
 
+
 ## Api Middleware
 
 Add the middleware that needed to be used when using api. 
