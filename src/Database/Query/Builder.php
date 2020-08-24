@@ -266,6 +266,11 @@ class Builder extends QueryBuilder
             }
         });
 
+        if (is_null($orgColumns->get('columns'))) {
+            $this->columns = $orgColumns->get('expression')->all();
+            return $this;
+        }
+
         $this->orginalColumns = $orgColumns->get('columns')->all();
 
         $columns = [];
