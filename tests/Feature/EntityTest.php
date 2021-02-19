@@ -131,7 +131,7 @@ class EntityTest extends TestCase
         $this->assertEquals($this->entity->defaultAttributeSet->attribute_set_id, $set->attribute_set_id);
     }
 
-    protected function tearDown()
+    protected function tearDown(): void
     {
         parent::tearDown();
 
