@@ -328,17 +328,6 @@ abstract class Model extends Eloquent
                  
                 return true;
             });
-
-            // Once we have run the update operation, we will fire the "updated" event for
-            // this model instance. This will allow developers to hook into these after
-            // models are updated, giving them a chance to do any special processing.
-            $dirty = $this->getDirty();
-
-            if (count($dirty) > 0) {
-                $this->fireModelEvent('updated', false);
-            }
-
-            $this->syncChanges();
         }
 
         return true;
@@ -362,6 +351,9 @@ abstract class Model extends Eloquent
         $mainData = array_intersect_key($attributes, array_flip($mainTableAttribute));
         
         $numRows = $this->setKeysForSaveQuery($query)->update($mainData);
+
+        // @see Illuminate\Database\Eloquent\Concerns\HasAttributes::syncChanges()
+        $this->changes = $mainData;
 
         $this->fireModelEvent('updated.main', false);
         
